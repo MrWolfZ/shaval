@@ -5,13 +5,46 @@
 ```ts
 
 // @public (undocumented)
-export type Result<T> = T | ShavalError<T>;
+export type ErrorMessage = string;
 
 // @public (undocumented)
-export interface ShavalError<T> {
+export interface Errors {
     // (undocumented)
-    readonly prop?: T;
+    readonly details: Readonly<Record<ErrorMessage, unknown>>;
+    // (undocumented)
+    readonly path: readonly string[];
+    // (undocumented)
+    readonly value: unknown;
 }
+
+// @public (undocumented)
+export interface Failure {
+    // (undocumented)
+    readonly [FAILURE]: undefined;
+    // (undocumented)
+    readonly errors: readonly Errors[];
+}
+
+// @public (undocumented)
+export function failure(value: unknown, message: ErrorMessage, details?: unknown): Failure;
+
+// @public (undocumented)
+export function failure(value: unknown, details: Readonly<Record<ErrorMessage, unknown>>): Failure;
+
+// @public (undocumented)
+export function failure(errors: readonly Errors[]): Failure;
+
+// @public (undocumented)
+export function isFailure<T>(result: Result<T>): result is Failure;
+
+// @public (undocumented)
+export function isSuccess<T>(result: Result<T>): result is T;
+
+// @public (undocumented)
+export type _ReadonlyObject = Readonly<Record<string, any>>;
+
+// @public (undocumented)
+export type Result<T> = T | Failure;
 
 
 // (No @packageDocumentation comment for this package)
