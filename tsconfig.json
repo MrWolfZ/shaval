@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "target": "esnext",
+    "module": "esnext",
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "inlineSourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "strict": true,
+    "isolatedModules": true,
+    "importsNotUsedAsValues": "error",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "pretty": true,
+    "types": ["node", "jest"],
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "paths": {
+      "@shaval/*": ["./packages/*"]
+    }
+  },
+  "include": ["packages/**/*.ts", "packages/**/*.tsx", "recipes/**/*.ts", "scripts/**/*.ts"],
+  "exclude": ["packages/*/dist/**/*.ts", "packages/*/dist/**/*.tsx", "recipes/*/dist/**/*.ts"]
+}

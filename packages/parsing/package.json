@@ -1,0 +1,71 @@
+{
+  "name": "@shaval/parsing",
+  "version": "0.1.0-alpha.0",
+  "description": "The parsing package of shaval. Contains everything to safely parse unknown objects in a simple way.",
+  "module": "./esm2015/index.js",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "import": "./esm2015/index.js"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "node ../../scripts/build.package.js --forceEnableColors=true",
+    "build:ci": "yarn build --forceEnableColors=false --ci",
+    "lint": "eslint index.ts src/**/*.ts test-d/**/*.ts --fix",
+    "lint:ci": "eslint index.ts src/**/*.ts test-d/**/*.ts",
+    "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
+    "test:watch": "yarn test --watchAll",
+    "test:ci": "yarn test --runInBand --ci --coverage --reporters default",
+    "tsd": "tsd",
+    "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F parsing",
+    "publish:custom": "yarn publish ./dist --access public --no-git-tag-version --non-interactive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrWolfZ/shaval.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/shaval/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/shaval#readme",
+  "keywords": [
+    "shaval",
+    "schema",
+    "shape",
+    "validation",
+    "validate",
+    "validating",
+    "parser",
+    "parse",
+    "parsing",
+    "javascript",
+    "typescript"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "dependencies": {
+    "@shaval/core": "0.1.0-alpha.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.25.0",
+    "jest": "^26.6.3",
+    "rollup": "^2.46.0",
+    "tsd": "^0.14.0"
+  },
+  "tsd": {
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@shaval/parsing": [
+          "./index.d.ts"
+        ]
+      },
+      "types": [],
+      "skipLibCheck": true
+    }
+  }
+}

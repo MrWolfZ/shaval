@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.lib.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "declaration": false,
+    "paths": {
+      "@shaval/core": ["../core"],
+      "@shaval/parsing": ["."]
+    }
+  },
+  "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts", "test-d/**/*.ts"]
+}

@@ -1,0 +1,7 @@
+{
+  "extends": "../../../tsconfig.composite.recipes.base.json",
+  "references": [
+    { "path": "../../../packages/parsing/tsconfig.composite.build.json" },
+    { "path": "../../../packages/validation/tsconfig.composite.build.json" }
+  ]
+}

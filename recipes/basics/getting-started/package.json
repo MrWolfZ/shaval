@@ -1,0 +1,13 @@
+{
+  "name": "@shaval/recipes.basics.getting-started",
+  "version": "0.1.0-alpha.0",
+  "main": "src/index.ts",
+  "private": true,
+  "dependencies": {
+    "@shaval/parsing": "0.1.0-alpha.0",
+    "@shaval/validation": "0.1.0-alpha.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  }
+}
