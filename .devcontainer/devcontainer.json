@@ -1,0 +1,27 @@
+{
+	"name": "Node.js & TypeScript",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { 
+			"VARIANT": "14"
+		}
+	},
+
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+
+	"extensions": [
+    "eg2.vscode-npm-script",
+    "christian-kohler.npm-intellisense",
+    "christian-kohler.path-intellisense",
+    "esbenp.prettier-vscode",
+		"dbaeumer.vscode-eslint"
+	],
+
+	"forwardPorts": [],
+
+	"postCreateCommand": "yarn install",
+
+	"remoteUser": "node"
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.lib.json",
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "./packages/core/tsconfig.composite.test.json" },
+    { "path": "./packages/parsing/tsconfig.composite.test.json" },
+    { "path": "./packages/validation/tsconfig.composite.test.json" }
+  ]
+}

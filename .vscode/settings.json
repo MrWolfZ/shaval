@@ -1,0 +1,34 @@
+{
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/packages/*/dist": true,
+    "**/packages/*/coverge": true
+  },
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "files.insertFinalNewline": true,
+  "javascript.format.semicolons": "remove",
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.preferences.useAliasesForRenames": false,
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.format.semicolons": "remove",
+  "eslint.validate": [],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.requireConfig": true,
+  "prettier.semi": false
+}

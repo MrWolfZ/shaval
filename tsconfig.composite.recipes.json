@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./recipes/basics/getting-started/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/quickstart/parsing/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/quickstart/validation/tsconfig.composite.json"
+    }
+  ]
+}
