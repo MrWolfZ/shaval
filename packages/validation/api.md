@@ -4,10 +4,40 @@
 
 ```ts
 
-import type { Result } from '@shaval/core';
+import { _ReadonlyObject } from '@shaval/core';
+import { ShavalResult } from '@shaval/core';
 
 // @public (undocumented)
-export type Validator<T> = (value: T) => Result<T>;
+export function combine<T>(...validators: Validator<T>[]): Validator<T>;
+
+// @public
+export function greaterThan(comparand: number): <T extends number | null | undefined>(value: T) => ShavalResult<T>;
+
+// @public
+export function lessThan(comparand: number): <T extends number | null | undefined>(value: T) => ShavalResult<T>;
+
+// @public (undocumented)
+export type ObjectPropertyValidator<TProperty> = TProperty extends unknown[] ? Validator<TProperty> | Validator<TProperty>[] : TProperty extends _ReadonlyObject ? _SelfOrArray<ObjectPropertyValidators<TProperty> | Validator<TProperty>> : _SelfOrArray<Validator<TProperty>>;
+
+// @public (undocumented)
+export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
+    readonly [prop in keyof T]?: ObjectPropertyValidator<NonNullable<T[prop]>>;
+};
+
+// @public
+export function required<T>(value: T): ShavalResult<T>;
+
+// @public (undocumented)
+export type _SelfOrArray<T> = T | T[];
+
+// @public (undocumented)
+export function validateArray<T>(...itemValidators: Validator<T>[]): Validator<T[]>;
+
+// @public (undocumented)
+export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T>): Validator<T>;
+
+// @public (undocumented)
+export type Validator<T> = (value: T) => ShavalResult<T>;
 
 
 // (No @packageDocumentation comment for this package)

@@ -1,6 +1,6 @@
 // this file contains a end-to-end tests for the public API
 
-import type { Result } from '@shaval/core'
+import type { ShavalResult } from '@shaval/core'
 
 describe(`@shaval/core`, () => {
   interface Todo {
@@ -16,7 +16,7 @@ describe(`@shaval/core`, () => {
   }
 
   it('works', () => {
-    const result: Result<Todo> = todo
+    const result: ShavalResult<Todo> = todo
 
     expect(result).toBeDefined()
   })

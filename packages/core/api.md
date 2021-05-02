@@ -5,13 +5,38 @@
 ```ts
 
 // @public (undocumented)
-export type Result<T> = T | ShavalError<T>;
+export function error<T>(value: unknown, ...errors: readonly (string | PropertyErrors)[]): ShavalError<T>;
+
+// @public (undocumented)
+export function isShavalError<T>(result: ShavalResult<T>): result is ShavalError<T>;
+
+// @public (undocumented)
+export function isSuccess<T>(result: ShavalResult<T>): result is T;
+
+// @public (undocumented)
+export interface PropertyErrors {
+    // (undocumented)
+    readonly messages: readonly string[];
+    // (undocumented)
+    readonly path: readonly string[];
+}
+
+// @public (undocumented)
+export type _ReadonlyObject = Readonly<Record<string, any>>;
 
 // @public (undocumented)
 export interface ShavalError<T> {
     // (undocumented)
-    readonly prop?: T;
+    readonly [ERROR]: undefined;
+    // (undocumented)
+    readonly errors: readonly (string | PropertyErrors)[];
+    readonly nullOrUndefined?: undefined extends T ? 'undefined' : null extends T ? 'null' : never;
+    // (undocumented)
+    readonly value: unknown;
 }
+
+// @public (undocumented)
+export type ShavalResult<T> = T | ShavalError<T>;
 
 
 // (No @packageDocumentation comment for this package)

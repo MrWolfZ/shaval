@@ -1,4 +1,4 @@
-import type { Result } from '@shaval/core'
+import type { ShavalResult } from '@shaval/core'
 import { expectAssignable } from 'tsd'
 
-expectAssignable<Result<string>>('')
+expectAssignable<ShavalResult<string>>('')

@@ -4,10 +4,43 @@
 
 ```ts
 
-import type { Result } from '@shaval/core';
+import type { _ReadonlyObject } from '@shaval/core';
+import type { ShavalResult } from '@shaval/core';
 
 // @public (undocumented)
-export type Parser<T> = (value: unknown) => Result<T>;
+export function array<T>(valueParser: Parser<T>): Parser<T[]>;
+
+// @public (undocumented)
+export const boolean: Parser<boolean>;
+
+// @public (undocumented)
+export function nullable<T>(valueParser: Parser<T>): Parser<T | null>;
+
+// @public (undocumented)
+export const number: Parser<number>;
+
+// @public (undocumented)
+export function object<T extends _ReadonlyObject>(config: ObjectParsingConfig<T>): Parser<T>;
+
+// @public (undocumented)
+export type ObjectParsingConfig<T extends _ReadonlyObject> = {
+    readonly [prop in keyof T]: Parser<T[prop]>;
+};
+
+// @public (undocumented)
+export function optional<T>(valueParser: Parser<T>): Parser<T | undefined>;
+
+// @public (undocumented)
+export type Parser<T> = (value: unknown) => ShavalResult<T>;
+
+// @public (undocumented)
+export const string: Parser<string>;
+
+// @public (undocumented)
+export function union<T1, T2>(valueParser1: Parser<T1>, valueParser2: Parser<T2>): Parser<T1 | T2>;
+
+// @public (undocumented)
+export function union<T1, T2, T3>(valueParser1: Parser<T1>, valueParser2: Parser<T2>, valueParser3: Parser<T3>): Parser<T1 | T2 | T3>;
 
 
 // (No @packageDocumentation comment for this package)
