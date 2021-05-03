@@ -5,13 +5,13 @@ import { combine } from './combine.js'
 /**
  * @public
  */
-export type _SelfOrArray<T> = T | T[]
+export type _SelfOrArray<T> = T | readonly T[]
 
 /**
  * @public
  */
-export type ObjectPropertyValidator<TProperty> = TProperty extends unknown[]
-  ? Validator<TProperty> | Validator<TProperty>[]
+export type ObjectPropertyValidator<TProperty> = TProperty extends readonly (infer U)[]
+  ? Validator<readonly U[]> | readonly Validator<readonly U[]>[]
   : TProperty extends _ReadonlyObject
   ? _SelfOrArray<ObjectPropertyValidators<TProperty> | Validator<TProperty>>
   : _SelfOrArray<Validator<TProperty>>
@@ -46,10 +46,6 @@ export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T
       const propValue = value[key as keyof T]
       const validator = propertyValidators[key as keyof T]
 
-      if (validator === null || (validator === undefined && key in propertyValidators)) {
-        throw new Error(`validators must not be null or undefined`)
-      }
-
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const propValidator = getPropertyValidator(validator!)
       const result = propValidator(propValue)
@@ -71,7 +67,7 @@ function getPropertyValidator(propValidator: ObjectPropertyValidator<unknown>): 
   } else if (Array.isArray(propValidator)) {
     validators.push(...propValidator)
   } else {
-    validators.push(validateObject(propValidator))
+    validators.push(validateObject(propValidator) as Validator<unknown>)
   }
 
   return combine(...validators)

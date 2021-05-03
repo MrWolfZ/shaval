@@ -311,7 +311,7 @@ describe(validateObject.name, () => {
     })
   })
 
-  describe('object with optional property', () => {
+  describe('object with nullable property', () => {
     interface ObjectWithNullableProperty {
       n: number | null
     }

@@ -5,7 +5,7 @@ import { combine } from './combine.js'
 /**
  * @public
  */
-export function validateArray<T>(...itemValidators: Validator<T>[]): Validator<T[]> {
+export function validateArray<T>(...itemValidators: readonly Validator<T>[]): Validator<readonly T[]> {
   const combinedValidator = combine(...itemValidators)
 
   return (array) => {

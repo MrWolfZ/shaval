@@ -1,6 +1,12 @@
 import { boolean, nullable, number, optional, Parser, string, union } from '@shaval/parsing'
 import { expectError, expectType } from 'tsd'
 
+// @ts-expect-error test
+union()
+
+// @ts-expect-error test
+union(string)
+
 expectType<Parser<string | number>>(union(string, number))
 expectType<Parser<string | number>>(union(number, string))
 expectError<Parser<string | number>>(union(string, string))
