@@ -17,7 +17,7 @@ export function greaterThan(comparand: number): <T extends number | null | undef
 export function lessThan(comparand: number): <T extends number | null | undefined>(value: T) => ShavalResult<T>;
 
 // @public (undocumented)
-export type ObjectPropertyValidator<TProperty> = TProperty extends unknown[] ? Validator<TProperty> | Validator<TProperty>[] : TProperty extends _ReadonlyObject ? _SelfOrArray<ObjectPropertyValidators<TProperty> | Validator<TProperty>> : _SelfOrArray<Validator<TProperty>>;
+export type ObjectPropertyValidator<TProperty> = TProperty extends readonly (infer U)[] ? Validator<readonly U[]> | readonly Validator<readonly U[]>[] : TProperty extends _ReadonlyObject ? _SelfOrArray<ObjectPropertyValidators<TProperty> | Validator<TProperty>> : _SelfOrArray<Validator<TProperty>>;
 
 // @public (undocumented)
 export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
@@ -28,10 +28,10 @@ export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
 export function required<T>(value: T): ShavalResult<T>;
 
 // @public (undocumented)
-export type _SelfOrArray<T> = T | T[];
+export type _SelfOrArray<T> = T | readonly T[];
 
 // @public (undocumented)
-export function validateArray<T>(...itemValidators: Validator<T>[]): Validator<T[]>;
+export function validateArray<T>(...itemValidators: readonly Validator<T>[]): Validator<readonly T[]>;
 
 // @public (undocumented)
 export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T>): Validator<T>;
