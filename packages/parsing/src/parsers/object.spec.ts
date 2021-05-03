@@ -93,6 +93,18 @@ describe(object.name, () => {
       expect(error2?.path).toEqual(['n'])
     })
 
+    it('returns a deep copy', () => {
+      const value: SimpleObject = { s: 'a', n: 1, b: true }
+      expect(parser(value)).not.toBe(value)
+      expect(parser(value)).toEqual(value)
+    })
+
+    it('strips unknown properties', () => {
+      const expected: SimpleObject = { s: 'a', n: 1, b: true }
+      const input = { ...expected, extra: '' }
+      expect(parser(input)).toEqual(expected)
+    })
+
     it('fails for zero', () => {
       expect(isSuccess(parser(0))).toBe(false)
     })
@@ -115,6 +127,22 @@ describe(object.name, () => {
 
     it('fails for array', () => {
       expect(isSuccess(parser([' ']))).toBe(false)
+    })
+
+    it('fails for function', () => {
+      expect(isSuccess(parser(() => void 0))).toBe(false)
+    })
+
+    it('fails for class instance', () => {
+      class TestClass implements SimpleObject {
+        s = ''
+        n = 0
+        b = false
+      }
+
+      const value = new TestClass()
+
+      expect(isSuccess(parser(value))).toBe(false)
     })
   })
 

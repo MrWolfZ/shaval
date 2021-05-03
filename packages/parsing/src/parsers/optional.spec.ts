@@ -34,4 +34,8 @@ describe(optional.name, () => {
   it('fails for array', () => {
     expect(isSuccess(optional(number)([' ']))).toBe(false)
   })
+
+  it('fails for function', () => {
+    expect(isSuccess(optional(number)(() => void 0))).toBe(false)
+  })
 })

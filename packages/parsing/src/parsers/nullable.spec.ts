@@ -34,4 +34,8 @@ describe(nullable.name, () => {
   it('fails for array', () => {
     expect(isSuccess(nullable(number)([' ']))).toBe(false)
   })
+
+  it('fails for function', () => {
+    expect(isSuccess(nullable(number)(() => void 0))).toBe(false)
+  })
 })

@@ -33,4 +33,8 @@ describe(string.name, () => {
   it('fails for array', () => {
     expect(isSuccess(string([' ']))).toBe(false)
   })
+
+  it('fails for function', () => {
+    expect(isSuccess(string(() => void 0))).toBe(false)
+  })
 })

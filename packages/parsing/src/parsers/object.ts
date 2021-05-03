@@ -37,7 +37,12 @@ export function object<T extends _ReadonlyObject>(propertyParsers: ObjectPropert
       return error(value, 'value must be an object and not an array')
     }
 
+    if (value.constructor !== Object) {
+      return error(value, 'value must be a plain object')
+    }
+
     const errors: (string | PropertyErrors)[] = []
+    const returnValue: Record<string, unknown> = {}
 
     for (const key of Object.keys(propertyParsers)) {
       const propValue = value[key as keyof typeof value]
@@ -48,10 +53,12 @@ export function object<T extends _ReadonlyObject>(propertyParsers: ObjectPropert
 
       if (isShavalError(result)) {
         errors.push(...result.errors.map((err) => prependKeyToPath(err, key)))
+      } else {
+        returnValue[key] = result
       }
     }
 
-    return errors.length > 0 ? error(value, ...errors) : (value as T)
+    return errors.length > 0 ? error(value, ...errors) : (returnValue as T)
   }
 }
 

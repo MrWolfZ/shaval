@@ -46,6 +46,10 @@ describe(union.name, () => {
       expect(isSuccess(parser([' ']))).toBe(false)
     })
 
+    it('fails for function', () => {
+      expect(isSuccess(parser(() => void 0))).toBe(false)
+    })
+
     it('aggregates errors from all properties', () => {
       const value = {}
       const result = parser(value)

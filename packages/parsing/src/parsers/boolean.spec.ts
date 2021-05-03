@@ -33,4 +33,8 @@ describe(boolean.name, () => {
   it('fails for array', () => {
     expect(isSuccess(boolean([' ']))).toBe(false)
   })
+
+  it('fails for function', () => {
+    expect(isSuccess(boolean(() => void 0))).toBe(false)
+  })
 })

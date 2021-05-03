@@ -79,6 +79,12 @@ describe(array.name, () => {
       expect(error2?.path).toEqual(['2'])
     })
 
+    it('returns a deep copy', () => {
+      const value = [1, 2, 3]
+      expect(parser(value)).not.toBe(value)
+      expect(parser(value)).toEqual(value)
+    })
+
     it('fails for zero', () => {
       expect(isSuccess(parser(0))).toBe(false)
     })
@@ -99,8 +105,8 @@ describe(array.name, () => {
       expect(isSuccess(parser(true))).toBe(false)
     })
 
-    it('fails for array', () => {
-      expect(isSuccess(parser([' ']))).toBe(false)
+    it('fails for function', () => {
+      expect(isSuccess(parser(() => void 0))).toBe(false)
     })
   })
 

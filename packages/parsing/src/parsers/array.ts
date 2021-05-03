@@ -22,7 +22,7 @@ export function array<T>(valueParser: Parser<T>): Parser<T[]> {
       }
     }
 
-    return errors.length > 0 ? error(value, ...errors) : value
+    return errors.length > 0 ? error(value, ...errors) : value.map((i) => i)
   }
 }
 

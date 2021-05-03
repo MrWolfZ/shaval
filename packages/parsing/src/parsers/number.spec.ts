@@ -33,4 +33,8 @@ describe(number.name, () => {
   it('fails for array', () => {
     expect(isSuccess(number([' ']))).toBe(false)
   })
+
+  it('fails for function', () => {
+    expect(isSuccess(number(() => void 0))).toBe(false)
+  })
 })

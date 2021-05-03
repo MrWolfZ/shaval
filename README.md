@@ -1,4 +1,4 @@
-# shaval - simple unobtrusive object parsing and validation for JavaScript and TypeScript
+# shaval - simple unobtrusive object parsing and validation for TypeScript
 
 **shaval** (short for **sha**pe **val**idation) is object parsing and validation as it should be: simple to use, no boilerplate, unobtrusive, lightning-fast and type-safe but not verbose.
 
@@ -10,7 +10,7 @@
 ## Quickstart
 
 ```sh
-npm i shaval -S
+npm i @shaval/parsing @shaval/validation -S
 ```
 
 ```ts
@@ -27,7 +27,44 @@ TODO
 
 ## Open points
 
-TODO
+### core
+
+- add comments for all public exports
+
+### parsing
+
+- add comments for all public exports
+- add `literal` parser
+- add `record` parser
+- add `enum` parser
+- add `tuple` parser
+- add `promise` parser
+- add `symbol` parser
+- add `function` parser
+- add `intersection` parser
+- omit certain error messages for production builds
+- improve error messages
+
+### validation
+
+- refactor `Validator` to accept `T | ShavalResult<T>` as a parameter for composability
+- rename `validateArray` to `arrayValidator`
+- in `arrayValidator` if array element is object allow passing object validation config instead of validator
+- rename `validateObject` to `objectValidator`
+- add comments for all public exports
+- omit certain error messages for production builds
+- improve error messages
+
+### recipes
+
+- write quickstart
+- write proper recipes for all features
+- write recipe to show express integration
+
+### docs
+
+- write proper recipes for all features
+- create list of parsers and validators
 
 ## Contributing
 
