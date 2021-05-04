@@ -8,10 +8,10 @@ import { _ReadonlyObject } from '@shaval/core';
 import { Result } from '@shaval/core';
 
 // @public (undocumented)
-export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;
+export function and<T>(validator1: Validator<T>, validator2: Validator<T>, ...otherValidators: Validator<T>[]): Validator<T>;
 
 // @public (undocumented)
-export function combine<T>(validator1: Validator<T>, validator2: Validator<T>, ...otherValidators: Validator<T>[]): Validator<T>;
+export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;
 
 // @public
 export function greaterThan(comparand: number): Validator<number>;

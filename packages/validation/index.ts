@@ -1,7 +1,7 @@
+export { and } from './src/combinators/and.js'
 export { or } from './src/combinators/or.js'
 export type { Validator } from './src/validator.js'
 export { validateArray } from './src/validators/array.js'
-export { combine } from './src/validators/combine.js'
 export { greaterThan } from './src/validators/greater-than.js'
 export { lessThan } from './src/validators/less-than.js'
 export { validateObject } from './src/validators/object.js'

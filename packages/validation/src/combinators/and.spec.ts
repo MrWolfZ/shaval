@@ -1,24 +1,24 @@
 import { failure, isFailure } from '@shaval/core'
 import type { Validator } from '../validator.js'
-import { combine } from './combine.js'
+import { and } from './and.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-describe(combine.name, () => {
+describe(and.name, () => {
   const validator1: Validator<string> = (value) => (value === 'a' ? value : failure(value, 'a'))
   const validator2: Validator<string> = (value) => (value === 'a' || value === 'b' ? value : failure(value, 'b'))
   const validator3: Validator<string> = (value) =>
     value === 'a' || value === 'b' || value === 'c' ? value : failure(value, 'c')
 
   it('throws for null validator parameter', () => {
-    expect(() => combine(validator1, null as any)).toThrow()
+    expect(() => and(validator1, null as any)).toThrow()
   })
 
   it('throws for undefined validator parameter', () => {
-    expect(() => combine(validator1, undefined as any)).toThrow()
+    expect(() => and(validator1, undefined as any)).toThrow()
   })
 
-  const validator = combine(validator1, validator2, validator3)
+  const validator = and(validator1, validator2, validator3)
 
   it('succeeds for valid value', () => {
     expect(validator('a')).toBe('a')

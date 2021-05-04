@@ -1,6 +1,6 @@
 import { Errors, failure, isFailure, _ReadonlyObject } from '@shaval/core'
+import { _and } from '../combinators/and.js'
 import type { Validator } from '../validator.js'
-import { _combine } from './combine.js'
 
 /**
  * @public
@@ -84,7 +84,7 @@ function getPropertyValidator(
     validators.push(validateObject(propValidator) as Validator<unknown>)
   }
 
-  return _combine(...validators)
+  return _and(...validators)
 }
 
 function prependKeyToPath(error: Errors, key: string): Errors {

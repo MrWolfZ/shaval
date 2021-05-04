@@ -1,6 +1,6 @@
 import { Errors, failure, isFailure } from '@shaval/core'
+import { _and } from '../combinators/and.js'
 import type { Validator } from '../validator.js'
-import { _combine } from './combine.js'
 
 /**
  * @public
@@ -9,7 +9,7 @@ export function validateArray<T>(
   itemValidator: Validator<T>,
   ...itemValidators: readonly Validator<T>[]
 ): Validator<readonly T[]> {
-  const combinedValidator = _combine(itemValidator, ...itemValidators)
+  const combinedValidator = _and(itemValidator, ...itemValidators)
 
   return (array) => {
     const errors: Errors[] = []
