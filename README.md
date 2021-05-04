@@ -29,8 +29,7 @@ TODO
 
 ### core
 
-- rename `ShavalError` to `Failure`
-- figure out how to better deal with failure messages
+- write e2e tests
 - add comments for all public exports
 
 ### parsing
@@ -45,7 +44,9 @@ TODO
 - add `intersection` parser
 - omit certain error messages for production builds
 - improve error messages
+- write e2e tests
 - add comments for all public exports
+- run performance tests
 
 ### validation
 
@@ -55,10 +56,13 @@ TODO
 - rename `validateObject` to `objectValidator`
 - figure out how to deal with intersections
 - add `tupleValidator`
+- rename `combine` to `and`
 - add most common validators
 - omit certain error messages for production builds
 - improve error messages
+- write e2e tests
 - add comments for all public exports
+- run performance tests
 
 ### recipes
 

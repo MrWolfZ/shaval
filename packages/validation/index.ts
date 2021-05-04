@@ -1,3 +1,4 @@
+export { or } from './src/combinators/or.js'
 export type { Validator } from './src/validator.js'
 export { validateArray } from './src/validators/array.js'
 export { combine } from './src/validators/combine.js'
