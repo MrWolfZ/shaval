@@ -13,6 +13,9 @@ export function and<T>(validator1: Validator<T>, validator2: Validator<T>, ...ot
 // @public (undocumented)
 export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;
 
+// @public (undocumented)
+export function arrayValidator<T>(itemValidator: Validator<T>, ...itemValidators: readonly Validator<T>[]): Validator<readonly T[]>;
+
 // @public
 export function greaterThan(comparand: number): Validator<number>;
 
@@ -31,6 +34,9 @@ export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
 };
 
 // @public (undocumented)
+export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<T>): Validator<T>;
+
+// @public (undocumented)
 export function or<T>(validator1: Validator<T>, validator2: Validator<T>, ...restValidators: Validator<T>[]): Validator<T>;
 
 // @public
@@ -41,12 +47,6 @@ export function sameAs<T>(comparand: T): Validator<T>;
 
 // @public (undocumented)
 export type _SelfOrArray<T> = T | readonly T[];
-
-// @public (undocumented)
-export function validateArray<T>(itemValidator: Validator<T>, ...itemValidators: readonly Validator<T>[]): Validator<readonly T[]>;
-
-// @public (undocumented)
-export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T>): Validator<T>;
 
 // @public (undocumented)
 export type Validator<T> = (value: T) => Result<T>;

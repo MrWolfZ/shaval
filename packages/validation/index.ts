@@ -1,10 +1,10 @@
 export { and } from './src/combinators/and.js'
 export { or } from './src/combinators/or.js'
 export type { Validator } from './src/validator.js'
-export { validateArray } from './src/validators/array.js'
+export { arrayValidator } from './src/validators/array.js'
 export { greaterThan } from './src/validators/greater-than.js'
 export { lessThan } from './src/validators/less-than.js'
-export { validateObject } from './src/validators/object.js'
+export { objectValidator } from './src/validators/object.js'
 export type {
   ObjectPropertyValidator,
   ObjectPropertyValidators,

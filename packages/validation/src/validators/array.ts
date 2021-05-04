@@ -5,7 +5,7 @@ import type { Validator } from '../validator.js'
 /**
  * @public
  */
-export function validateArray<T>(
+export function arrayValidator<T>(
   itemValidator: Validator<T>,
   ...itemValidators: readonly Validator<T>[]
 ): Validator<readonly T[]> {

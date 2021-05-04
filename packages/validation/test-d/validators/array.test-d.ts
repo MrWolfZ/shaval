@@ -1,4 +1,4 @@
-import { validateArray, Validator } from '@shaval/validation'
+import { arrayValidator, Validator } from '@shaval/validation'
 import { expectAssignable, expectError } from 'tsd'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -8,12 +8,12 @@ const numberValidator: Validator<number> = undefined!
 const booleanValidator: Validator<boolean> = undefined!
 
 // @ts-expect-error test
-validateArray()
+arrayValidator()
 
-expectAssignable<Validator<readonly string[]>>(validateArray(stringValidator))
-expectAssignable<Validator<readonly string[]>>(validateArray(stringValidator, stringValidator))
-expectAssignable<Validator<readonly number[]>>(validateArray(numberValidator))
-expectAssignable<Validator<readonly boolean[]>>(validateArray(booleanValidator))
+expectAssignable<Validator<readonly string[]>>(arrayValidator(stringValidator))
+expectAssignable<Validator<readonly string[]>>(arrayValidator(stringValidator, stringValidator))
+expectAssignable<Validator<readonly number[]>>(arrayValidator(numberValidator))
+expectAssignable<Validator<readonly boolean[]>>(arrayValidator(booleanValidator))
 
-expectError<Validator<readonly string[]>>(validateArray(numberValidator))
-expectError<Validator<readonly string[]>>(validateArray(stringValidator, numberValidator))
+expectError<Validator<readonly string[]>>(arrayValidator(numberValidator))
+expectError<Validator<readonly string[]>>(arrayValidator(stringValidator, numberValidator))

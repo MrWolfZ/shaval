@@ -43,7 +43,6 @@ TODO
 - add `function` parser
 - add `intersection` parser
 - omit certain error messages for production builds
-- improve error messages
 - write e2e tests
 - add comments for all public exports
 - run performance tests
@@ -51,15 +50,11 @@ TODO
 ### validation
 
 - refactor `Validator` to accept `T | ShavalResult<T>` as a parameter for composability
-- rename `validateArray` to `arrayValidator`
 - in `arrayValidator` if array element is object allow passing object validation config instead of validator
-- rename `validateObject` to `objectValidator`
 - figure out how to deal with intersections
 - add `tupleValidator`
-- rename `combine` to `and`
 - add most common validators
 - omit certain error messages for production builds
-- improve error messages
 - write e2e tests
 - add comments for all public exports
 - run performance tests

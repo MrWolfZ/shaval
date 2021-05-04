@@ -1,28 +1,28 @@
 import { failure, isFailure } from '@shaval/core'
 import type { Validator } from '../validator.js'
-import { validateObject } from './object.js'
+import { objectValidator } from './object.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-describe(validateObject.name, () => {
+describe(objectValidator.name, () => {
   it('throws for null validators', () => {
-    expect(() => validateObject<{ s: string }>(null as any)).toThrow()
+    expect(() => objectValidator<{ s: string }>(null as any)).toThrow()
   })
 
   it('throws for undefined validators', () => {
-    expect(() => validateObject<{ s: string }>(undefined as any)).toThrow()
+    expect(() => objectValidator<{ s: string }>(undefined as any)).toThrow()
   })
 
   it('throws for null property validator', () => {
-    expect(() => validateObject<{ s: string }>({ s: null as any })).toThrow()
+    expect(() => objectValidator<{ s: string }>({ s: null as any })).toThrow()
   })
 
   it('throws for explicitly undefined property validator', () => {
-    expect(() => validateObject<{ s: string }>({ s: undefined as any })).toThrow()
+    expect(() => objectValidator<{ s: string }>({ s: undefined as any })).toThrow()
   })
 
   it('does not throw for undefined property validator', () => {
-    expect(() => validateObject<{ s: string }>({})).not.toThrow()
+    expect(() => objectValidator<{ s: string }>({})).not.toThrow()
   })
 
   describe('simple object', () => {
@@ -32,7 +32,7 @@ describe(validateObject.name, () => {
     }
 
     describe('no validators', () => {
-      const validator = validateObject<SimpleObject>({})
+      const validator = objectValidator<SimpleObject>({})
 
       it('succeeds for any value', () => {
         const value: SimpleObject = { s: '', n: 0 }
@@ -44,7 +44,7 @@ describe(validateObject.name, () => {
       const propValidator: Validator<number> = (value) =>
         value === 1 ? value : failure([{ value, path: ['a'], details: { a: undefined } }])
 
-      const validator = validateObject<SimpleObject>({ n: propValidator })
+      const validator = objectValidator<SimpleObject>({ n: propValidator })
 
       it('succeeds for valid property', () => {
         const value: SimpleObject = { s: '', n: 1 }
@@ -73,7 +73,7 @@ describe(validateObject.name, () => {
       const propValidator2: Validator<number> = (value) =>
         value === 1 ? value : failure([{ value, path: ['b'], details: { b: undefined } }])
 
-      const validator = validateObject<SimpleObject>({ n: [propValidator1, propValidator2] })
+      const validator = objectValidator<SimpleObject>({ n: [propValidator1, propValidator2] })
 
       it('succeeds for valid property', () => {
         const value: SimpleObject = { s: '', n: 1 }
@@ -113,7 +113,7 @@ describe(validateObject.name, () => {
       const propValidator2: Validator<number> = (value) =>
         value === 1 ? value : failure([{ value, path: ['b'], details: { b: undefined } }])
 
-      const validator = validateObject<SimpleObject>({ s: propValidator1, n: propValidator2 })
+      const validator = objectValidator<SimpleObject>({ s: propValidator1, n: propValidator2 })
 
       it('succeeds for valid properties', () => {
         const value: SimpleObject = { s: 'a', n: 1 }
@@ -157,7 +157,7 @@ describe(validateObject.name, () => {
       const propValidator4: Validator<number> = (value) =>
         [1, 2].includes(value) ? value : failure([{ value, path: ['d'], details: { d: undefined } }])
 
-      const validator = validateObject<SimpleObject>({
+      const validator = objectValidator<SimpleObject>({
         s: [propValidator1, propValidator2],
         n: [propValidator3, propValidator4],
       })
@@ -202,7 +202,7 @@ describe(validateObject.name, () => {
     }
 
     const propValidator: Validator<number> = (val) => (val === 1 ? val : { ...failure(val, ''), path: ['a'] })
-    const validator = validateObject<ObjectWithOptionalProperty>({ n: propValidator })
+    const validator = objectValidator<ObjectWithOptionalProperty>({ n: propValidator })
 
     it('succeeds for missing property', () => {
       const value: ObjectWithOptionalProperty = {}
@@ -229,7 +229,7 @@ describe(validateObject.name, () => {
     }
 
     const propValidator: Validator<number | null> = (val) => (val === 1 || val === null ? val : failure(val, ''))
-    const validator = validateObject<ObjectWithNullableProperty>({ n: propValidator })
+    const validator = objectValidator<ObjectWithNullableProperty>({ n: propValidator })
 
     it('succeeds for null property', () => {
       const value: ObjectWithNullableProperty = { n: null }

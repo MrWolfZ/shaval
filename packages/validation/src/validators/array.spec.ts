@@ -1,21 +1,21 @@
 import { failure, isFailure } from '@shaval/core'
 import type { Validator } from '../validator.js'
-import { validateArray } from './array.js'
+import { arrayValidator } from './array.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-describe(validateArray.name, () => {
+describe(arrayValidator.name, () => {
   it('throws for null validator parameter', () => {
-    expect(() => validateArray(null as any)).toThrow()
+    expect(() => arrayValidator(null as any)).toThrow()
   })
 
   it('throws for undefined validator parameter', () => {
-    expect(() => validateArray(undefined as any)).toThrow()
+    expect(() => arrayValidator(undefined as any)).toThrow()
   })
 
   describe('with single validator', () => {
     const itemValidator: Validator<number> = (value) => value
-    const validator = validateArray(itemValidator)
+    const validator = arrayValidator(itemValidator)
 
     it('succeeds for empty array', () => {
       const value: number[] = []
@@ -29,19 +29,19 @@ describe(validateArray.name, () => {
 
     it('fails if single element is invalid', () => {
       const itemValidator: Validator<number> = (value) => (value === 1 ? failure(value, '') : value)
-      const validator = validateArray(itemValidator)
+      const validator = arrayValidator(itemValidator)
       expect(isFailure(validator([1, 2, 3]))).toBe(true)
     })
 
     it('fails if multiple elements are invalid', () => {
       const itemValidator: Validator<number> = (value) => (value !== 1 ? failure(value, '') : value)
-      const validator = validateArray(itemValidator)
+      const validator = arrayValidator(itemValidator)
       expect(isFailure(validator([1, 2, 3]))).toBe(true)
     })
 
     it('aggregates error messages from all items', () => {
       const itemValidator: Validator<number> = (value) => failure(value, '')
-      const validator = validateArray(itemValidator)
+      const validator = arrayValidator(itemValidator)
 
       const result = validator([1, 2])
 
@@ -56,7 +56,7 @@ describe(validateArray.name, () => {
       const itemValidator: Validator<number> = (value) =>
         value === 1 ? failure([{ value, path: ['p'], details: { '1': 1 } }]) : value === 3 ? failure(value, '3') : value
 
-      const validator = validateArray(itemValidator)
+      const validator = arrayValidator(itemValidator)
 
       const result = validator([1, 2, 3])
 
@@ -73,7 +73,7 @@ describe(validateArray.name, () => {
   describe('with multiple validators', () => {
     const itemValidator1: Validator<number> = (value) => value
     const itemValidator2: Validator<number> = (value) => value
-    const validator = validateArray(itemValidator1, itemValidator2)
+    const validator = arrayValidator(itemValidator1, itemValidator2)
 
     it('succeeds for empty array', () => {
       const value: number[] = []
@@ -88,21 +88,21 @@ describe(validateArray.name, () => {
     it('fails if single element is invalid', () => {
       const itemValidator1: Validator<number> = (value) => (value === 1 ? failure(value, '') : value)
       const itemValidator2: Validator<number> = (value) => value
-      const validator = validateArray(itemValidator1, itemValidator2)
+      const validator = arrayValidator(itemValidator1, itemValidator2)
       expect(isFailure(validator([1, 2, 3]))).toBe(true)
     })
 
     it('fails if multiple elements are invalid', () => {
       const itemValidator1: Validator<number> = (value) => (value !== 1 ? failure(value, '') : value)
       const itemValidator2: Validator<number> = (value) => value
-      const validator = validateArray(itemValidator1, itemValidator2)
+      const validator = arrayValidator(itemValidator1, itemValidator2)
       expect(isFailure(validator([1, 2, 3]))).toBe(true)
     })
 
     it('aggregates error messages from all validators', () => {
       const itemValidator1: Validator<number> = (value) => failure(value, '1')
       const itemValidator2: Validator<number> = (value) => failure(value, '2')
-      const validator = validateArray(itemValidator1, itemValidator2)
+      const validator = arrayValidator(itemValidator1, itemValidator2)
 
       const result = validator([1])
 
@@ -118,7 +118,7 @@ describe(validateArray.name, () => {
     it('aggregates error messages from all items', () => {
       const itemValidator1: Validator<number> = (value) => failure(value, '')
       const itemValidator2: Validator<number> = (value) => value
-      const validator = validateArray(itemValidator1, itemValidator2)
+      const validator = arrayValidator(itemValidator1, itemValidator2)
 
       const result = validator([1, 2])
 
@@ -136,7 +136,7 @@ describe(validateArray.name, () => {
     it('adds the item index to path for errors', () => {
       const itemValidator1: Validator<number> = (value) => (value !== 2 ? failure(value, '') : value)
       const itemValidator2: Validator<number> = (value) => value
-      const validator = validateArray(itemValidator1, itemValidator2)
+      const validator = arrayValidator(itemValidator1, itemValidator2)
 
       const result = validator([1, 2, 3])
 

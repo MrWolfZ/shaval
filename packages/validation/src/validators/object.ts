@@ -34,7 +34,7 @@ export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
 /**
  * @public
  */
-export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T>): Validator<T> {
+export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<T>): Validator<T> {
   if (propertyValidators === null || propertyValidators === undefined) {
     throw new Error(`property validators must not be null or undefined`)
   }
@@ -81,7 +81,7 @@ function getPropertyValidator(
   } else if (Array.isArray(propValidator)) {
     validators.push(...propValidator)
   } else {
-    validators.push(validateObject(propValidator) as Validator<unknown>)
+    validators.push(objectValidator(propValidator) as Validator<unknown>)
   }
 
   return _and(...validators)
