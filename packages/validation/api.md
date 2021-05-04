@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { Failure } from '@shaval/core';
 import { _ReadonlyObject } from '@shaval/core';
 import { Result } from '@shaval/core';
 
@@ -49,7 +50,7 @@ export function sameAs<T>(comparand: T): Validator<T>;
 export type _SelfOrArray<T> = T | readonly T[];
 
 // @public (undocumented)
-export type Validator<T> = (value: T) => Result<T>;
+export type Validator<T> = (value: T | Failure) => Result<T>;
 
 
 // (No @packageDocumentation comment for this package)

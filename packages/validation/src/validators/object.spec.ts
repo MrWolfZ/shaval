@@ -25,6 +25,12 @@ describe(objectValidator.name, () => {
     expect(() => objectValidator<{ s: string }>({})).not.toThrow()
   })
 
+  it('if called with failure returns failure', () => {
+    const validator = objectValidator({})
+    const err = failure({}, 'fail')
+    expect(validator(err)).toBe(err)
+  })
+
   describe('simple object', () => {
     interface SimpleObject {
       s: string
@@ -151,11 +157,11 @@ describe(objectValidator.name, () => {
       const propValidator1: Validator<string> = (value) =>
         value === 'a' ? value : failure([{ value, path: ['a'], details: { a: undefined } }])
       const propValidator2: Validator<string> = (value) =>
-        ['a', 'b'].includes(value) ? value : failure([{ value, path: ['b'], details: { b: undefined } }])
+        ['a', 'b'].includes(value as string) ? value : failure([{ value, path: ['b'], details: { b: undefined } }])
       const propValidator3: Validator<number> = (value) =>
         value === 1 ? value : failure([{ value, path: ['c'], details: { c: undefined } }])
       const propValidator4: Validator<number> = (value) =>
-        [1, 2].includes(value) ? value : failure([{ value, path: ['d'], details: { d: undefined } }])
+        [1, 2].includes(value as number) ? value : failure([{ value, path: ['d'], details: { d: undefined } }])
 
       const validator = objectValidator<SimpleObject>({
         s: [propValidator1, propValidator2],

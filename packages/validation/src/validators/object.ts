@@ -48,6 +48,10 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
   }
 
   return (value) => {
+    if (isFailure(value)) {
+      return value
+    }
+
     const errors: Errors[] = []
 
     for (const key of Object.keys(value)) {

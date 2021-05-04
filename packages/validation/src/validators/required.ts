@@ -1,4 +1,4 @@
-import { failure, Result } from '@shaval/core'
+import { failure, isFailure, Result } from '@shaval/core'
 
 /**
  * A validator that requires the value to be non-`undefined` and non-`null`.
@@ -9,7 +9,7 @@ import { failure, Result } from '@shaval/core'
  * @public
  */
 export function required<T>(value: T): Result<T> {
-  if (value !== undefined && value !== null) {
+  if ((value !== undefined && value !== null) || isFailure(value)) {
     return value
   }
 

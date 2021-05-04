@@ -14,3 +14,5 @@ expectError<Validator<string | number>>(stringValidator)
 expectAssignable<Validator<string | number>>((value) =>
   typeof value === 'string' ? stringValidator(value) : numberValidator(value),
 )
+
+expectAssignable<Validator<string>>((value) => stringValidator(stringValidator(value)))

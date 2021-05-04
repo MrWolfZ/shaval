@@ -1,4 +1,4 @@
-import { failure } from '@shaval/core'
+import { failure, isFailure } from '@shaval/core'
 import type { Validator } from '../validator.js'
 
 /**
@@ -12,7 +12,7 @@ import type { Validator } from '../validator.js'
  */
 export function sameAs<T>(comparand: T): Validator<T> {
   return (value) => {
-    if (value === comparand) {
+    if (value === comparand || isFailure(value)) {
       return value
     }
 

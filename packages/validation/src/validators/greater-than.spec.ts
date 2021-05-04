@@ -1,4 +1,4 @@
-import { isFailure } from '@shaval/core'
+import { failure, isFailure } from '@shaval/core'
 import { greaterThan } from './greater-than.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -10,6 +10,11 @@ describe(greaterThan.name, () => {
 
   it('throws for undefined comparand parameter', () => {
     expect(() => greaterThan(undefined as any)).toThrow()
+  })
+
+  it('if called with failure returns failure', () => {
+    const err = failure(1, 'fail')
+    expect(greaterThan(0)(err)).toBe(err)
   })
 
   it('fails for null', () => {

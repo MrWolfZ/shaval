@@ -13,6 +13,12 @@ describe(arrayValidator.name, () => {
     expect(() => arrayValidator(undefined as any)).toThrow()
   })
 
+  it('if called with failure returns failure', () => {
+    const validator = arrayValidator((v) => v)
+    const err = failure([], 'fail')
+    expect(validator(err)).toBe(err)
+  })
+
   describe('with single validator', () => {
     const itemValidator: Validator<number> = (value) => value
     const validator = arrayValidator(itemValidator)

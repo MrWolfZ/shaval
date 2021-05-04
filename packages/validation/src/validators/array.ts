@@ -12,6 +12,10 @@ export function arrayValidator<T>(
   const combinedValidator = _and(itemValidator, ...itemValidators)
 
   return (array) => {
+    if (isFailure(array)) {
+      return array
+    }
+
     const errors: Errors[] = []
 
     for (const [i, item] of array.entries()) {

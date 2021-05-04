@@ -1,4 +1,4 @@
-import { isFailure } from '@shaval/core'
+import { failure, isFailure } from '@shaval/core'
 import { required } from './required.js'
 
 describe(required.name, () => {
@@ -61,5 +61,10 @@ describe(required.name, () => {
 
     expect(result.errors).toHaveLength(1)
     expect(result.errors[0]?.value).toBe(null)
+  })
+
+  it('if called with failure returns failure', () => {
+    const err = failure(1, 'fail')
+    expect(required(err)).toBe(err)
   })
 })

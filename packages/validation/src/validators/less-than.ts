@@ -1,4 +1,4 @@
-import { failure } from '@shaval/core'
+import { failure, isFailure } from '@shaval/core'
 import type { Validator } from '../validator.js'
 
 /**
@@ -20,7 +20,7 @@ export function lessThan(comparand: number): Validator<number> {
   }
 
   return (value) => {
-    if (typeof value === 'number' && value < comparand) {
+    if ((typeof value === 'number' && value < comparand) || isFailure(value)) {
       return value
     }
 
