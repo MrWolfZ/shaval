@@ -15,12 +15,10 @@ export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] 
 /**
  * @public
  */
-export type ObjectPropertyValidator<TProperty, TValidator, TTuple> = TProperty extends unknown[]
+export type ObjectPropertyValidator<TProperty extends unknown[], TValidator> = TProperty extends [unknown[]]
   ? _SelfOrArray<TValidator>
-  : TProperty extends _ReadonlyObject
-  ? [null] extends TTuple
-    ? never
-    : _SelfOrArray<ObjectPropertyValidators<TProperty> | TValidator>
+  : TProperty[number] extends _ReadonlyObject
+  ? _SelfOrArray<ObjectPropertyValidators<TProperty[number]> | TValidator>
   : _SelfOrArray<TValidator>
 
 /**
@@ -28,17 +26,10 @@ export type ObjectPropertyValidator<TProperty, TValidator, TTuple> = TProperty e
  */
 export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
   readonly [prop in keyof T]?: ObjectPropertyValidator<
-    Exclude<T[prop], undefined>,
-    Validator<_ArrayAsReadonly<Exclude<T[prop], undefined>>>,
-    [Exclude<T[prop], undefined>]
+    [Exclude<T[prop], undefined>], // wrap in tuple to prevent distribution of unions
+    Validator<_ArrayAsReadonly<Exclude<T[prop], undefined>>>
   >
 }
-
-// interface Nested {
-//   n: number
-// }
-
-// type T = ObjectPropertyValidator<Nested | null, Validator<Nested | null>, [Nested | null]>
 
 /**
  * @public
@@ -61,7 +52,7 @@ export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T
 
     for (const key of Object.keys(value)) {
       const propValue = value[key as keyof T]
-      const validator = propertyValidators[key as keyof T]
+      const validator = propertyValidators[key as keyof T] as Validator<unknown>
 
       if (!validator) {
         continue
@@ -81,7 +72,7 @@ export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T
 }
 
 function getPropertyValidator(
-  propValidator: ObjectPropertyValidator<unknown, Validator<unknown>, [unknown]>,
+  propValidator: ObjectPropertyValidator<[unknown], Validator<unknown>>,
 ): Validator<unknown> {
   const validators: Validator<unknown>[] = []
 

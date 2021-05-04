@@ -8,21 +8,30 @@ import { _ReadonlyObject } from '@shaval/core';
 import { Result } from '@shaval/core';
 
 // @public (undocumented)
-export function combine<T>(...validators: Validator<T>[]): Validator<T>;
-
-// @public
-export function greaterThan(comparand: number): <T extends number | null | undefined>(value: T) => Result<T>;
-
-// @public
-export function lessThan(comparand: number): <T extends number | null | undefined>(value: T) => Result<T>;
+export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;
 
 // @public (undocumented)
-export type ObjectPropertyValidator<TProperty> = TProperty extends readonly (infer U)[] ? Validator<readonly U[]> | readonly Validator<readonly U[]>[] : TProperty extends _ReadonlyObject ? _SelfOrArray<ObjectPropertyValidators<TProperty> | Validator<TProperty>> : _SelfOrArray<Validator<TProperty>>;
+export function combine<T>(validator1: Validator<T>, validator2: Validator<T>, ...otherValidators: Validator<T>[]): Validator<T>;
+
+// @public
+export function greaterThan(comparand: number): Validator<number>;
+
+// @public
+export function lessThan(comparand: number): Validator<number>;
+
+// @public (undocumented)
+export type ObjectPropertyValidator<TProperty extends unknown[], TValidator> = TProperty extends [unknown[]] ? _SelfOrArray<TValidator> : TProperty[number] extends _ReadonlyObject ? _SelfOrArray<ObjectPropertyValidators<TProperty[number]> | TValidator> : _SelfOrArray<TValidator>;
 
 // @public (undocumented)
 export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
-    readonly [prop in keyof T]?: ObjectPropertyValidator<NonNullable<T[prop]>>;
+    readonly [prop in keyof T]?: ObjectPropertyValidator<[
+        Exclude<T[prop], undefined>
+    ], // wrap in tuple to prevent distribution of unions
+    Validator<_ArrayAsReadonly<Exclude<T[prop], undefined>>>>;
 };
+
+// @public (undocumented)
+export function or<T>(validator1: Validator<T>, validator2: Validator<T>, ...restValidators: Validator<T>[]): Validator<T>;
 
 // @public
 export function required<T>(value: T): Result<T>;
@@ -34,7 +43,7 @@ export function sameAs<T>(comparand: T): Validator<T>;
 export type _SelfOrArray<T> = T | readonly T[];
 
 // @public (undocumented)
-export function validateArray<T>(...itemValidators: readonly Validator<T>[]): Validator<readonly T[]>;
+export function validateArray<T>(itemValidator: Validator<T>, ...itemValidators: readonly Validator<T>[]): Validator<readonly T[]>;
 
 // @public (undocumented)
 export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T>): Validator<T>;

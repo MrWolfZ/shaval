@@ -45,7 +45,7 @@ export interface _ResultTypeMarker<T> {
 export const string: Parser<string>;
 
 // @public (undocumented)
-export function union<T1, T2, T extends readonly unknown[]>(parser1: Parser<T1>, parser2: Parser<T2>, ...restParsers: UnionParsers<T>): Parser<T1 | T2 | T[number]>;
+export function union<T1, T2, TRest extends readonly unknown[]>(parser1: Parser<T1>, parser2: Parser<T2>, ...restParsers: UnionParsers<TRest>): Parser<T1 | T2 | TRest[number]>;
 
 // @public (undocumented)
 export type UnionParsers<T> = {
