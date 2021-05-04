@@ -29,11 +29,12 @@ TODO
 
 ### core
 
+- rename `ShavalError` to `Failure`
+- figure out how to better deal with failure messages
 - add comments for all public exports
 
 ### parsing
 
-- add comments for all public exports
 - add `literal` parser
 - add `record` parser
 - add `enum` parser
@@ -44,6 +45,7 @@ TODO
 - add `intersection` parser
 - omit certain error messages for production builds
 - improve error messages
+- add comments for all public exports
 
 ### validation
 
@@ -51,14 +53,19 @@ TODO
 - rename `validateArray` to `arrayValidator`
 - in `arrayValidator` if array element is object allow passing object validation config instead of validator
 - rename `validateObject` to `objectValidator`
-- add comments for all public exports
+- figure out how to deal with intersections
+- add `tupleValidator`
+- add most common validators
 - omit certain error messages for production builds
 - improve error messages
+- add comments for all public exports
 
 ### recipes
 
 - write quickstart
 - write proper recipes for all features
+- write recipe for writing custom validators
+- write recipe for validating unions (i.e. just a custom validator with a type check)
 - write recipe to show express integration
 
 ### docs
