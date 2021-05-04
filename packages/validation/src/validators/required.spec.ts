@@ -1,4 +1,4 @@
-import { isShavalError } from '@shaval/core'
+import { isFailure } from '@shaval/core'
 import { required } from './required.js'
 
 describe(required.name, () => {
@@ -44,7 +44,7 @@ describe(required.name, () => {
   it('fails for undefined', () => {
     const result = required(undefined)
 
-    if (!isShavalError(result)) {
+    if (!isFailure(result)) {
       return fail('result was not an error')
     }
 
@@ -55,7 +55,7 @@ describe(required.name, () => {
   it('fails for null', () => {
     const result = required(null)
 
-    if (!isShavalError(result)) {
+    if (!isFailure(result)) {
       return fail('result was not an error')
     }
 

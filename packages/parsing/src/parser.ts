@@ -1,6 +1,6 @@
-import type { ShavalResult } from '@shaval/core'
+import type { Result } from '@shaval/core'
 
 /**
  * @public
  */
-export type Parser<T> = (value: unknown) => ShavalResult<T>
+export type Parser<T> = (value: unknown) => Result<T>

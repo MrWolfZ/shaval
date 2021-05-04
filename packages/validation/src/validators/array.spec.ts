@@ -1,4 +1,4 @@
-import { isShavalError } from '@shaval/core'
+import { isFailure } from '@shaval/core'
 import { validateArray } from './array.js'
 import { greaterThan } from './greater-than.js'
 import { lessThan } from './less-than.js'
@@ -47,7 +47,7 @@ describe(validateArray.name, () => {
         const value = [0, 2, 3]
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -59,7 +59,7 @@ describe(validateArray.name, () => {
         const value = [0, -1, 3]
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -71,7 +71,7 @@ describe(validateArray.name, () => {
         const value = [-1, -2]
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -83,7 +83,7 @@ describe(validateArray.name, () => {
         const value = [0, 1, -1]
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -118,7 +118,7 @@ describe(validateArray.name, () => {
         const value = [0, 2, 3]
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -130,7 +130,7 @@ describe(validateArray.name, () => {
         const value = [0, 4, 3]
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -143,7 +143,7 @@ describe(validateArray.name, () => {
         const validator = validateArray(greaterThan(0), greaterThan(-1))
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -156,7 +156,7 @@ describe(validateArray.name, () => {
         const validator = validateArray(greaterThan(0), greaterThan(-1))
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -169,7 +169,7 @@ describe(validateArray.name, () => {
         const validator = validateArray(greaterThan(0), greaterThan(-1))
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -220,7 +220,7 @@ describe(validateArray.name, () => {
       const value: TestObject[] = [{ n: 0 }, { n: 2 }]
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -232,7 +232,7 @@ describe(validateArray.name, () => {
       const value: TestObject[] = [{ n: 0 }, { n: 0 }]
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -244,7 +244,7 @@ describe(validateArray.name, () => {
       const value: TestObject[] = [{ n: 0 }, { n: 0 }]
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -256,7 +256,7 @@ describe(validateArray.name, () => {
       const value: TestObject[] = [{ n: 0 }, { n: 0 }]
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -291,7 +291,7 @@ describe(validateArray.name, () => {
       const value: number[][] = [[0, 2], [3]]
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -303,7 +303,7 @@ describe(validateArray.name, () => {
       const value: number[][] = [[0, 2], [0]]
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -315,7 +315,7 @@ describe(validateArray.name, () => {
       const value: number[][] = [[0, -1], [0]]
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -327,7 +327,7 @@ describe(validateArray.name, () => {
       const value: number[][] = [[1, 0], [1], [0]]
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 

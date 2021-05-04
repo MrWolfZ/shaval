@@ -1,4 +1,4 @@
-import { error, isShavalError, PropertyErrors, _ReadonlyObject } from '@shaval/core'
+import { error, isFailure, PropertyErrors, _ReadonlyObject } from '@shaval/core'
 import type { Validator } from '../validator.js'
 import { combine } from './combine.js'
 
@@ -50,7 +50,7 @@ export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T
       const propValidator = getPropertyValidator(validator!)
       const result = propValidator(propValue)
 
-      if (isShavalError(result)) {
+      if (isFailure(result)) {
         errors.push(...result.errors.map((err) => prependKeyToPath(err, key)))
       }
     }

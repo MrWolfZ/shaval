@@ -1,4 +1,4 @@
-import { error, isShavalError, PropertyErrors, _ReadonlyObject } from '@shaval/core'
+import { error, isFailure, PropertyErrors, _ReadonlyObject } from '@shaval/core'
 import type { Parser } from '../parser.js'
 
 /**
@@ -51,7 +51,7 @@ export function object<T extends _ReadonlyObject>(propertyParsers: ObjectPropert
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const result = propertyParser!(propValue)
 
-      if (isShavalError(result)) {
+      if (isFailure(result)) {
         errors.push(...result.errors.map((err) => prependKeyToPath(err, key)))
       } else {
         returnValue[key] = result

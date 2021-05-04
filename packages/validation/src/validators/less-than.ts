@@ -1,4 +1,4 @@
-import { error, ShavalResult } from '@shaval/core'
+import { error, Result } from '@shaval/core'
 
 /**
  * A validator that requires the value to be less than a number. Considers `null`,
@@ -20,7 +20,7 @@ export function lessThan(comparand: number) {
 
   // this function is generic to allow the compiler to properly infer the type
   // of the validator for both optional and non-optional values
-  return <T extends number | null | undefined>(value: T): ShavalResult<T> => {
+  return <T extends number | null | undefined>(value: T): Result<T> => {
     if (value === null || value === undefined || typeof value !== 'number') {
       return value
     }

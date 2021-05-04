@@ -1,4 +1,4 @@
-import { error, isShavalError, PropertyErrors } from '@shaval/core'
+import { error, isFailure, PropertyErrors } from '@shaval/core'
 import type { Validator } from '../validator.js'
 import { combine } from './combine.js'
 
@@ -14,7 +14,7 @@ export function validateArray<T>(...itemValidators: readonly Validator<T>[]): Va
     for (const [i, item] of array.entries()) {
       const result = combinedValidator(item)
 
-      if (isShavalError(result)) {
+      if (isFailure(result)) {
         errors.push(...result.errors.map((err) => prependIndexToPath(err, i)))
       }
     }

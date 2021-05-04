@@ -1,4 +1,4 @@
-import { error, isShavalError, PropertyErrors } from '@shaval/core'
+import { error, isFailure, PropertyErrors } from '@shaval/core'
 import type { Parser } from '../parser.js'
 
 /**
@@ -17,7 +17,7 @@ export function array<T>(valueParser: Parser<T>): Parser<T[]> {
     for (const [i, item] of value.entries()) {
       const result = valueParser(item)
 
-      if (isShavalError(result)) {
+      if (isFailure(result)) {
         errors.push(...result.errors.map((err) => prependIndexToPath(err, i)))
       }
     }

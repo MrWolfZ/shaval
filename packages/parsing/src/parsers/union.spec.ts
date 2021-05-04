@@ -1,4 +1,4 @@
-import { isShavalError, isSuccess } from '@shaval/core'
+import { isFailure, isSuccess } from '@shaval/core'
 import { boolean } from './boolean.js'
 import { nullable } from './nullable.js'
 import { number } from './number.js'
@@ -54,7 +54,7 @@ describe(union.name, () => {
       const value = {}
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -190,7 +190,7 @@ describe(union.name, () => {
       const value = {}
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 

@@ -1,4 +1,4 @@
-const ERROR = Symbol()
+const FAILURE = Symbol()
 
 /**
  * @public
@@ -11,8 +11,8 @@ export interface PropertyErrors {
 /**
  * @public
  */
-export interface ShavalError<T> {
-  readonly [ERROR]: undefined
+export interface Failure<T> {
+  readonly [FAILURE]: undefined
   readonly value: unknown
   readonly errors: readonly (string | PropertyErrors)[]
 
@@ -28,14 +28,14 @@ export interface ShavalError<T> {
 /**
  * @public
  */
-export type ShavalResult<T> = T | ShavalError<T>
+export type Result<T> = T | Failure<T>
 
 /**
  * @public
  */
-export function error<T>(value: unknown, ...errors: readonly (string | PropertyErrors)[]): ShavalError<T> {
+export function error<T>(value: unknown, ...errors: readonly (string | PropertyErrors)[]): Failure<T> {
   return {
-    [ERROR]: undefined,
+    [FAILURE]: undefined,
     value,
     errors,
   }
@@ -44,13 +44,13 @@ export function error<T>(value: unknown, ...errors: readonly (string | PropertyE
 /**
  * @public
  */
-export function isSuccess<T>(result: ShavalResult<T>): result is T {
-  return !isShavalError(result)
+export function isSuccess<T>(result: Result<T>): result is T {
+  return !isFailure(result)
 }
 
 /**
  * @public
  */
-export function isShavalError<T>(result: ShavalResult<T>): result is ShavalError<T> {
-  return typeof result === 'object' && result !== null && ERROR in result
+export function isFailure<T>(result: Result<T>): result is Failure<T> {
+  return typeof result === 'object' && result !== null && FAILURE in result
 }

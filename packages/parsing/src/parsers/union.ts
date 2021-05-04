@@ -1,4 +1,4 @@
-import { error, isShavalError, PropertyErrors } from '@shaval/core'
+import { error, isFailure, PropertyErrors } from '@shaval/core'
 import type { Parser } from '../parser.js'
 
 /**
@@ -22,7 +22,7 @@ export function union<T1, T2, T extends readonly unknown[]>(
     for (const parser of allParsers) {
       const result = parser(value)
 
-      if (isShavalError(result)) {
+      if (isFailure(result)) {
         errors.push(...result.errors)
       } else {
         return value

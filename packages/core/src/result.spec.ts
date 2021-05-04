@@ -1,4 +1,4 @@
-import { error, isShavalError, isSuccess, PropertyErrors } from './result.js'
+import { error, isFailure, isSuccess, PropertyErrors } from './result.js'
 
 describe(error.name, () => {
   it('creates an error with a single string message', () => {
@@ -76,23 +76,23 @@ describe(isSuccess.name, () => {
   })
 })
 
-describe(isShavalError.name, () => {
+describe(isFailure.name, () => {
   it('returns false for any non-error value', () => {
-    expect(isShavalError(undefined)).toBe(false)
-    expect(isShavalError(null)).toBe(false)
-    expect(isShavalError('')).toBe(false)
-    expect(isShavalError('a')).toBe(false)
-    expect(isShavalError(true)).toBe(false)
-    expect(isShavalError(false)).toBe(false)
-    expect(isShavalError(0)).toBe(false)
-    expect(isShavalError(-1)).toBe(false)
-    expect(isShavalError(1)).toBe(false)
-    expect(isShavalError(['a'])).toBe(false)
-    expect(isShavalError({ s: 'a' })).toBe(false)
-    expect(isShavalError(Symbol())).toBe(false)
+    expect(isFailure(undefined)).toBe(false)
+    expect(isFailure(null)).toBe(false)
+    expect(isFailure('')).toBe(false)
+    expect(isFailure('a')).toBe(false)
+    expect(isFailure(true)).toBe(false)
+    expect(isFailure(false)).toBe(false)
+    expect(isFailure(0)).toBe(false)
+    expect(isFailure(-1)).toBe(false)
+    expect(isFailure(1)).toBe(false)
+    expect(isFailure(['a'])).toBe(false)
+    expect(isFailure({ s: 'a' })).toBe(false)
+    expect(isFailure(Symbol())).toBe(false)
   })
 
   it('returns true for error value', () => {
-    expect(isShavalError(error('', ''))).toBe(true)
+    expect(isFailure(error('', ''))).toBe(true)
   })
 })

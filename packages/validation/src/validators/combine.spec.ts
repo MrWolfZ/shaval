@@ -1,4 +1,4 @@
-import { isShavalError } from '@shaval/core'
+import { isFailure } from '@shaval/core'
 import { combine } from './combine.js'
 import { greaterThan } from './greater-than.js'
 import { lessThan } from './less-than.js'
@@ -36,7 +36,7 @@ describe(combine.name, () => {
     it('fails for invalid value', () => {
       const result = validator(0)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -55,7 +55,7 @@ describe(combine.name, () => {
     it('fails for invalid value', () => {
       const result = validator(0)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -67,7 +67,7 @@ describe(combine.name, () => {
       const validator = combine(greaterThan(0), greaterThan(-1))
       const result = validator(-1)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 

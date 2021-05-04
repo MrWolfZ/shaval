@@ -1,4 +1,4 @@
-import { error, ShavalResult } from '@shaval/core'
+import { error, Result } from '@shaval/core'
 
 /**
  * A validator that requires the value to be non-`undefined` and non-`null`.
@@ -8,7 +8,7 @@ import { error, ShavalResult } from '@shaval/core'
  *
  * @public
  */
-export function required<T>(value: T): ShavalResult<T> {
+export function required<T>(value: T): Result<T> {
   if (value !== undefined && value !== null) {
     return value
   }

@@ -1,4 +1,4 @@
-import { isShavalError, isSuccess } from '@shaval/core'
+import { isFailure, isSuccess } from '@shaval/core'
 import { array } from './array.js'
 import { nullable } from './nullable.js'
 import { number } from './number.js'
@@ -50,7 +50,7 @@ describe(array.name, () => {
       const value: number[] = ['' as any, '' as any]
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -62,7 +62,7 @@ describe(array.name, () => {
       const value: number[] = ['' as any, 1, '' as any]
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -239,7 +239,7 @@ describe(array.name, () => {
       const value: number[][] = [undefined as any, undefined as any]
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -251,7 +251,7 @@ describe(array.name, () => {
       const value: number[][] = [[undefined as any], [1], [0, undefined as any]]
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -307,7 +307,7 @@ describe(array.name, () => {
       const value: TestObject[] = [undefined as any, undefined as any]
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -319,7 +319,7 @@ describe(array.name, () => {
       const value: TestObject[] = [{ n: undefined as any }, { n: 1 }, { n: undefined as any }]
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 

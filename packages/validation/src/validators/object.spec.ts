@@ -1,4 +1,4 @@
-import { isShavalError } from '@shaval/core'
+import { isFailure } from '@shaval/core'
 import { validateArray } from './array.js'
 import { greaterThan } from './greater-than.js'
 import { validateObject } from './object.js'
@@ -56,7 +56,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -68,7 +68,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -96,7 +96,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 1, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -108,7 +108,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -120,7 +120,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -150,7 +150,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 1, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -162,7 +162,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -174,7 +174,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -204,7 +204,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 1, n2: 2, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -216,7 +216,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -228,7 +228,7 @@ describe(validateObject.name, () => {
         const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
@@ -270,7 +270,7 @@ describe(validateObject.name, () => {
       const value: ObjectWithOptionalProperty = { n: 0 }
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -283,7 +283,7 @@ describe(validateObject.name, () => {
       const validator = validateObject<ObjectWithOptionalProperty>({ n: required })
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -295,7 +295,7 @@ describe(validateObject.name, () => {
       const value: ObjectWithOptionalProperty = { n: 0 }
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -332,7 +332,7 @@ describe(validateObject.name, () => {
       const value: ObjectWithNullableProperty = { n: 0 }
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -345,7 +345,7 @@ describe(validateObject.name, () => {
       const validator = validateObject<ObjectWithNullableProperty>({ n: required })
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -357,7 +357,7 @@ describe(validateObject.name, () => {
       const value: ObjectWithNullableProperty = { n: 0 }
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -389,7 +389,7 @@ describe(validateObject.name, () => {
       const value: ObjectWithArrayProperty = { arr: [0] }
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -401,7 +401,7 @@ describe(validateObject.name, () => {
       const value: ObjectWithArrayProperty = { arr: [0] }
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -435,7 +435,7 @@ describe(validateObject.name, () => {
       const value: ObjectWithObjectProperty = { obj: { n: 0 } }
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -447,7 +447,7 @@ describe(validateObject.name, () => {
       const value: ObjectWithObjectProperty = { obj: { n: 0 } }
       const result = validator(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -476,7 +476,7 @@ describe(validateObject.name, () => {
         const value: ObjectWithObjectProperty = { obj: { n: 0 } }
         const result = validator(value)
 
-        if (!isShavalError(result)) {
+        if (!isFailure(result)) {
           return fail('result was not an error')
         }
 

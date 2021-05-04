@@ -1,4 +1,4 @@
-import { isShavalError, isSuccess } from '@shaval/core'
+import { isFailure, isSuccess } from '@shaval/core'
 import { array } from './array.js'
 import { boolean } from './boolean.js'
 import { nullable } from './nullable.js'
@@ -64,7 +64,7 @@ describe(object.name, () => {
       const value: Partial<SimpleObject> = { n: '' as any, b: false }
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -76,7 +76,7 @@ describe(object.name, () => {
       const value: Partial<SimpleObject> = { n: '' as any, b: false }
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -281,7 +281,7 @@ describe(object.name, () => {
       const value: Partial<ObjectWithArrayProperty> = { arr: ['' as any, '' as any] }
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -293,7 +293,7 @@ describe(object.name, () => {
       const value: Partial<ObjectWithArrayProperty> = { arr: ['' as any, 0, '' as any] }
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -347,7 +347,7 @@ describe(object.name, () => {
       const value: ObjectWithObjectProperty = { obj: { s: 0 as any, n: '' as any } }
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
@@ -359,7 +359,7 @@ describe(object.name, () => {
       const value: ObjectWithObjectProperty = { obj: { s: 0 as any, n: '' as any } }
       const result = parser(value)
 
-      if (!isShavalError(result)) {
+      if (!isFailure(result)) {
         return fail('result was not an error')
       }
 

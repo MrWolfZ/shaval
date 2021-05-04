@@ -1,4 +1,4 @@
-import { isShavalError } from '@shaval/core'
+import { isFailure } from '@shaval/core'
 import { greaterThan } from './greater-than.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -31,7 +31,7 @@ describe(greaterThan.name, () => {
   it('fails if value is equal to comparand', () => {
     const result = greaterThan(1)(1)
 
-    if (!isShavalError(result)) {
+    if (!isFailure(result)) {
       return fail('result was not an error')
     }
 
@@ -42,7 +42,7 @@ describe(greaterThan.name, () => {
   it('fails if value is less than comparand', () => {
     const result = greaterThan(1)(0)
 
-    if (!isShavalError(result)) {
+    if (!isFailure(result)) {
       return fail('result was not an error')
     }
 
