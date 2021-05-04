@@ -1,8 +1,6 @@
-import { isFailure } from '@shaval/core'
+import { failure, isFailure } from '@shaval/core'
+import type { Validator } from '../validator.js'
 import { validateArray } from './array.js'
-import { greaterThan } from './greater-than.js'
-import { lessThan } from './less-than.js'
-import { validateObject } from './object.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -15,202 +13,37 @@ describe(validateArray.name, () => {
     expect(() => validateArray(undefined as any)).toThrow()
   })
 
-  describe('primitive elements', () => {
-    describe('no validators', () => {
-      const validator = validateArray()
-
-      it('succeeds for empty array', () => {
-        const value: number[] = []
-        expect(validator(value)).toBe(value)
-      })
-
-      it('succeeds for non-empty array', () => {
-        const value = [1, 2, 3]
-        expect(validator(value)).toBe(value)
-      })
-    })
-
-    describe('with single validator', () => {
-      const validator = validateArray(greaterThan(0))
-
-      it('succeeds for empty array', () => {
-        const value: number[] = []
-        expect(validator(value)).toBe(value)
-      })
-
-      it('succeeds for non-empty array', () => {
-        const value = [1, 2, 3]
-        expect(validator(value)).toBe(value)
-      })
-
-      it('fails if single element is invalid', () => {
-        const value = [0, 2, 3]
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(1)
-      })
-
-      it('fails if multiple elements are invalid', () => {
-        const value = [0, -1, 3]
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(2)
-      })
-
-      it('aggregates error messages from all items', () => {
-        const value = [-1, -2]
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(2)
-      })
-
-      it('adds the item index to path for errors', () => {
-        const value = [0, 1, -1]
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(2)
-        expect(result.errors[0]?.path).toEqual(['0'])
-        expect(result.errors[1]?.path).toEqual(['2'])
-      })
-    })
-
-    describe('with multiple validators', () => {
-      const validator = validateArray(greaterThan(0), lessThan(4))
-
-      it('succeeds for empty array', () => {
-        const value: number[] = []
-        expect(validator(value)).toBe(value)
-      })
-
-      it('succeeds for non-empty array', () => {
-        const value = [1, 2, 3]
-        expect(validator(value)).toBe(value)
-      })
-
-      it('fails if single element is invalid', () => {
-        const value = [0, 2, 3]
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(1)
-      })
-
-      it('fails if multiple elements are invalid', () => {
-        const value = [0, 4, 3]
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(2)
-      })
-
-      it('aggregates error messages from all validators', () => {
-        const value = [0]
-        const validator = validateArray(greaterThan(0), lessThan(0))
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(1)
-        expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
-      })
-
-      it('aggregates error messages from all items', () => {
-        const value = [-1, 5]
-        const validator = validateArray(greaterThan(0), lessThan(4))
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(2)
-      })
-
-      it('adds the item index to path for errors', () => {
-        const value = [-1, 1, 4]
-        const validator = validateArray(greaterThan(0), lessThan(3))
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(2)
-
-        expect(result.errors[0]?.path).toEqual(['0'])
-        expect(result.errors[1]?.path).toEqual(['2'])
-      })
-    })
-  })
-
-  describe('object elements', () => {
-    interface TestObject {
-      n: number
-    }
-
-    const validator = validateArray(
-      validateObject<TestObject>({ n: greaterThan(0) }),
-    )
+  describe('with single validator', () => {
+    const itemValidator: Validator<number> = (value) => value
+    const validator = validateArray(itemValidator)
 
     it('succeeds for empty array', () => {
-      const value: TestObject[] = []
+      const value: number[] = []
       expect(validator(value)).toBe(value)
     })
 
     it('succeeds for non-empty array', () => {
-      const value: TestObject[] = [{ n: 1 }, { n: 2 }]
+      const value = [1, 2, 3]
       expect(validator(value)).toBe(value)
     })
 
     it('fails if single element is invalid', () => {
-      const value: TestObject[] = [{ n: 0 }, { n: 2 }]
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
+      const itemValidator: Validator<number> = (value) => (value === 1 ? failure(value, '') : value)
+      const validator = validateArray(itemValidator)
+      expect(isFailure(validator([1, 2, 3]))).toBe(true)
     })
 
     it('fails if multiple elements are invalid', () => {
-      const value: TestObject[] = [{ n: 0 }, { n: 0 }]
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
+      const itemValidator: Validator<number> = (value) => (value !== 1 ? failure(value, '') : value)
+      const validator = validateArray(itemValidator)
+      expect(isFailure(validator([1, 2, 3]))).toBe(true)
     })
 
     it('aggregates error messages from all items', () => {
-      const value: TestObject[] = [{ n: 0 }, { n: 0 }]
-      const result = validator(value)
+      const itemValidator: Validator<number> = (value) => failure(value, '')
+      const validator = validateArray(itemValidator)
+
+      const result = validator([1, 2])
 
       if (!isFailure(result)) {
         return fail('result was not an error')
@@ -220,77 +53,100 @@ describe(validateArray.name, () => {
     })
 
     it('adds the item index to path for errors', () => {
-      const value: TestObject[] = [{ n: 0 }, { n: 0 }]
-      const result = validator(value)
+      const itemValidator: Validator<number> = (value) =>
+        value === 1 ? failure([{ value, path: ['p'], details: { '1': 1 } }]) : value === 3 ? failure(value, '3') : value
+
+      const validator = validateArray(itemValidator)
+
+      const result = validator([1, 2, 3])
 
       if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
       expect(result.errors).toHaveLength(2)
-      expect(result.errors[0]?.path).toEqual(['0', 'n'])
-      expect(result.errors[1]?.path).toEqual(['1', 'n'])
+      expect(result.errors[0]?.path).toEqual(['0', 'p'])
+      expect(result.errors[1]?.path).toEqual(['2'])
     })
   })
 
-  describe('array elements', () => {
-    const validator = validateArray(validateArray(greaterThan(0)))
+  describe('with multiple validators', () => {
+    const itemValidator1: Validator<number> = (value) => value
+    const itemValidator2: Validator<number> = (value) => value
+    const validator = validateArray(itemValidator1, itemValidator2)
 
     it('succeeds for empty array', () => {
-      const value: number[][] = []
+      const value: number[] = []
       expect(validator(value)).toBe(value)
     })
 
     it('succeeds for non-empty array', () => {
-      const value: number[][] = [[1, 2], [3]]
+      const value = [1, 2, 3]
       expect(validator(value)).toBe(value)
     })
 
     it('fails if single element is invalid', () => {
-      const value: number[][] = [[0, 2], [3]]
-      const result = validator(value)
+      const itemValidator1: Validator<number> = (value) => (value === 1 ? failure(value, '') : value)
+      const itemValidator2: Validator<number> = (value) => value
+      const validator = validateArray(itemValidator1, itemValidator2)
+      expect(isFailure(validator([1, 2, 3]))).toBe(true)
+    })
+
+    it('fails if multiple elements are invalid', () => {
+      const itemValidator1: Validator<number> = (value) => (value !== 1 ? failure(value, '') : value)
+      const itemValidator2: Validator<number> = (value) => value
+      const validator = validateArray(itemValidator1, itemValidator2)
+      expect(isFailure(validator([1, 2, 3]))).toBe(true)
+    })
+
+    it('aggregates error messages from all validators', () => {
+      const itemValidator1: Validator<number> = (value) => failure(value, '1')
+      const itemValidator2: Validator<number> = (value) => failure(value, '2')
+      const validator = validateArray(itemValidator1, itemValidator2)
+
+      const result = validator([1])
 
       if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
       expect(result.errors).toHaveLength(1)
-    })
-
-    it('fails if multiple elements are invalid', () => {
-      const value: number[][] = [[0, 2], [0]]
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
+      expect(result.errors[0]?.value).toBe(1)
+      expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
     })
 
     it('aggregates error messages from all items', () => {
-      const value: number[][] = [[0, -1], [0]]
-      const result = validator(value)
+      const itemValidator1: Validator<number> = (value) => failure(value, '')
+      const itemValidator2: Validator<number> = (value) => value
+      const validator = validateArray(itemValidator1, itemValidator2)
 
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(3)
-    })
-
-    it('adds the item index to path for errors', () => {
-      const value: number[][] = [[1, 0], [1], [0]]
-      const result = validator(value)
+      const result = validator([1, 2])
 
       if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
       expect(result.errors).toHaveLength(2)
+      expect(result.errors[0]?.value).toBe(1)
+      expect(result.errors[1]?.value).toBe(2)
+      expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(1)
+      expect(Object.keys(result.errors[1]?.details ?? {})).toHaveLength(1)
+    })
 
-      expect(result.errors[0]?.path).toEqual(['0', '1'])
-      expect(result.errors[1]?.path).toEqual(['2', '0'])
+    it('adds the item index to path for errors', () => {
+      const itemValidator1: Validator<number> = (value) => (value !== 2 ? failure(value, '') : value)
+      const itemValidator2: Validator<number> = (value) => value
+      const validator = validateArray(itemValidator1, itemValidator2)
+
+      const result = validator([1, 2, 3])
+
+      if (!isFailure(result)) {
+        return fail('result was not an error')
+      }
+
+      expect(result.errors).toHaveLength(2)
+      expect(result.errors[0]?.path).toEqual(['0'])
+      expect(result.errors[1]?.path).toEqual(['2'])
     })
   })
 })

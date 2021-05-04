@@ -4,7 +4,15 @@ import type { Validator } from '../validator.js'
 /**
  * @public
  */
-export function or<T>(...validators: Validator<T>[]): Validator<T> {
+export function or<T>(
+  validator1: Validator<T>,
+  validator2: Validator<T>,
+  ...restValidators: Validator<T>[]
+): Validator<T> {
+  return _or(validator1, validator2, ...restValidators)
+}
+
+function _or<T>(...validators: Validator<T>[]): Validator<T> {
   if (validators.some((v) => v === null || v === undefined)) {
     throw new Error(`validators must not be null or undefined`)
   }

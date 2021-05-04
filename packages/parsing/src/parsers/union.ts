@@ -9,14 +9,14 @@ export type UnionParsers<T> = { [K in keyof T]: Parser<T[K]> }
 /**
  * @public
  */
-export function union<T1, T2, T extends readonly unknown[]>(
+export function union<T1, T2, TRest extends readonly unknown[]>(
   parser1: Parser<T1>,
   parser2: Parser<T2>,
-  ...restParsers: UnionParsers<T>
-): Parser<T1 | T2 | T[number]> {
+  ...restParsers: UnionParsers<TRest>
+): Parser<T1 | T2 | TRest[number]> {
   const allParsers = [parser1, parser2, ...restParsers]
 
-  return (value): ParserResult<T1 | T2 | T[number]> => {
+  return (value): ParserResult<T1 | T2 | TRest[number]> => {
     const errors: Errors[] = []
 
     for (const parser of allParsers) {
@@ -25,7 +25,7 @@ export function union<T1, T2, T extends readonly unknown[]>(
       if (isFailure(result)) {
         errors.push(...result.errors)
       } else {
-        return value as ParserResult<T1 | T2 | T[number]>
+        return value as ParserResult<T1 | T2 | TRest[number]>
       }
     }
 

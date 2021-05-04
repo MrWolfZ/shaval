@@ -12,16 +12,20 @@ describe(greaterThan.name, () => {
     expect(() => greaterThan(undefined as any)).toThrow()
   })
 
-  it('succeeds for null', () => {
-    expect(greaterThan(1)(null)).toBe(null)
+  it('fails for null', () => {
+    expect(isFailure(greaterThan(1)(null as any))).toBe(true)
   })
 
-  it('succeeds for undefined', () => {
-    expect(greaterThan(1)(undefined)).toBe(undefined)
+  it('fails for undefined', () => {
+    expect(isFailure(greaterThan(1)(undefined as any))).toBe(true)
   })
 
-  it('succeeds for non-numeric value', () => {
-    expect(greaterThan(1)('string' as any)).toBe('string')
+  it('fails for NaN', () => {
+    expect(isFailure(greaterThan(1)(NaN))).toBe(true)
+  })
+
+  it('fails for non-numeric value', () => {
+    expect(isFailure(greaterThan(1)('string' as any))).toBe(true)
   })
 
   it('succeeds if value is greater than comparand', () => {

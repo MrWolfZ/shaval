@@ -1,29 +1,21 @@
-import { greaterThan, or, required, sameAs, validateObject, Validator } from '@shaval/validation'
+import { or, Validator } from '@shaval/validation'
 import { expectAssignable, expectError } from 'tsd'
 
-expectError<Validator<string>>(or(required, greaterThan(0)))
-expectAssignable<Validator<number>>(or(required, greaterThan(0)))
-expectError<Validator<boolean>>(or(required, greaterThan(0)))
-expectAssignable<Validator<null>>(or(required, greaterThan(0)))
-expectAssignable<Validator<undefined>>(or(required, greaterThan(0)))
-expectAssignable<Validator<number | undefined>>(or(required, greaterThan(0)))
-expectAssignable<Validator<number | null>>(or(required, greaterThan(0)))
-expectAssignable<Validator<number | undefined | null>>(or(required, greaterThan(0)))
-expectError<Validator<string[]>>(or(required, greaterThan(0)))
-expectError<Validator<{ s: string }>>(or(required, greaterThan(0)))
-expectAssignable<Validator<number>>(or(greaterThan(0), sameAs(5)))
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-interface SimpleObject {
-  n: number
-}
+const stringValidator: Validator<string> = undefined!
+const numberValidator: Validator<number> = undefined!
+const stringOrNumberValidator: Validator<string | number> = undefined!
 
-expectAssignable<Validator<SimpleObject>>(
-  or(
-    validateObject<SimpleObject>({
-      n: [required, greaterThan(0)],
-    }),
-    validateObject<SimpleObject>({
-      n: greaterThan(0),
-    }),
-  ),
-)
+// @ts-expect-error test
+or()
+
+// @ts-expect-error test
+or(stringValidator)
+
+// @ts-expect-error test
+or(stringValidator, numberValidator)
+
+expectAssignable<Validator<string>>(or(stringValidator, stringValidator))
+expectAssignable<Validator<string | number>>(or(stringOrNumberValidator, stringOrNumberValidator))
+expectError<Validator<number>>(or(stringValidator, stringValidator))

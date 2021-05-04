@@ -1,77 +1,42 @@
-import { isFailure } from '@shaval/core'
+import { failure, isFailure } from '@shaval/core'
+import type { Validator } from '../validator.js'
 import { combine } from './combine.js'
-import { greaterThan } from './greater-than.js'
-import { lessThan } from './less-than.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe(combine.name, () => {
+  const validator1: Validator<string> = (value) => (value === 'a' ? value : failure(value, 'a'))
+  const validator2: Validator<string> = (value) => (value === 'a' || value === 'b' ? value : failure(value, 'b'))
+  const validator3: Validator<string> = (value) =>
+    value === 'a' || value === 'b' || value === 'c' ? value : failure(value, 'c')
+
   it('throws for null validator parameter', () => {
-    expect(() => combine(null as any)).toThrow()
+    expect(() => combine(validator1, null as any)).toThrow()
   })
 
   it('throws for undefined validator parameter', () => {
-    expect(() => combine(undefined as any)).toThrow()
+    expect(() => combine(validator1, undefined as any)).toThrow()
   })
 
-  describe('no validators', () => {
-    const validator = combine()
+  const validator = combine(validator1, validator2, validator3)
 
-    it('succeeds for empty string', () => {
-      expect(validator('')).toBe('')
-    })
-
-    it('succeeds for non-empty string', () => {
-      expect(validator('a')).toBe('a')
-    })
+  it('succeeds for valid value', () => {
+    expect(validator('a')).toBe('a')
   })
 
-  describe('with single validator', () => {
-    const validator = combine(greaterThan(0))
-
-    it('succeeds for valid value', () => {
-      expect(validator(1)).toBe(1)
-    })
-
-    it('fails for invalid value', () => {
-      const result = validator(0)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-    })
+  it('fails for invalid value', () => {
+    expect(isFailure(validator('d'))).toBe(true)
   })
 
-  describe('with multiple validators', () => {
-    const validator = combine(greaterThan(0), lessThan(4))
+  it('aggregates error messages from all failing validators', () => {
+    const result = validator('c')
 
-    it('succeeds for valid value', () => {
-      expect(validator(1)).toBe(1)
-    })
+    if (!isFailure(result)) {
+      return fail('result was not an error')
+    }
 
-    it('fails for invalid value', () => {
-      const result = validator(0)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-    })
-
-    it('aggregates error messages from all validators', () => {
-      const validator = combine(greaterThan(0), lessThan(0))
-      const result = validator(0)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-      expect(result.errors[0]?.value).toBe(0)
-      expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
-    })
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0]?.value).toBe('c')
+    expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
   })
 })

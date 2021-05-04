@@ -1,9 +1,6 @@
-import { isFailure } from '@shaval/core'
-import { validateArray } from './array.js'
-import { greaterThan } from './greater-than.js'
+import { failure, isFailure } from '@shaval/core'
+import type { Validator } from '../validator.js'
 import { validateObject } from './object.js'
-import { required } from './required.js'
-import { sameAs } from './same-as.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -31,118 +28,104 @@ describe(validateObject.name, () => {
   describe('simple object', () => {
     interface SimpleObject {
       s: string
-      n1: number
-      n2: number
-      b: boolean
+      n: number
     }
 
     describe('no validators', () => {
       const validator = validateObject<SimpleObject>({})
 
       it('succeeds for any value', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
+        const value: SimpleObject = { s: '', n: 0 }
         expect(validator(value)).toBe(value)
       })
     })
 
     describe('with single validator for single property', () => {
-      const validator = validateObject<SimpleObject>({ n1: greaterThan(0) })
+      const propValidator: Validator<number> = (value) =>
+        value === 1 ? value : failure([{ value, path: ['a'], details: { a: undefined } }])
+
+      const validator = validateObject<SimpleObject>({ n: propValidator })
 
       it('succeeds for valid property', () => {
-        const value: SimpleObject = { s: '', n1: 1, n2: 0, b: false }
+        const value: SimpleObject = { s: '', n: 1 }
         expect(validator(value)).toBe(value)
       })
 
       it('fails for invalid property', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(1)
+        expect(isFailure(validator({ s: '', n: 0 }))).toBe(true)
       })
 
       it('adds the property name to path for errors', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
-        const result = validator(value)
+        const result = validator({ s: '', n: 0 })
 
         if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
         expect(result.errors).toHaveLength(1)
-        expect(result.errors[0]?.path).toEqual(['n1'])
+        expect(result.errors[0]?.path).toEqual(['n', 'a'])
       })
     })
 
     describe('with multiple validators for single property', () => {
-      const validator = validateObject<SimpleObject>({ n1: [greaterThan(0), sameAs(2)] })
+      const propValidator1: Validator<number> = (value) =>
+        value === 1 ? value : failure([{ value, path: ['a'], details: { a: undefined } }])
+      const propValidator2: Validator<number> = (value) =>
+        value === 1 ? value : failure([{ value, path: ['b'], details: { b: undefined } }])
+
+      const validator = validateObject<SimpleObject>({ n: [propValidator1, propValidator2] })
 
       it('succeeds for valid property', () => {
-        const value: SimpleObject = { s: '', n1: 2, n2: 0, b: false }
+        const value: SimpleObject = { s: '', n: 1 }
         expect(validator(value)).toBe(value)
       })
 
       it('fails for invalid property', () => {
-        const value: SimpleObject = { s: '', n1: 1, n2: 0, b: false }
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(1)
+        expect(isFailure(validator({ s: '', n: 0 }))).toBe(true)
       })
 
       it('aggregates error messages from all validators', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
-        const result = validator(value)
+        const result = validator({ s: '', n: 0 })
 
         if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
-        expect(result.errors).toHaveLength(1)
-        expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
+        expect(result.errors).toHaveLength(2)
       })
 
       it('adds the property name to path for errors', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
-        const result = validator(value)
+        const result = validator({ s: '', n: 0 })
 
         if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
-        expect(result.errors).toHaveLength(1)
-        expect(result.errors[0]?.path).toEqual(['n1'])
+        expect(result.errors).toHaveLength(2)
+        expect(result.errors[0]?.path).toEqual(['n', 'a'])
+        expect(result.errors[1]?.path).toEqual(['n', 'b'])
       })
     })
 
     describe('with single validator for multiple properties', () => {
-      const validator = validateObject<SimpleObject>({ n1: greaterThan(0), n2: greaterThan(1) })
+      const propValidator1: Validator<string> = (value) =>
+        value === 'a' ? value : failure([{ value, path: ['a'], details: { a: undefined } }])
+      const propValidator2: Validator<number> = (value) =>
+        value === 1 ? value : failure([{ value, path: ['b'], details: { b: undefined } }])
+
+      const validator = validateObject<SimpleObject>({ s: propValidator1, n: propValidator2 })
 
       it('succeeds for valid properties', () => {
-        const value: SimpleObject = { s: '', n1: 1, n2: 2, b: false }
+        const value: SimpleObject = { s: 'a', n: 1 }
         expect(validator(value)).toBe(value)
       })
 
       it('fails for single invalid property', () => {
-        const value: SimpleObject = { s: '', n1: 1, n2: 0, b: false }
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(1)
+        expect(isFailure(validator({ s: '', n: 1 }))).toBe(true)
       })
 
-      it('fails for multiple invalid properties and aggregates errors', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
-        const result = validator(value)
+      it('aggregates error messages from all validators', () => {
+        const result = validator({ s: '', n: 0 })
 
         if (!isFailure(result)) {
           return fail('result was not an error')
@@ -152,60 +135,63 @@ describe(validateObject.name, () => {
       })
 
       it('adds the property name to path for errors', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
-        const result = validator(value)
+        const result = validator({ s: '', n: 0 })
 
         if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
         expect(result.errors).toHaveLength(2)
-        expect(result.errors[0]?.path).toEqual(['n1'])
-        expect(result.errors[1]?.path).toEqual(['n2'])
+        expect(result.errors[0]?.path).toEqual(['s', 'a'])
+        expect(result.errors[1]?.path).toEqual(['n', 'b'])
       })
     })
 
     describe('with mulitple validators for multiple properties', () => {
-      const validator = validateObject<SimpleObject>({ n1: [greaterThan(0)], n2: greaterThan(1) })
+      const propValidator1: Validator<string> = (value) =>
+        value === 'a' ? value : failure([{ value, path: ['a'], details: { a: undefined } }])
+      const propValidator2: Validator<string> = (value) =>
+        ['a', 'b'].includes(value) ? value : failure([{ value, path: ['b'], details: { b: undefined } }])
+      const propValidator3: Validator<number> = (value) =>
+        value === 1 ? value : failure([{ value, path: ['c'], details: { c: undefined } }])
+      const propValidator4: Validator<number> = (value) =>
+        [1, 2].includes(value) ? value : failure([{ value, path: ['d'], details: { d: undefined } }])
+
+      const validator = validateObject<SimpleObject>({
+        s: [propValidator1, propValidator2],
+        n: [propValidator3, propValidator4],
+      })
 
       it('succeeds for valid properties', () => {
-        const value: SimpleObject = { s: '', n1: 2, n2: 2, b: false }
+        const value: SimpleObject = { s: 'a', n: 1 }
         expect(validator(value)).toBe(value)
       })
 
       it('fails for single invalid property', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 2, b: false }
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(1)
+        expect(isFailure(validator({ s: '', n: 1 }))).toBe(true)
       })
 
-      it('fails for multiple invalid properties and aggregates errors', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
-        const result = validator(value)
+      it('aggregates error messages from all validators', () => {
+        const result = validator({ s: '', n: 2 })
 
         if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
-        expect(result.errors).toHaveLength(2)
+        expect(result.errors).toHaveLength(3)
       })
 
       it('adds the property name to path for errors', () => {
-        const value: SimpleObject = { s: '', n1: 0, n2: 0, b: false }
-        const result = validator(value)
+        const result = validator({ s: '', n: 2 })
 
         if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
-        expect(result.errors).toHaveLength(2)
-        expect(result.errors[0]?.path).toEqual(['n1'])
-        expect(result.errors[1]?.path).toEqual(['n2'])
+        expect(result.errors).toHaveLength(3)
+        expect(result.errors[0]?.path).toEqual(['s', 'a'])
+        expect(result.errors[1]?.path).toEqual(['s', 'b'])
+        expect(result.errors[2]?.path).toEqual(['n', 'c'])
       })
     })
   })
@@ -215,9 +201,10 @@ describe(validateObject.name, () => {
       n?: number
     }
 
-    const validator = validateObject<ObjectWithOptionalProperty>({ n: greaterThan(0) })
+    const propValidator: Validator<number> = (val) => (val === 1 ? val : { ...failure(val, ''), path: ['a'] })
+    const validator = validateObject<ObjectWithOptionalProperty>({ n: propValidator })
 
-    it('succeeds for undefined property', () => {
+    it('succeeds for missing property', () => {
       const value: ObjectWithOptionalProperty = {}
       expect(validator(value)).toBe(value)
     })
@@ -228,38 +215,11 @@ describe(validateObject.name, () => {
     })
 
     it('fails for invalid property', () => {
-      const value: ObjectWithOptionalProperty = { n: 0 }
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
+      expect(isFailure(validator({ n: 0 }))).toBe(true)
     })
 
-    it('fails for undefined property if required', () => {
-      const value: ObjectWithOptionalProperty = { n: undefined }
-      const validator = validateObject<ObjectWithOptionalProperty>({ n: required })
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: ObjectWithOptionalProperty = { n: 0 }
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-      expect(result.errors[0]?.path).toEqual(['n'])
+    it('fails for explicitly undefined property', () => {
+      expect(isFailure(validator({ n: undefined }))).toBe(true)
     })
   })
 
@@ -268,7 +228,8 @@ describe(validateObject.name, () => {
       n: number | null
     }
 
-    const validator = validateObject<ObjectWithNullableProperty>({ n: greaterThan(0) })
+    const propValidator: Validator<number | null> = (val) => (val === 1 || val === null ? val : failure(val, ''))
+    const validator = validateObject<ObjectWithNullableProperty>({ n: propValidator })
 
     it('succeeds for null property', () => {
       const value: ObjectWithNullableProperty = { n: null }
@@ -281,134 +242,7 @@ describe(validateObject.name, () => {
     })
 
     it('fails for invalid property', () => {
-      const value: ObjectWithNullableProperty = { n: 0 }
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-    })
-
-    it('fails for null property if required', () => {
-      const value: ObjectWithNullableProperty = { n: null }
-      const validator = validateObject<ObjectWithNullableProperty>({ n: required })
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: ObjectWithNullableProperty = { n: 0 }
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-      expect(result.errors[0]?.path).toEqual(['n'])
-    })
-  })
-
-  describe('object with array property', () => {
-    interface ObjectWithArrayProperty {
-      arr: number[]
-    }
-
-    const validator = validateObject<ObjectWithArrayProperty>({ arr: validateArray(greaterThan(0)) })
-
-    it('succeeds for valid property', () => {
-      const value: ObjectWithArrayProperty = { arr: [1] }
-      expect(validator(value)).toBe(value)
-    })
-
-    it('fails for invalid property', () => {
-      const value: ObjectWithArrayProperty = { arr: [0] }
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: ObjectWithArrayProperty = { arr: [0] }
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-      expect(result.errors[0]?.path).toEqual(['arr', '0'])
-    })
-  })
-
-  describe('object with object property', () => {
-    interface ObjectWithObjectProperty {
-      obj: {
-        n: number
-      }
-    }
-
-    const validator = validateObject<ObjectWithObjectProperty>({ obj: { n: greaterThan(0) } })
-
-    it('succeeds for valid property', () => {
-      const value: ObjectWithObjectProperty = { obj: { n: 1 } }
-      expect(validator(value)).toBe(value)
-    })
-
-    it('fails for invalid property', () => {
-      const value: ObjectWithObjectProperty = { obj: { n: 0 } }
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: ObjectWithObjectProperty = { obj: { n: 0 } }
-      const result = validator(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(1)
-      expect(result.errors[0]?.path).toEqual(['obj', 'n'])
-    })
-
-    describe('with long form', () => {
-      const validator = validateObject<ObjectWithObjectProperty>({
-        obj: validateObject<ObjectWithObjectProperty['obj']>({ n: greaterThan(0) }),
-      })
-
-      it('succeeds for valid property', () => {
-        const value: ObjectWithObjectProperty = { obj: { n: 1 } }
-        expect(validator(value)).toBe(value)
-      })
-
-      it('fails for invalid property', () => {
-        const value: ObjectWithObjectProperty = { obj: { n: 0 } }
-        const result = validator(value)
-
-        if (!isFailure(result)) {
-          return fail('result was not an error')
-        }
-
-        expect(result.errors).toHaveLength(1)
-      })
+      expect(isFailure(validator({ n: 0 }))).toBe(true)
     })
   })
 })

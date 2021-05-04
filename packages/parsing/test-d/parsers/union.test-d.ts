@@ -1,4 +1,4 @@
-import { boolean, nullable, number, optional, Parser, string, union } from '@shaval/parsing'
+import { array, boolean, nullable, number, optional, Parser, string, union } from '@shaval/parsing'
 import { expectError, expectType } from 'tsd'
 
 // @ts-expect-error test
@@ -27,3 +27,5 @@ expectType<Parser<string | number | boolean | null>>(nullable(union(string, numb
 expectError<Parser<string | number | boolean | null>>(optional(union(string, number, boolean)))
 expectType<Parser<string | number | boolean | null | undefined>>(optional(nullable(union(string, number, boolean))))
 expectType<Parser<string | number | boolean | null | undefined>>(nullable(optional(union(string, number, boolean))))
+
+expectType<Parser<string | number | boolean | string[]>>(union(string, number, boolean, array(string)))

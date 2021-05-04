@@ -1,5 +1,10 @@
-import { greaterThan, required, validateArray, validateObject, Validator } from '@shaval/validation'
+import { validateObject, Validator } from '@shaval/validation'
 import { expectAssignable, expectError } from 'tsd'
+
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+const stringValidator: Validator<string> = undefined!
+const numberValidator: Validator<number> = undefined!
 
 interface SimpleObject {
   s: string
@@ -11,26 +16,26 @@ expectAssignable<Validator<SimpleObject>>(validateObject<SimpleObject>({}))
 
 expectAssignable<Validator<SimpleObject>>(
   validateObject<SimpleObject>({
-    s: required,
-    n: greaterThan(0),
+    s: stringValidator,
+    n: numberValidator,
   }),
 )
 
 expectAssignable<Validator<SimpleObject>>(
   validateObject<SimpleObject>({
-    n: [required, greaterThan(0)],
+    n: [numberValidator, numberValidator],
   }),
 )
 
 expectError<Validator<SimpleObject>>(
   validateObject<SimpleObject>({
-    s: greaterThan(0),
+    s: numberValidator,
   }),
 )
 
 expectError<Validator<SimpleObject>>(
   validateObject<SimpleObject>({
-    s: [required, greaterThan(0)],
+    s: [stringValidator, numberValidator],
   }),
 )
 
@@ -42,13 +47,25 @@ expectAssignable<Validator<ObjectWithOptionalProperty>>(validateObject<ObjectWit
 
 expectAssignable<Validator<ObjectWithOptionalProperty>>(
   validateObject<ObjectWithOptionalProperty>({
-    n: required,
+    n: numberValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalProperty>>(
   validateObject<ObjectWithOptionalProperty>({
-    n: [required, greaterThan(0)],
+    n: [numberValidator, numberValidator],
+  }),
+)
+
+expectError<Validator<ObjectWithOptionalProperty>>(
+  validateObject<ObjectWithOptionalProperty>({
+    n: stringValidator,
+  }),
+)
+
+expectError<Validator<ObjectWithOptionalProperty>>(
+  validateObject<ObjectWithOptionalProperty>({
+    n: [stringValidator, numberValidator],
   }),
 )
 
@@ -56,19 +73,43 @@ interface ObjectWithNullableProperty {
   n: number | null
 }
 
+const nullOrNumberValidator: Validator<number | null> = undefined!
+
 expectAssignable<Validator<ObjectWithNullableProperty>>(validateObject<ObjectWithNullableProperty>({}))
 
 expectAssignable<Validator<ObjectWithNullableProperty>>(
   validateObject<ObjectWithNullableProperty>({
-    n: required,
+    n: nullOrNumberValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithNullableProperty>>(
   validateObject<ObjectWithNullableProperty>({
-    n: [required, greaterThan(0)],
+    n: [nullOrNumberValidator, nullOrNumberValidator],
   }),
 )
+
+expectError<Validator<ObjectWithNullableProperty>>(
+  validateObject<ObjectWithNullableProperty>({
+    n: numberValidator,
+  }),
+)
+
+validateObject<ObjectWithNullableProperty>({
+  // @ts-expect-error test
+  n: [numberValidator, numberValidator],
+})
+
+expectError<Validator<ObjectWithNullableProperty>>(
+  validateObject<ObjectWithNullableProperty>({
+    n: stringValidator,
+  }),
+)
+
+validateObject<ObjectWithNullableProperty>({
+  // @ts-expect-error test
+  n: [stringValidator, numberValidator],
+})
 
 interface ObjectWithNullableOptionalProperty {
   n?: number | null
@@ -78,15 +119,39 @@ expectAssignable<Validator<ObjectWithNullableOptionalProperty>>(validateObject<O
 
 expectAssignable<Validator<ObjectWithNullableOptionalProperty>>(
   validateObject<ObjectWithNullableOptionalProperty>({
-    n: required,
+    n: nullOrNumberValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithNullableOptionalProperty>>(
   validateObject<ObjectWithNullableOptionalProperty>({
-    n: [required, greaterThan(0)],
+    n: [nullOrNumberValidator, nullOrNumberValidator],
   }),
 )
+
+expectError<Validator<ObjectWithNullableOptionalProperty>>(
+  validateObject<ObjectWithNullableOptionalProperty>({
+    n: numberValidator,
+  }),
+)
+
+validateObject<ObjectWithNullableOptionalProperty>({
+  // @ts-expect-error test
+  n: [numberValidator, numberValidator],
+})
+
+expectError<Validator<ObjectWithNullableOptionalProperty>>(
+  validateObject<ObjectWithNullableOptionalProperty>({
+    n: stringValidator,
+  }),
+)
+
+validateObject<ObjectWithNullableOptionalProperty>({
+  // @ts-expect-error test
+  n: [stringValidator, numberValidator],
+})
+
+const arrayValidator: Validator<readonly number[]> = undefined!
 
 interface ObjectWithArrayProperty {
   arr: number[]
@@ -96,43 +161,25 @@ expectAssignable<Validator<ObjectWithArrayProperty>>(validateObject<ObjectWithAr
 
 expectAssignable<Validator<ObjectWithArrayProperty>>(
   validateObject<ObjectWithArrayProperty>({
-    arr: required,
+    arr: arrayValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithArrayProperty>>(
   validateObject<ObjectWithArrayProperty>({
-    arr: validateArray(),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithArrayProperty>>(
-  validateObject<ObjectWithArrayProperty>({
-    arr: validateArray(required),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithArrayProperty>>(
-  validateObject<ObjectWithArrayProperty>({
-    arr: [validateArray(required), validateArray(required)],
-  }),
-)
-
-expectAssignable<Validator<ObjectWithArrayProperty>>(
-  validateObject<ObjectWithArrayProperty>({
-    arr: validateArray(required, greaterThan(0)),
+    arr: [arrayValidator, arrayValidator],
   }),
 )
 
 expectError<Validator<ObjectWithArrayProperty>>(
   validateObject<ObjectWithArrayProperty>({
-    arr: greaterThan(0),
+    arr: stringValidator,
   }),
 )
 
 expectError<Validator<ObjectWithArrayProperty>>(
   validateObject<ObjectWithArrayProperty>({
-    arr: [required, greaterThan(0)],
+    arr: [stringValidator, arrayValidator],
   }),
 )
 
@@ -144,39 +191,29 @@ expectAssignable<Validator<ObjectWithOptionalArrayProperty>>(validateObject<Obje
 
 expectAssignable<Validator<ObjectWithOptionalArrayProperty>>(
   validateObject<ObjectWithOptionalArrayProperty>({
-    arr: required,
+    arr: arrayValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalArrayProperty>>(
   validateObject<ObjectWithOptionalArrayProperty>({
-    arr: validateArray(),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithOptionalArrayProperty>>(
-  validateObject<ObjectWithOptionalArrayProperty>({
-    arr: validateArray(required),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithOptionalArrayProperty>>(
-  validateObject<ObjectWithOptionalArrayProperty>({
-    arr: validateArray(required, greaterThan(0)),
+    arr: [arrayValidator, arrayValidator],
   }),
 )
 
 expectError<Validator<ObjectWithOptionalArrayProperty>>(
   validateObject<ObjectWithOptionalArrayProperty>({
-    arr: greaterThan(0),
+    arr: stringValidator,
   }),
 )
 
 expectError<Validator<ObjectWithOptionalArrayProperty>>(
   validateObject<ObjectWithOptionalArrayProperty>({
-    arr: [required, greaterThan(0)],
+    arr: [stringValidator, arrayValidator],
   }),
 )
+
+const nullOrArrayValidator: Validator<readonly number[] | null> = undefined!
 
 interface ObjectWithNullableArrayProperty {
   arr: number[] | null
@@ -186,39 +223,39 @@ expectAssignable<Validator<ObjectWithNullableArrayProperty>>(validateObject<Obje
 
 expectAssignable<Validator<ObjectWithNullableArrayProperty>>(
   validateObject<ObjectWithNullableArrayProperty>({
-    arr: required,
+    arr: nullOrArrayValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithNullableArrayProperty>>(
   validateObject<ObjectWithNullableArrayProperty>({
-    arr: validateArray(),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableArrayProperty>>(
-  validateObject<ObjectWithNullableArrayProperty>({
-    arr: validateArray(required),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableArrayProperty>>(
-  validateObject<ObjectWithNullableArrayProperty>({
-    arr: validateArray(required, greaterThan(0)),
+    arr: [nullOrArrayValidator, nullOrArrayValidator],
   }),
 )
 
 expectError<Validator<ObjectWithNullableArrayProperty>>(
   validateObject<ObjectWithNullableArrayProperty>({
-    arr: greaterThan(0),
+    arr: arrayValidator,
   }),
 )
 
+validateObject<ObjectWithNullableArrayProperty>({
+  // @ts-expect-error test
+  arr: [arrayValidator, arrayValidator],
+})
+
 expectError<Validator<ObjectWithNullableArrayProperty>>(
   validateObject<ObjectWithNullableArrayProperty>({
-    arr: [required, greaterThan(0)],
+    arr: stringValidator,
   }),
 )
+
+validateObject<ObjectWithNullableArrayProperty>({
+  // @ts-expect-error test
+  arr: [stringValidator, arrayValidator],
+})
+
+const nestedObjectValidator: Validator<{ n: number }> = undefined!
 
 interface ObjectWithObjectProperty {
   obj: {
@@ -230,67 +267,49 @@ expectAssignable<Validator<ObjectWithObjectProperty>>(validateObject<ObjectWithO
 
 expectAssignable<Validator<ObjectWithObjectProperty>>(
   validateObject<ObjectWithObjectProperty>({
-    obj: required,
+    obj: nestedObjectValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithObjectProperty>>(
   validateObject<ObjectWithObjectProperty>({
-    obj: validateObject({}),
+    obj: [nestedObjectValidator, nestedObjectValidator],
   }),
 )
 
 expectAssignable<Validator<ObjectWithObjectProperty>>(
   validateObject<ObjectWithObjectProperty>({
-    obj: validateObject<ObjectWithObjectProperty['obj']>({ n: required }),
+    obj: validateObject<ObjectWithObjectProperty['obj']>({ n: numberValidator }),
   }),
 )
 
 expectAssignable<Validator<ObjectWithObjectProperty>>(
   validateObject<ObjectWithObjectProperty>({
-    obj: { n: required },
+    obj: { n: numberValidator },
   }),
 )
 
 expectAssignable<Validator<ObjectWithObjectProperty>>(
   validateObject<ObjectWithObjectProperty>({
-    obj: validateObject<ObjectWithObjectProperty['obj']>({ n: greaterThan(0) }),
+    obj: [{ n: numberValidator }, { n: numberValidator }],
   }),
 )
 
 expectAssignable<Validator<ObjectWithObjectProperty>>(
   validateObject<ObjectWithObjectProperty>({
-    obj: { n: greaterThan(0) },
-  }),
-)
-
-expectAssignable<Validator<ObjectWithObjectProperty>>(
-  validateObject<ObjectWithObjectProperty>({
-    obj: [required, { n: greaterThan(0) }],
-  }),
-)
-
-expectAssignable<Validator<ObjectWithObjectProperty>>(
-  validateObject<ObjectWithObjectProperty>({
-    obj: [{ n: required }, { n: greaterThan(0) }],
-  }),
-)
-
-expectAssignable<Validator<ObjectWithObjectProperty>>(
-  validateObject<ObjectWithObjectProperty>({
-    obj: validateObject({ n: [required, greaterThan(0)] }),
+    obj: [nestedObjectValidator, { n: numberValidator }],
   }),
 )
 
 expectError<Validator<ObjectWithObjectProperty>>(
   validateObject<ObjectWithObjectProperty>({
-    obj: greaterThan(0),
+    obj: stringValidator,
   }),
 )
 
 expectError<Validator<ObjectWithObjectProperty>>(
   validateObject<ObjectWithObjectProperty>({
-    obj: [required, greaterThan(0)],
+    obj: [stringValidator, nestedObjectValidator],
   }),
 )
 
@@ -304,69 +323,53 @@ expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(validateObject<Obj
 
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
   validateObject<ObjectWithOptionalObjectProperty>({
-    obj: required,
+    obj: nestedObjectValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
   validateObject<ObjectWithOptionalObjectProperty>({
-    obj: validateObject({}),
+    obj: [nestedObjectValidator, nestedObjectValidator],
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
   validateObject<ObjectWithOptionalObjectProperty>({
-    obj: validateObject<NonNullable<ObjectWithOptionalObjectProperty['obj']>>({ n: required }),
+    obj: validateObject<NonNullable<ObjectWithOptionalObjectProperty['obj']>>({ n: numberValidator }),
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
   validateObject<ObjectWithOptionalObjectProperty>({
-    obj: { n: required },
+    obj: { n: numberValidator },
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
   validateObject<ObjectWithOptionalObjectProperty>({
-    obj: validateObject<NonNullable<ObjectWithOptionalObjectProperty['obj']>>({ n: greaterThan(0) }),
+    obj: [{ n: numberValidator }, { n: numberValidator }],
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
   validateObject<ObjectWithOptionalObjectProperty>({
-    obj: { n: greaterThan(0) },
-  }),
-)
-
-expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
-  validateObject<ObjectWithOptionalObjectProperty>({
-    obj: [required, { n: greaterThan(0) }],
-  }),
-)
-
-expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
-  validateObject<ObjectWithOptionalObjectProperty>({
-    obj: [{ n: required }, { n: greaterThan(0) }],
-  }),
-)
-
-expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
-  validateObject<ObjectWithOptionalObjectProperty>({
-    obj: validateObject({ n: [required, greaterThan(0)] }),
+    obj: [nestedObjectValidator, { n: numberValidator }],
   }),
 )
 
 expectError<Validator<ObjectWithOptionalObjectProperty>>(
   validateObject<ObjectWithOptionalObjectProperty>({
-    obj: greaterThan(0),
+    obj: stringValidator,
   }),
 )
 
 expectError<Validator<ObjectWithOptionalObjectProperty>>(
   validateObject<ObjectWithOptionalObjectProperty>({
-    obj: [required, greaterThan(0)],
+    obj: [stringValidator, nestedObjectValidator],
   }),
 )
+
+const nullOrNestedObjectValidator: Validator<{ n: number } | null> = undefined!
 
 interface ObjectWithNullableObjectProperty {
   obj: {
@@ -378,66 +381,56 @@ expectAssignable<Validator<ObjectWithNullableObjectProperty>>(validateObject<Obj
 
 expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
   validateObject<ObjectWithNullableObjectProperty>({
-    obj: required,
+    obj: nullOrNestedObjectValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
   validateObject<ObjectWithNullableObjectProperty>({
-    obj: validateObject({}),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
-  validateObject<ObjectWithNullableObjectProperty>({
-    obj: validateObject<NonNullable<ObjectWithNullableObjectProperty['obj']>>({ n: required }),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
-  validateObject<ObjectWithNullableObjectProperty>({
-    obj: { n: required },
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
-  validateObject<ObjectWithNullableObjectProperty>({
-    obj: validateObject<NonNullable<ObjectWithNullableObjectProperty['obj']>>({ n: greaterThan(0) }),
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
-  validateObject<ObjectWithNullableObjectProperty>({
-    obj: { n: greaterThan(0) },
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
-  validateObject<ObjectWithNullableObjectProperty>({
-    obj: [required, { n: greaterThan(0) }],
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
-  validateObject<ObjectWithNullableObjectProperty>({
-    obj: [{ n: required }, { n: greaterThan(0) }],
-  }),
-)
-
-expectAssignable<Validator<ObjectWithNullableObjectProperty>>(
-  validateObject<ObjectWithNullableObjectProperty>({
-    obj: validateObject({ n: [required, greaterThan(0)] }),
+    obj: [nullOrNestedObjectValidator, nullOrNestedObjectValidator],
   }),
 )
 
 expectError<Validator<ObjectWithNullableObjectProperty>>(
   validateObject<ObjectWithNullableObjectProperty>({
-    obj: greaterThan(0),
+    obj: nestedObjectValidator,
+  }),
+)
+
+validateObject<ObjectWithNullableObjectProperty>({
+  // @ts-expect-error test
+  obj: [nestedObjectValidator, nestedObjectValidator],
+})
+
+expectError<Validator<ObjectWithNullableObjectProperty>>(
+  validateObject<ObjectWithNullableObjectProperty>({
+    obj: validateObject<NonNullable<ObjectWithNullableObjectProperty['obj']>>({ n: numberValidator }),
   }),
 )
 
 expectError<Validator<ObjectWithNullableObjectProperty>>(
   validateObject<ObjectWithNullableObjectProperty>({
-    obj: [required, greaterThan(0)],
+    obj: { n: numberValidator },
   }),
 )
+
+validateObject<ObjectWithNullableObjectProperty>({
+  // @ts-expect-error test
+  obj: [{ n: numberValidator }, { n: numberValidator }],
+})
+
+validateObject<ObjectWithNullableObjectProperty>({
+  // @ts-expect-error test
+  obj: [nestedObjectValidator, { n: numberValidator }],
+})
+
+expectError<Validator<ObjectWithNullableObjectProperty>>(
+  validateObject<ObjectWithNullableObjectProperty>({
+    obj: stringValidator,
+  }),
+)
+
+validateObject<ObjectWithNullableObjectProperty>({
+  // @ts-expect-error test
+  obj: [stringValidator, nestedObjectValidator],
+})
