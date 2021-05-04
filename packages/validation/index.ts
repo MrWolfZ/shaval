@@ -1,4 +1,5 @@
 export { and } from './src/combinators/and.js'
+export type { _AndValidators } from './src/combinators/and.js'
 export { or } from './src/combinators/or.js'
 export type { Validator } from './src/validator.js'
 export { arrayValidator } from './src/validators/array.js'

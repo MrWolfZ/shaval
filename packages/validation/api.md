@@ -9,7 +9,12 @@ import type { _ReadonlyObject } from '@shaval/core';
 import type { Result } from '@shaval/core';
 
 // @public (undocumented)
-export function and<T>(validator1: Validator<T>, validator2: Validator<T>, ...otherValidators: Validator<T>[]): Validator<T>;
+export function and<T1, T2, TRest extends unknown[]>(validator1: Validator<T1>, validator2: Validator<T2>, ...otherValidators: _AndValidators<TRest>): Validator<T1 & T2 & ([] extends TRest ? unknown : TRest[number])>;
+
+// @public (undocumented)
+export type _AndValidators<T> = {
+    [K in keyof T]: Validator<T[K]>;
+};
 
 // @public (undocumented)
 export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;

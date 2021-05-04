@@ -52,7 +52,6 @@ TODO
 - add `tupleValidator`
 - add most common validators
 - in `arrayValidator` if array element is object allow passing object validation config instead of validator
-- figure out how to deal with intersections
 - omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports
@@ -65,6 +64,7 @@ TODO
 - write recipe for writing custom validators
 - write recipe for validating unions (i.e. just a custom validator with a type check)
 - write recipe to show express integration
+- mention intersections, unions, and enums
 
 ### docs
 

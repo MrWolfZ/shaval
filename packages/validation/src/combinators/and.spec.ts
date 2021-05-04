@@ -49,4 +49,29 @@ describe(and.name, () => {
     expect(result.errors[0]?.value).toBe('c')
     expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
   })
+
+  describe('intersections', () => {
+    interface Object1 {
+      s: string
+    }
+
+    interface Object2 {
+      n: number
+    }
+
+    const validator1: Validator<Object1> = (value) => ((value as Object1).s === 'a' ? value : failure(value, '1'))
+    const validator2: Validator<Object2> = (value) => ((value as Object2).n === 1 ? value : failure(value, '2'))
+
+    const validator = and(validator1, validator2)
+
+    it('succeeds for valid value', () => {
+      const value: Object1 & Object2 = { s: 'a', n: 1 }
+      expect(validator(value)).toBe(value)
+    })
+
+    it('fails for invalid value', () => {
+      const value: Object1 & Object2 = { s: '', n: 1 }
+      expect(isFailure(validator(value))).toBe(true)
+    })
+  })
 })

@@ -5,12 +5,18 @@ import type { Validator } from '../validator.js'
 /**
  * @public
  */
-export function and<T>(
-  validator1: Validator<T>,
-  validator2: Validator<T>,
-  ...otherValidators: Validator<T>[]
-): Validator<T> {
-  return _and(validator1, validator2, ...otherValidators)
+export type _AndValidators<T> = { [K in keyof T]: Validator<T[K]> }
+
+/**
+ * @public
+ */
+export function and<T1, T2, TRest extends unknown[]>(
+  validator1: Validator<T1>,
+  validator2: Validator<T2>,
+  ...otherValidators: _AndValidators<TRest>
+): Validator<T1 & T2 & ([] extends TRest ? unknown : TRest[number])> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return _and<any>(validator1, validator2, ...otherValidators)
 }
 
 /**
