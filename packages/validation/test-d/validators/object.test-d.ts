@@ -10,6 +10,7 @@ interface SimpleObject {
   s: string
   n: number
   b: boolean
+  u: string | number
 }
 
 expectAssignable<Validator<SimpleObject>>(objectValidator<SimpleObject>({}))
@@ -18,6 +19,7 @@ expectAssignable<Validator<SimpleObject>>(
   objectValidator<SimpleObject>({
     s: stringValidator,
     n: numberValidator,
+    u: (v) => (typeof v === 'string' ? stringValidator(v) : numberValidator(v)),
   }),
 )
 

@@ -17,6 +17,16 @@ describe(or.name, () => {
     expect(() => or(validator1, undefined as any)).toThrow()
   })
 
+  it('if called with failure returns failure', () => {
+    const validator = or(
+      (v) => v,
+      (v) => v,
+    )
+
+    const err = failure([], 'fail')
+    expect(validator(err)).toBe(err)
+  })
+
   const validator = or(validator1, validator2, validator3)
 
   it('succeeds for valid value of first validator', () => {

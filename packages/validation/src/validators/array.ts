@@ -1,5 +1,6 @@
-import { Errors, failure, isFailure } from '@shaval/core'
+import type { Errors } from '@shaval/core'
 import { _and } from '../combinators/and.js'
+import { _failure, _isFailure } from '../result.js'
 import type { Validator } from '../validator.js'
 
 /**
@@ -12,7 +13,7 @@ export function arrayValidator<T>(
   const combinedValidator = _and(itemValidator, ...itemValidators)
 
   return (array) => {
-    if (isFailure(array)) {
+    if (_isFailure(array)) {
       return array
     }
 
@@ -21,12 +22,12 @@ export function arrayValidator<T>(
     for (const [i, item] of array.entries()) {
       const result = combinedValidator(item)
 
-      if (isFailure(result)) {
+      if (_isFailure(result)) {
         errors.push(...result.errors.map((err) => prependIndexToPath(err, i)))
       }
     }
 
-    return errors.length > 0 ? failure(errors) : array
+    return errors.length > 0 ? _failure(errors) : array
   }
 }
 

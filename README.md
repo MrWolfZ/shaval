@@ -49,11 +49,10 @@ TODO
 
 ### validation
 
-- refactor `Validator` to accept `T | ShavalResult<T>` as a parameter for composability
-- in `arrayValidator` if array element is object allow passing object validation config instead of validator
-- figure out how to deal with intersections
 - add `tupleValidator`
 - add most common validators
+- in `arrayValidator` if array element is object allow passing object validation config instead of validator
+- figure out how to deal with intersections
 - omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports

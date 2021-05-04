@@ -1,4 +1,4 @@
-import { failure, isFailure } from '@shaval/core'
+import { _failure, _isFailure } from '../result.js'
 import type { Validator } from '../validator.js'
 
 /**
@@ -12,10 +12,10 @@ import type { Validator } from '../validator.js'
  */
 export function sameAs<T>(comparand: T): Validator<T> {
   return (value) => {
-    if (value === comparand || isFailure(value)) {
+    if (value === comparand || _isFailure(value)) {
       return value
     }
 
-    return failure(value, 'value must be the same comparand', { comparand })
+    return _failure(value, 'value must be the same as comparand', { comparand })
   }
 }

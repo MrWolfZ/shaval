@@ -1,5 +1,6 @@
-import { Errors, failure, isFailure, _ReadonlyObject } from '@shaval/core'
+import type { Errors, _ReadonlyObject } from '@shaval/core'
 import { _and } from '../combinators/and.js'
+import { _failure, _isFailure } from '../result.js'
 import type { Validator } from '../validator.js'
 
 /**
@@ -48,7 +49,7 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
   }
 
   return (value) => {
-    if (isFailure(value)) {
+    if (_isFailure(value)) {
       return value
     }
 
@@ -66,12 +67,12 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
       const propValidator = getPropertyValidator(validator!)
       const result = propValidator(propValue)
 
-      if (isFailure(result)) {
+      if (_isFailure(result)) {
         errors.push(...result.errors.map((err) => prependKeyToPath(err, key)))
       }
     }
 
-    return errors.length > 0 ? failure(errors) : value
+    return errors.length > 0 ? _failure(errors) : value
   }
 }
 

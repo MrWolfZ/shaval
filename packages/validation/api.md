@@ -5,8 +5,8 @@
 ```ts
 
 import type { Failure } from '@shaval/core';
-import { _ReadonlyObject } from '@shaval/core';
-import { Result } from '@shaval/core';
+import type { _ReadonlyObject } from '@shaval/core';
+import type { Result } from '@shaval/core';
 
 // @public (undocumented)
 export function and<T>(validator1: Validator<T>, validator2: Validator<T>, ...otherValidators: Validator<T>[]): Validator<T>;

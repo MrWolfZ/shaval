@@ -1,4 +1,4 @@
-import { failure, isFailure } from '@shaval/core'
+import { _failure, _isFailure } from '../result.js'
 import type { Validator } from '../validator.js'
 
 /**
@@ -20,10 +20,10 @@ export function greaterThan(comparand: number): Validator<number> {
   }
 
   return (value) => {
-    if ((typeof value === 'number' && value > comparand) || isFailure(value)) {
+    if ((typeof value === 'number' && value > comparand) || _isFailure(value)) {
       return value
     }
 
-    return failure(value, 'value must be greater than comparand', { comparand })
+    return _failure(value, 'value must be greater than comparand', { comparand })
   }
 }

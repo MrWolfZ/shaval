@@ -18,6 +18,16 @@ describe(and.name, () => {
     expect(() => and(validator1, undefined as any)).toThrow()
   })
 
+  it('if called with failure returns failure', () => {
+    const validator = and(
+      (v) => v,
+      (v) => v,
+    )
+
+    const err = failure([], 'fail')
+    expect(validator(err)).toBe(err)
+  })
+
   const validator = and(validator1, validator2, validator3)
 
   it('succeeds for valid value', () => {

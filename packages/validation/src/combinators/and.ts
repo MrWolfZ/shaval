@@ -1,4 +1,5 @@
-import { Errors, failure, isFailure } from '@shaval/core'
+import type { Errors } from '@shaval/core'
+import { _failure, _isFailure } from '../result.js'
 import type { Validator } from '../validator.js'
 
 /**
@@ -26,16 +27,20 @@ export function _and<T>(...validators: Validator<T>[]): Validator<T> {
   }
 
   return (value) => {
+    if (_isFailure(value)) {
+      return value
+    }
+
     const errors: Errors[] = []
 
     for (const validator of validators) {
       const result = validator(value)
 
-      if (isFailure(result)) {
+      if (_isFailure(result)) {
         errors.push(...result.errors)
       }
     }
 
-    return errors.length > 0 ? failure(errors) : value
+    return errors.length > 0 ? _failure(errors) : value
   }
 }
