@@ -1,8 +1,6 @@
 import { array, boolean, nullable, number, object, optional, Parser, string, union } from '@shaval/parsing'
 import { expectError, expectType } from 'tsd'
 
-// objects
-
 interface SimpleObject {
   s: string
   n: number

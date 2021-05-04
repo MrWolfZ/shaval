@@ -1,4 +1,4 @@
-import { error } from '@shaval/core'
+import { failure } from '@shaval/core'
 import type { Parser } from '../parser.js'
 
 /**
@@ -9,5 +9,5 @@ export const boolean: Parser<boolean> = (value) => {
     return value
   }
 
-  return error(value, 'value is not a boolean')
+  return failure(value, 'value must be a boolean')
 }

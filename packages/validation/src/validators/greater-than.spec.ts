@@ -35,8 +35,9 @@ describe(greaterThan.name, () => {
       return fail('result was not an error')
     }
 
-    expect(result.value).toBe(1)
     expect(result.errors).toHaveLength(1)
+    expect(result.errors[0]?.value).toBe(1)
+    expect(Object.values(result.errors[0]?.details ?? {})).toEqual([{ comparand: 1 }])
   })
 
   it('fails if value is less than comparand', () => {
@@ -46,7 +47,8 @@ describe(greaterThan.name, () => {
       return fail('result was not an error')
     }
 
-    expect(result.value).toBe(0)
     expect(result.errors).toHaveLength(1)
+    expect(result.errors[0]?.value).toBe(0)
+    expect(Object.values(result.errors[0]?.details ?? {})).toEqual([{ comparand: 1 }])
   })
 })

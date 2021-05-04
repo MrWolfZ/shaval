@@ -1,4 +1,4 @@
-import { error } from '@shaval/core'
+import { failure } from '@shaval/core'
 import type { Parser } from '../parser.js'
 
 /**
@@ -9,5 +9,5 @@ export const string: Parser<string> = (value) => {
     return value
   }
 
-  return error(value, 'value is not a string')
+  return failure(value, 'value must be a string')
 }

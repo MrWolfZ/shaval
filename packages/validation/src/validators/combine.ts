@@ -1,4 +1,4 @@
-import { error, isFailure, PropertyErrors } from '@shaval/core'
+import { Errors, failure, isFailure } from '@shaval/core'
 import type { Validator } from '../validator.js'
 
 /**
@@ -10,7 +10,7 @@ export function combine<T>(...validators: Validator<T>[]): Validator<T> {
   }
 
   return (value) => {
-    const errors: (string | PropertyErrors)[] = []
+    const errors: Errors[] = []
 
     for (const validator of validators) {
       const result = validator(value)
@@ -20,6 +20,6 @@ export function combine<T>(...validators: Validator<T>[]): Validator<T> {
       }
     }
 
-    return errors.length > 0 ? error(value, ...errors) : value
+    return errors.length > 0 ? failure(errors) : value
   }
 }

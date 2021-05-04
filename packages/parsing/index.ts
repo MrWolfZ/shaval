@@ -1,4 +1,4 @@
-export type { Parser } from './src/parser.js'
+export type { Parser, ParserResult, _ResultTypeMarker } from './src/parser.js'
 export { array } from './src/parsers/array.js'
 export { boolean } from './src/parsers/boolean.js'
 export { nullable } from './src/parsers/nullable.js'

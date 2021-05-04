@@ -1,4 +1,4 @@
-import { error, isFailure, PropertyErrors, _ReadonlyObject } from '@shaval/core'
+import { Errors, failure, isFailure, _ReadonlyObject } from '@shaval/core'
 import type { Parser } from '../parser.js'
 
 /**
@@ -26,22 +26,22 @@ export function object<T extends _ReadonlyObject>(propertyParsers: ObjectPropert
 
   return (value) => {
     if (typeof value !== 'object') {
-      return error(value, 'value must be an object')
+      return failure(value, 'value must be an object')
     }
 
     if (value === null) {
-      return error(value, 'value must be a non-null object')
+      return failure(value, 'value must be a non-null object')
     }
 
     if (Array.isArray(value)) {
-      return error(value, 'value must be an object and not an array')
+      return failure(value, 'value must be an object and not an array')
     }
 
     if (value.constructor !== Object) {
-      return error(value, 'value must be a plain object')
+      return failure(value, 'value must be a plain object')
     }
 
-    const errors: (string | PropertyErrors)[] = []
+    const errors: Errors[] = []
     const returnValue: Record<string, unknown> = {}
 
     for (const key of Object.keys(propertyParsers)) {
@@ -58,20 +58,13 @@ export function object<T extends _ReadonlyObject>(propertyParsers: ObjectPropert
       }
     }
 
-    return errors.length > 0 ? error(value, ...errors) : (returnValue as T)
+    return errors.length > 0 ? failure(errors) : (returnValue as T)
   }
 }
 
-function prependKeyToPath(error: string | PropertyErrors, key: string): PropertyErrors {
-  if (typeof error === 'string') {
-    return {
-      path: [key],
-      messages: [error],
-    }
-  }
-
+function prependKeyToPath(error: Errors, key: string): Errors {
   return {
+    ...error,
     path: [key, ...error.path],
-    messages: error.messages,
   }
 }

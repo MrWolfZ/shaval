@@ -1,5 +1,5 @@
-import { error, isFailure, PropertyErrors } from '@shaval/core'
-import type { Parser } from '../parser.js'
+import { Errors, failure, isFailure } from '@shaval/core'
+import type { Parser, ParserResult } from '../parser.js'
 
 /**
  * @public
@@ -16,8 +16,8 @@ export function union<T1, T2, T extends readonly unknown[]>(
 ): Parser<T1 | T2 | T[number]> {
   const allParsers = [parser1, parser2, ...restParsers]
 
-  return (value) => {
-    const errors: (string | PropertyErrors)[] = []
+  return (value): ParserResult<T1 | T2 | T[number]> => {
+    const errors: Errors[] = []
 
     for (const parser of allParsers) {
       const result = parser(value)
@@ -25,10 +25,10 @@ export function union<T1, T2, T extends readonly unknown[]>(
       if (isFailure(result)) {
         errors.push(...result.errors)
       } else {
-        return value
+        return value as ParserResult<T1 | T2 | T[number]>
       }
     }
 
-    return errors.length > 0 ? error(value, ...errors) : value
+    return failure(errors)
   }
 }

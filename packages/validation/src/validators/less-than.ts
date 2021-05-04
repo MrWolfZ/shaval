@@ -1,4 +1,4 @@
-import { error, Result } from '@shaval/core'
+import { failure, Result } from '@shaval/core'
 
 /**
  * A validator that requires the value to be less than a number. Considers `null`,
@@ -29,6 +29,6 @@ export function lessThan(comparand: number) {
       return value
     }
 
-    return error(value, `value ${value} must be less than ${comparand}, but is greater than or equal to it`)
+    return failure(value, 'value must be less than comparand', { comparand })
   }
 }

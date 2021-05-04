@@ -40,7 +40,6 @@ describe(combine.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(0)
       expect(result.errors).toHaveLength(1)
     })
   })
@@ -59,20 +58,20 @@ describe(combine.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(0)
       expect(result.errors).toHaveLength(1)
     })
 
     it('aggregates error messages from all validators', () => {
-      const validator = combine(greaterThan(0), greaterThan(-1))
-      const result = validator(-1)
+      const validator = combine(greaterThan(0), lessThan(0))
+      const result = validator(0)
 
       if (!isFailure(result)) {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(-1)
-      expect(result.errors).toHaveLength(2)
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0]?.value).toBe(0)
+      expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
     })
   })
 })

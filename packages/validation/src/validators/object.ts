@@ -1,4 +1,4 @@
-import { error, isFailure, PropertyErrors, _ReadonlyObject } from '@shaval/core'
+import { Errors, failure, isFailure, _ReadonlyObject } from '@shaval/core'
 import type { Validator } from '../validator.js'
 import { combine } from './combine.js'
 
@@ -40,7 +40,7 @@ export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T
   }
 
   return (value) => {
-    const errors: (string | PropertyErrors)[] = []
+    const errors: Errors[] = []
 
     for (const key of Object.keys(propertyValidators)) {
       const propValue = value[key as keyof T]
@@ -55,7 +55,7 @@ export function validateObject<T>(propertyValidators: ObjectPropertyValidators<T
       }
     }
 
-    return errors.length > 0 ? error(value, ...errors) : value
+    return errors.length > 0 ? failure(errors) : value
   }
 }
 
@@ -73,16 +73,9 @@ function getPropertyValidator(propValidator: ObjectPropertyValidator<unknown>): 
   return combine(...validators)
 }
 
-function prependKeyToPath(error: string | PropertyErrors, key: string): PropertyErrors {
-  if (typeof error === 'string') {
-    return {
-      path: [key],
-      messages: [error],
-    }
-  }
-
+function prependKeyToPath(error: Errors, key: string): Errors {
   return {
+    ...error,
     path: [key, ...error.path],
-    messages: error.messages,
   }
 }

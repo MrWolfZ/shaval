@@ -1,5 +1,4 @@
-import type { Result } from '@shaval/core'
-import type { Parser } from '../parser.js'
+import type { Parser, ParserResult } from '../parser.js'
 
 /**
  * @public
@@ -7,9 +6,9 @@ import type { Parser } from '../parser.js'
 export function optional<T>(valueParser: Parser<T>): Parser<T | undefined> {
   return (value) => {
     if (value === undefined) {
-      return value
+      return (value as unknown) as ParserResult<T | undefined>
     }
 
-    return valueParser(value) as Result<T | undefined>
+    return valueParser(value) as ParserResult<T | undefined>
   }
 }

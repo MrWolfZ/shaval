@@ -1,57 +1,141 @@
-import { error, isFailure, isSuccess, PropertyErrors } from './result.js'
+import { Errors, failure, isFailure, isSuccess } from './result.js'
 
-describe(error.name, () => {
-  it('creates an error with a single string message', () => {
+describe(failure.name, () => {
+  it('creates a failure with a message', () => {
     const value = 'invalid value'
     const message = 'validation error'
-    const err = error(value, message)
+    const err = failure(value, message)
 
-    expect(err.value).toBe(value)
-    expect(err.errors).toEqual([message])
-    expect(err.nullOrUndefined).toBeUndefined()
+    expect(err.errors).toHaveLength(1)
+    expect(err.errors[0]?.path).toEqual([])
+    expect(err.errors[0]?.value).toBe(value)
+    expect(err.errors[0]?.details).toEqual({ [message]: undefined })
   })
 
-  it('creates an error with multiple string messages', () => {
+  it('creates a failure with a message and details', () => {
+    const value = 'invalid value'
+    const message = 'validation error'
+    const details = { s: 'a' }
+    const err = failure(value, message, details)
+
+    expect(err.errors).toHaveLength(1)
+    expect(err.errors[0]?.path).toEqual([])
+    expect(err.errors[0]?.value).toBe(value)
+    expect(err.errors[0]?.details).toEqual({ [message]: details })
+  })
+
+  it('creates a failure with multiple messages', () => {
+    const value = 'invalid value'
+    const message1 = 'validation error 1'
+    const details1 = { a: 'a' }
+    const message2 = 'validation error 2'
+    const details2 = { b: 'b' }
+    const details = { [message1]: details1, [message2]: details2 }
+    const err = failure(value, details)
+
+    expect(err.errors).toHaveLength(1)
+    expect(err.errors[0]?.path).toEqual([])
+    expect(err.errors[0]?.value).toBe(value)
+    expect(err.errors[0]?.details).toBe(details)
+  })
+
+  it('creates a failure with a single property error', () => {
+    const value = 'invalid value'
+    const message = 'validation error'
+    const details = { [message]: { s: 'a' } }
+    const path = ['prop']
+    const propError: Errors = { path, value, details }
+    const err = failure([propError])
+
+    expect(err.errors).toHaveLength(1)
+    expect(err.errors[0]?.path).toBe(path)
+    expect(err.errors[0]?.value).toBe(value)
+    expect(err.errors[0]?.details).toBe(details)
+  })
+
+  it('creates a failure with multiple property errors', () => {
+    const value1 = 'invalid value 1'
+    const value2 = 'invalid value 2'
+    const message1 = 'validation error 1'
+    const message2 = 'validation error 2'
+    const details1 = { [message1]: { a: 'a' } }
+    const details2 = { [message2]: { b: 'b' } }
+    const path1 = ['prop1']
+    const path2 = ['prop2']
+    const propError1: Errors = { path: path1, value: value1, details: details1 }
+    const propError2: Errors = { path: path2, value: value2, details: details2 }
+    const err = failure([propError1, propError2])
+
+    expect(err.errors).toHaveLength(2)
+    expect(err.errors[0]?.path).toBe(path1)
+    expect(err.errors[0]?.value).toBe(value1)
+    expect(err.errors[0]?.details).toBe(details1)
+    expect(err.errors[1]?.path).toBe(path2)
+    expect(err.errors[1]?.value).toBe(value2)
+    expect(err.errors[1]?.details).toBe(details2)
+  })
+
+  it('creates a failure with multiple property errors with same path but different value (which should never happen)', () => {
+    const value1 = 'invalid value 1'
+    const value2 = 'invalid value 2'
+    const message1 = 'validation error 1'
+    const message2 = 'validation error 2'
+    const details1 = { [message1]: { a: 'a' } }
+    const details2 = { [message2]: { b: 'b' } }
+    const path = ['prop']
+    const propError1: Errors = { path, value: value1, details: details1 }
+    const propError2: Errors = { path, value: value2, details: details2 }
+    const err = failure([propError1, propError2])
+
+    expect(err.errors).toHaveLength(2)
+    expect(err.errors[0]?.path).toBe(path)
+    expect(err.errors[0]?.value).toBe(value1)
+    expect(err.errors[0]?.details).toBe(details1)
+    expect(err.errors[1]?.path).toBe(path)
+    expect(err.errors[1]?.value).toBe(value2)
+    expect(err.errors[1]?.details).toBe(details2)
+  })
+
+  it('creates a failure with multiple property errors with same value but different path', () => {
     const value = 'invalid value'
     const message1 = 'validation error 1'
     const message2 = 'validation error 2'
-    const err = error(value, message1, message2)
+    const details1 = { [message1]: { a: 'a' } }
+    const details2 = { [message2]: { b: 'b' } }
+    const path1 = ['prop1']
+    const path2 = ['prop2']
+    const propError1: Errors = { path: path1, value, details: details1 }
+    const propError2: Errors = { path: path2, value, details: details2 }
+    const err = failure([propError1, propError2])
 
-    expect(err.value).toBe(value)
-    expect(err.errors).toEqual([message1, message2])
-    expect(err.nullOrUndefined).toBeUndefined()
+    expect(err.errors).toHaveLength(2)
+    expect(err.errors[0]?.path).toBe(path1)
+    expect(err.errors[0]?.value).toBe(value)
+    expect(err.errors[0]?.details).toBe(details1)
+    expect(err.errors[1]?.path).toBe(path2)
+    expect(err.errors[1]?.value).toBe(value)
+    expect(err.errors[1]?.details).toBe(details2)
   })
 
-  it('creates an error with a single property error', () => {
+  it('merges errors for same path and value', () => {
     const value = 'invalid value'
-    const propError: PropertyErrors = { path: ['prop'], messages: ['validation error'] }
-    const err = error(value, propError)
+    const message1 = 'validation error 1'
+    const message2 = 'validation error 2'
+    const details1 = { [message1]: { a: 'a' } }
+    const details2 = { [message2]: { b: 'b' } }
+    const path = ['prop']
+    const propError1: Errors = { path, value, details: details1 }
+    const propError2: Errors = { path, value, details: details2 }
+    const err = failure([propError1, propError2])
 
-    expect(err.value).toBe(value)
-    expect(err.errors).toEqual([propError])
-    expect(err.nullOrUndefined).toBeUndefined()
+    expect(err.errors).toHaveLength(1)
+    expect(err.errors[0]?.path).toBe(path)
+    expect(err.errors[0]?.value).toBe(value)
+    expect(err.errors[0]?.details).toEqual({ ...details1, ...details2 })
   })
 
-  it('creates an error with multiple property errors', () => {
-    const value = 'invalid value'
-    const propError1: PropertyErrors = { path: ['prop1'], messages: ['validation error 1'] }
-    const propError2: PropertyErrors = { path: ['prop2'], messages: ['validation error 2'] }
-    const err = error(value, propError1, propError2)
-
-    expect(err.value).toBe(value)
-    expect(err.errors).toEqual([propError1, propError2])
-    expect(err.nullOrUndefined).toBeUndefined()
-  })
-
-  it('creates an error with mixed string message and property error', () => {
-    const value = 'invalid value'
-    const message = 'validation error 1'
-    const propError: PropertyErrors = { path: ['prop'], messages: ['validation error 2'] }
-    const err = error(value, message, propError)
-
-    expect(err.value).toBe(value)
-    expect(err.errors).toEqual([message, propError])
-    expect(err.nullOrUndefined).toBeUndefined()
+  it('creates a failure with no property errors', () => {
+    expect(failure([]).errors).toHaveLength(0)
   })
 })
 
@@ -72,7 +156,7 @@ describe(isSuccess.name, () => {
   })
 
   it('returns false for error value', () => {
-    expect(isSuccess(error('', ''))).toBe(false)
+    expect(isSuccess(failure('', ''))).toBe(false)
   })
 })
 
@@ -93,6 +177,6 @@ describe(isFailure.name, () => {
   })
 
   it('returns true for error value', () => {
-    expect(isFailure(error('', ''))).toBe(true)
+    expect(isFailure(failure('', ''))).toBe(true)
   })
 })

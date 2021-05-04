@@ -1,4 +1,4 @@
-import { error, Result } from '@shaval/core'
+import { failure, Result } from '@shaval/core'
 
 /**
  * A validator that requires the value to be non-`undefined` and non-`null`.
@@ -13,5 +13,5 @@ export function required<T>(value: T): Result<T> {
     return value
   }
 
-  return error(value, 'value was undefined or null')
+  return failure(value, 'value must be defined and not null')
 }

@@ -3,6 +3,7 @@ import { validateArray } from './array.js'
 import { greaterThan } from './greater-than.js'
 import { validateObject } from './object.js'
 import { required } from './required.js'
+import { sameAs } from './same-as.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -60,7 +61,6 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.value).toBe(value)
         expect(result.errors).toHaveLength(1)
       })
 
@@ -73,19 +73,12 @@ describe(validateObject.name, () => {
         }
 
         expect(result.errors).toHaveLength(1)
-
-        const error = result.errors[0]
-
-        if (typeof error === 'string') {
-          return fail('error was not a property error')
-        }
-
-        expect(error?.path).toEqual(['n1'])
+        expect(result.errors[0]?.path).toEqual(['n1'])
       })
     })
 
     describe('with multiple validators for single property', () => {
-      const validator = validateObject<SimpleObject>({ n1: [greaterThan(0), greaterThan(1)] })
+      const validator = validateObject<SimpleObject>({ n1: [greaterThan(0), sameAs(2)] })
 
       it('succeeds for valid property', () => {
         const value: SimpleObject = { s: '', n1: 2, n2: 0, b: false }
@@ -100,7 +93,6 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.value).toBe(value)
         expect(result.errors).toHaveLength(1)
       })
 
@@ -112,8 +104,8 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.value).toBe(value)
-        expect(result.errors).toHaveLength(2)
+        expect(result.errors).toHaveLength(1)
+        expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
       })
 
       it('adds the property name to path for errors', () => {
@@ -124,17 +116,8 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.errors).toHaveLength(2)
-
-        const error1 = result.errors[0]
-        const error2 = result.errors[1]
-
-        if (typeof error1 === 'string' || typeof error2 === 'string') {
-          return fail('error was not a property error')
-        }
-
-        expect(error1?.path).toEqual(['n1'])
-        expect(error2?.path).toEqual(['n1'])
+        expect(result.errors).toHaveLength(1)
+        expect(result.errors[0]?.path).toEqual(['n1'])
       })
     })
 
@@ -154,7 +137,6 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.value).toBe(value)
         expect(result.errors).toHaveLength(1)
       })
 
@@ -166,7 +148,6 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.value).toBe(value)
         expect(result.errors).toHaveLength(2)
       })
 
@@ -179,21 +160,13 @@ describe(validateObject.name, () => {
         }
 
         expect(result.errors).toHaveLength(2)
-
-        const error1 = result.errors[0]
-        const error2 = result.errors[1]
-
-        if (typeof error1 === 'string' || typeof error2 === 'string') {
-          return fail('error was not a property error')
-        }
-
-        expect(error1?.path).toEqual(['n1'])
-        expect(error2?.path).toEqual(['n2'])
+        expect(result.errors[0]?.path).toEqual(['n1'])
+        expect(result.errors[1]?.path).toEqual(['n2'])
       })
     })
 
     describe('with mulitple validators for multiple properties', () => {
-      const validator = validateObject<SimpleObject>({ n1: [greaterThan(0), greaterThan(1)], n2: greaterThan(1) })
+      const validator = validateObject<SimpleObject>({ n1: [greaterThan(0)], n2: greaterThan(1) })
 
       it('succeeds for valid properties', () => {
         const value: SimpleObject = { s: '', n1: 2, n2: 2, b: false }
@@ -201,14 +174,13 @@ describe(validateObject.name, () => {
       })
 
       it('fails for single invalid property', () => {
-        const value: SimpleObject = { s: '', n1: 1, n2: 2, b: false }
+        const value: SimpleObject = { s: '', n1: 0, n2: 2, b: false }
         const result = validator(value)
 
         if (!isFailure(result)) {
           return fail('result was not an error')
         }
 
-        expect(result.value).toBe(value)
         expect(result.errors).toHaveLength(1)
       })
 
@@ -220,8 +192,7 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.value).toBe(value)
-        expect(result.errors).toHaveLength(3)
+        expect(result.errors).toHaveLength(2)
       })
 
       it('adds the property name to path for errors', () => {
@@ -232,19 +203,9 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.errors).toHaveLength(3)
-
-        const error1 = result.errors[0]
-        const error2 = result.errors[1]
-        const error3 = result.errors[2]
-
-        if (typeof error1 === 'string' || typeof error2 === 'string' || typeof error3 === 'string') {
-          return fail('error was not a property error')
-        }
-
-        expect(error1?.path).toEqual(['n1'])
-        expect(error2?.path).toEqual(['n1'])
-        expect(error3?.path).toEqual(['n2'])
+        expect(result.errors).toHaveLength(2)
+        expect(result.errors[0]?.path).toEqual(['n1'])
+        expect(result.errors[1]?.path).toEqual(['n2'])
       })
     })
   })
@@ -274,7 +235,6 @@ describe(validateObject.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(1)
     })
 
@@ -287,7 +247,6 @@ describe(validateObject.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(1)
     })
 
@@ -300,14 +259,7 @@ describe(validateObject.name, () => {
       }
 
       expect(result.errors).toHaveLength(1)
-
-      const error = result.errors[0]
-
-      if (typeof error === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error?.path).toEqual(['n'])
+      expect(result.errors[0]?.path).toEqual(['n'])
     })
   })
 
@@ -336,7 +288,6 @@ describe(validateObject.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(1)
     })
 
@@ -349,7 +300,6 @@ describe(validateObject.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(1)
     })
 
@@ -362,14 +312,7 @@ describe(validateObject.name, () => {
       }
 
       expect(result.errors).toHaveLength(1)
-
-      const error = result.errors[0]
-
-      if (typeof error === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error?.path).toEqual(['n'])
+      expect(result.errors[0]?.path).toEqual(['n'])
     })
   })
 
@@ -393,7 +336,6 @@ describe(validateObject.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(1)
     })
 
@@ -406,14 +348,7 @@ describe(validateObject.name, () => {
       }
 
       expect(result.errors).toHaveLength(1)
-
-      const error = result.errors[0]
-
-      if (typeof error === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error?.path).toEqual(['arr', '0'])
+      expect(result.errors[0]?.path).toEqual(['arr', '0'])
     })
   })
 
@@ -439,7 +374,6 @@ describe(validateObject.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(1)
     })
 
@@ -452,14 +386,7 @@ describe(validateObject.name, () => {
       }
 
       expect(result.errors).toHaveLength(1)
-
-      const error = result.errors[0]
-
-      if (typeof error === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error?.path).toEqual(['obj', 'n'])
+      expect(result.errors[0]?.path).toEqual(['obj', 'n'])
     })
 
     describe('with long form', () => {
@@ -480,7 +407,6 @@ describe(validateObject.name, () => {
           return fail('result was not an error')
         }
 
-        expect(result.value).toBe(value)
         expect(result.errors).toHaveLength(1)
       })
     })

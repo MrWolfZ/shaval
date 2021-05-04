@@ -5,7 +5,7 @@
 ```ts
 
 import { _ReadonlyObject } from '@shaval/core';
-import type { ShavalResult } from '@shaval/core';
+import type { Result } from '@shaval/core';
 
 // @public (undocumented)
 export function array<T>(valueParser: Parser<T>): Parser<T[]>;
@@ -31,7 +31,15 @@ export type ObjectPropertyParsers<T extends _ReadonlyObject> = {
 export function optional<T>(valueParser: Parser<T>): Parser<T | undefined>;
 
 // @public (undocumented)
-export type Parser<T> = (value: unknown) => ShavalResult<T>;
+export type Parser<T> = (value: unknown) => ParserResult<T>;
+
+// @public (undocumented)
+export type ParserResult<T> = Result<T> & _ResultTypeMarker<T>;
+
+// @public
+export interface _ResultTypeMarker<T> {
+    readonly nullOrUndefined?: undefined extends T ? 'undefined' : null extends T ? 'null' : never;
+}
 
 // @public (undocumented)
 export const string: Parser<string>;

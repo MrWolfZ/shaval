@@ -68,7 +68,6 @@ describe(object.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(2)
     })
 
@@ -81,16 +80,8 @@ describe(object.name, () => {
       }
 
       expect(result.errors).toHaveLength(2)
-
-      const error1 = result.errors[0]
-      const error2 = result.errors[1]
-
-      if (typeof error1 === 'string' || typeof error2 === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error1?.path).toEqual(['s'])
-      expect(error2?.path).toEqual(['n'])
+      expect(result.errors[0]?.path).toEqual(['s'])
+      expect(result.errors[1]?.path).toEqual(['n'])
     })
 
     it('returns a deep copy', () => {
@@ -285,7 +276,6 @@ describe(object.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(2)
     })
 
@@ -298,16 +288,8 @@ describe(object.name, () => {
       }
 
       expect(result.errors).toHaveLength(2)
-
-      const error1 = result.errors[0]
-      const error2 = result.errors[1]
-
-      if (typeof error1 === 'string' || typeof error2 === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error1?.path).toEqual(['arr', '0'])
-      expect(error2?.path).toEqual(['arr', '2'])
+      expect(result.errors[0]?.path).toEqual(['arr', '0'])
+      expect(result.errors[1]?.path).toEqual(['arr', '2'])
     })
   })
 
@@ -351,7 +333,6 @@ describe(object.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(2)
     })
 
@@ -364,16 +345,8 @@ describe(object.name, () => {
       }
 
       expect(result.errors).toHaveLength(2)
-
-      const error1 = result.errors[0]
-      const error2 = result.errors[1]
-
-      if (typeof error1 === 'string' || typeof error2 === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error1?.path).toEqual(['obj', 's'])
-      expect(error2?.path).toEqual(['obj', 'n'])
+      expect(result.errors[0]?.path).toEqual(['obj', 's'])
+      expect(result.errors[1]?.path).toEqual(['obj', 'n'])
     })
   })
 })

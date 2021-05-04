@@ -48,8 +48,8 @@ describe(required.name, () => {
       return fail('result was not an error')
     }
 
-    expect(result.value).toBe(undefined)
     expect(result.errors).toHaveLength(1)
+    expect(result.errors[0]?.value).toBe(undefined)
   })
 
   it('fails for null', () => {
@@ -59,7 +59,7 @@ describe(required.name, () => {
       return fail('result was not an error')
     }
 
-    expect(result.value).toBe(null)
     expect(result.errors).toHaveLength(1)
+    expect(result.errors[0]?.value).toBe(null)
   })
 })

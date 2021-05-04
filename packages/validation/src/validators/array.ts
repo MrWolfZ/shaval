@@ -1,4 +1,4 @@
-import { error, isFailure, PropertyErrors } from '@shaval/core'
+import { Errors, failure, isFailure } from '@shaval/core'
 import type { Validator } from '../validator.js'
 import { combine } from './combine.js'
 
@@ -9,7 +9,7 @@ export function validateArray<T>(...itemValidators: readonly Validator<T>[]): Va
   const combinedValidator = combine(...itemValidators)
 
   return (array) => {
-    const errors: (string | PropertyErrors)[] = []
+    const errors: Errors[] = []
 
     for (const [i, item] of array.entries()) {
       const result = combinedValidator(item)
@@ -19,20 +19,13 @@ export function validateArray<T>(...itemValidators: readonly Validator<T>[]): Va
       }
     }
 
-    return errors.length > 0 ? error(array, ...errors) : array
+    return errors.length > 0 ? failure(errors) : array
   }
 }
 
-function prependIndexToPath(error: string | PropertyErrors, index: number): PropertyErrors {
-  if (typeof error === 'string') {
-    return {
-      path: [index.toString()],
-      messages: [error],
-    }
-  }
-
+function prependIndexToPath(error: Errors, index: number): Errors {
   return {
-    path: [index.toString(), ...error.path],
-    messages: error.messages,
+    ...error,
+    path: [`${index}`, ...error.path],
   }
 }

@@ -1,8 +1,6 @@
 import { nullable, optional, Parser, string } from '@shaval/parsing'
 import { expectError, expectType } from 'tsd'
 
-// primitives
-
 expectType<Parser<string>>(string)
 expectType<Parser<string | undefined>>(optional(string))
 expectError<Parser<string | undefined>>(nullable(string))

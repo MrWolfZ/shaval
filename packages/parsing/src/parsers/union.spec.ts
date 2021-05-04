@@ -58,8 +58,9 @@ describe(union.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
-      expect(result.errors).toHaveLength(2)
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0]?.value).toBe(value)
+      expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
     })
   })
 
@@ -194,8 +195,9 @@ describe(union.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
-      expect(result.errors).toHaveLength(3)
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0]?.value).toBe(value)
+      expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(3)
     })
   })
 })

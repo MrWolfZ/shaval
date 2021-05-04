@@ -1,4 +1,4 @@
-import { error, isFailure, PropertyErrors } from '@shaval/core'
+import { Errors, failure, isFailure } from '@shaval/core'
 import type { Parser } from '../parser.js'
 
 /**
@@ -9,10 +9,10 @@ export function array<T>(valueParser: Parser<T>): Parser<T[]> {
 
   return (value) => {
     if (!Array.isArray(value)) {
-      return error(value, 'value must be an array')
+      return failure(value, 'value must be an array')
     }
 
-    const errors: (string | PropertyErrors)[] = []
+    const errors: Errors[] = []
 
     for (const [i, item] of value.entries()) {
       const result = valueParser(item)
@@ -22,20 +22,13 @@ export function array<T>(valueParser: Parser<T>): Parser<T[]> {
       }
     }
 
-    return errors.length > 0 ? error(value, ...errors) : value.map((i) => i)
+    return errors.length > 0 ? failure(errors) : value.map((i) => i)
   }
 }
 
-function prependIndexToPath(error: string | PropertyErrors, index: number): PropertyErrors {
-  if (typeof error === 'string') {
-    return {
-      path: [index.toString()],
-      messages: [error],
-    }
-  }
-
+function prependIndexToPath(error: Errors, index: number): Errors {
   return {
-    path: [index.toString(), ...error.path],
-    messages: error.messages,
+    ...error,
+    path: [`${index}`, ...error.path],
   }
 }

@@ -54,7 +54,6 @@ describe(array.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(2)
     })
 
@@ -67,16 +66,8 @@ describe(array.name, () => {
       }
 
       expect(result.errors).toHaveLength(2)
-
-      const error1 = result.errors[0]
-      const error2 = result.errors[1]
-
-      if (typeof error1 === 'string' || typeof error2 === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error1?.path).toEqual(['0'])
-      expect(error2?.path).toEqual(['2'])
+      expect(result.errors[0]?.path).toEqual(['0'])
+      expect(result.errors[1]?.path).toEqual(['2'])
     })
 
     it('returns a deep copy', () => {
@@ -243,7 +234,6 @@ describe(array.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(2)
     })
 
@@ -256,16 +246,8 @@ describe(array.name, () => {
       }
 
       expect(result.errors).toHaveLength(2)
-
-      const error1 = result.errors[0]
-      const error2 = result.errors[1]
-
-      if (typeof error1 === 'string' || typeof error2 === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error1?.path).toEqual(['0', '0'])
-      expect(error2?.path).toEqual(['2', '1'])
+      expect(result.errors[0]?.path).toEqual(['0', '0'])
+      expect(result.errors[1]?.path).toEqual(['2', '1'])
     })
   })
 
@@ -311,7 +293,6 @@ describe(array.name, () => {
         return fail('result was not an error')
       }
 
-      expect(result.value).toBe(value)
       expect(result.errors).toHaveLength(2)
     })
 
@@ -324,16 +305,8 @@ describe(array.name, () => {
       }
 
       expect(result.errors).toHaveLength(2)
-
-      const error1 = result.errors[0]
-      const error2 = result.errors[1]
-
-      if (typeof error1 === 'string' || typeof error2 === 'string') {
-        return fail('error was not a property error')
-      }
-
-      expect(error1?.path).toEqual(['0', 'n'])
-      expect(error2?.path).toEqual(['2', 'n'])
+      expect(result.errors[0]?.path).toEqual(['0', 'n'])
+      expect(result.errors[1]?.path).toEqual(['2', 'n'])
     })
   })
 })
