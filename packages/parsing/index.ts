@@ -3,6 +3,7 @@ export type { Parser, ParserOrShorthand, ParserResult, _ResultTypeMarker } from 
 export { array, readonlyArray } from './src/parsers/array.js'
 export type { ArrayParserShorthand } from './src/parsers/array.js'
 export { boolean } from './src/parsers/boolean.js'
+export { literal } from './src/parsers/literal.js'
 export { nullable } from './src/parsers/nullable.js'
 export { number } from './src/parsers/number.js'
 export { object } from './src/parsers/object.js'

@@ -34,7 +34,6 @@ TODO
 
 ### parsing
 
-- add `literal` parser
 - add `record` parser
 - add `enum` parser
 - add `tuple` parser
@@ -42,12 +41,13 @@ TODO
 - add `symbol` parser
 - add `function` parser
 - add `intersection` parser
+- add `date` parser
 - omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports
 - run performance tests
 
-- add `date` parser
+- add `stringToDate` parser
 - add `stringToNumber` parser
 - support for async parsers
 
