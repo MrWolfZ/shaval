@@ -34,8 +34,6 @@ TODO
 
 ### parsing
 
-- add shorthands for object and array parsing
-- deal with readonly array support
 - add `literal` parser
 - add `record` parser
 - add `enum` parser

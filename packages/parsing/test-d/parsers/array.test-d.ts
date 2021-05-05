@@ -1,4 +1,4 @@
-import { array, ArrayParserShorthand, Parser } from '@shaval/parsing'
+import { array, ArrayParserShorthand, Parser, ParserResult, readonlyArray } from '@shaval/parsing'
 import { expectAssignable, expectError, expectType } from 'tsd'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -12,6 +12,7 @@ const stringArrayParser: Parser<string[]> = undefined!
 const objectParser: Parser<{ s: string }> = undefined!
 
 expectType<Parser<string[]>>(array(stringParser))
+expectType<Parser<readonly string[]>>(readonlyArray(stringParser))
 expectType<Parser<(string | undefined)[]>>(array(optionalStringParser))
 expectError<Parser<(string | undefined)[]>>(array(stringParser))
 expectType<Parser<(string | null)[]>>(array(nullableStringParser))
@@ -35,3 +36,7 @@ expectAssignable<ArrayParserShorthand<{ s: string }>>([{ s: stringParser }])
 expectAssignable<ArrayParserShorthand<{ s: string; n: number }>>([{ s: stringParser, n: numberParser }])
 expectError<ArrayParserShorthand<{ s: string; n: number }>>({ s: stringParser })
 expectAssignable<ArrayParserShorthand<{ s: string | number }>>([{ s: stringOrNumberParser }])
+
+expectType<ParserResult<string[]>>(array(stringParser)([] as string[]))
+expectType<ParserResult<string[]>>(array(stringParser)([] as readonly string[]))
+expectType<ParserResult<readonly string[]>>(readonlyArray(stringParser)([] as readonly string[]))

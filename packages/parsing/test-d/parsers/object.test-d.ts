@@ -108,14 +108,27 @@ expectError<Parser<ObjectWithArrayProperty>>(
   object<ObjectWithArrayProperty>({ arr: stringParser }),
 )
 
-// TODO
-// interface ObjectWithReadonlyArrayProperty {
-//   arr: readonly string[]
-// }
+interface ObjectWithReadonlyArrayProperty {
+  arr: readonly string[]
+}
 
-// expectType<Parser<ObjectWithReadonlyArrayProperty>>(
-//   object<ObjectWithReadonlyArrayProperty>({ arr: array(string) }),
-// )
+const stringReadonlyArrayParser: Parser<readonly string[]> = undefined!
+
+expectType<Parser<ObjectWithReadonlyArrayProperty>>(
+  object<ObjectWithReadonlyArrayProperty>({ arr: stringReadonlyArrayParser }),
+)
+
+expectError<Parser<ObjectWithReadonlyArrayProperty>>(
+  object<ObjectWithReadonlyArrayProperty>({ arr: stringArrayParser }),
+)
+
+expectType<Parser<ObjectWithReadonlyArrayProperty>>(
+  object<ObjectWithReadonlyArrayProperty>({ arr: [stringParser] }),
+)
+
+expectError<Parser<ObjectWithReadonlyArrayProperty>>(
+  object<ObjectWithReadonlyArrayProperty>({ arr: stringParser }),
+)
 
 interface ObjectWithObjectProperty {
   obj: {

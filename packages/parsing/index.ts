@@ -1,6 +1,6 @@
 export { resolveParserOrShorthand } from './src/parser.js'
 export type { Parser, ParserOrShorthand, ParserResult, _ResultTypeMarker } from './src/parser.js'
-export { array } from './src/parsers/array.js'
+export { array, readonlyArray } from './src/parsers/array.js'
 export type { ArrayParserShorthand } from './src/parsers/array.js'
 export { boolean } from './src/parsers/boolean.js'
 export { nullable } from './src/parsers/nullable.js'

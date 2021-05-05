@@ -50,6 +50,29 @@ export function array<T>(itemParser: ParserOrShorthand<T>): Parser<T[]> {
   }
 }
 
+/**
+ * @public
+ */
+export function readonlyArray<T>(itemParser: Parser<T>): Parser<readonly T[]>
+
+/**
+ * @public
+ */
+export function readonlyArray<T>(itemParser: ArrayParserShorthand<T>): Parser<readonly T[][]>
+
+/**
+ * @public
+ */
+export function readonlyArray<T>(itemParser: ObjectParserShorthand<T>): Parser<readonly T[]>
+
+/**
+ * @public
+ */
+export function readonlyArray<T>(itemParser: ParserOrShorthand<T>): Parser<readonly T[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return array(itemParser as any) as any
+}
+
 function prependIndexToPath(error: Errors, index: number): Errors {
   return {
     ...error,
