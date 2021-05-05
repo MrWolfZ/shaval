@@ -17,7 +17,7 @@ export function array<T>(itemParser: ArrayParserShorthand<T>): Parser<T[][]>;
 export function array<T>(itemParser: ObjectParserShorthand<T>): Parser<T[]>;
 
 // @public (undocumented)
-export type ArrayParserShorthand<T> = [ParserOrShorthand<T>];
+export type ArrayParserShorthand<T> = readonly [ParserOrShorthand<T>];
 
 // @public (undocumented)
 export const boolean: Parser<boolean>;
@@ -62,6 +62,15 @@ export type ParserOrShorthand<T> = Parser<T> | ArrayParserShorthand<T> | ObjectP
 
 // @public (undocumented)
 export type ParserResult<T> = T | (Failure & _ResultTypeMarker<T>);
+
+// @public (undocumented)
+export function readonlyArray<T>(itemParser: Parser<T>): Parser<readonly T[]>;
+
+// @public (undocumented)
+export function readonlyArray<T>(itemParser: ArrayParserShorthand<T>): Parser<readonly T[][]>;
+
+// @public (undocumented)
+export function readonlyArray<T>(itemParser: ObjectParserShorthand<T>): Parser<readonly T[]>;
 
 // @public (undocumented)
 export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any>;

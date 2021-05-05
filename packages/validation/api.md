@@ -9,12 +9,19 @@ import type { _ReadonlyObject } from '@shaval/core';
 import type { Result } from '@shaval/core';
 
 // @public (undocumented)
-export function and<T1, T2, TRest extends unknown[]>(validator1: Validator<T1>, validator2: Validator<T2>, ...otherValidators: _AndValidators<TRest>): Validator<T1 & T2 & ([] extends TRest ? unknown : TRest[number])>;
+export function and<T1, T2, TRest extends unknown[]>(validator1: ValidatorOrShorthand<T1>, validator2: ValidatorOrShorthand<T2>, ...otherValidators: _AndValidators<TRest>): Validator<T1 & T2 & ([] extends TRest ? unknown : TRest[number])>;
 
 // @public (undocumented)
 export type _AndValidators<T> = {
-    [K in keyof T]: Validator<T[K]>;
+    [K in keyof T]: ValidatorOrShorthand<T[K]>;
 };
+
+// @public (undocumented)
+export type AndValidatorShorthand<T> = readonly [
+    ValidatorOrShorthand<T>,
+    ValidatorOrShorthand<T>,
+    ...ValidatorOrShorthand<T>[]
+];
 
 // @public (undocumented)
 export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;
@@ -29,18 +36,15 @@ export function greaterThan(comparand: number): Validator<number>;
 export function lessThan(comparand: number): Validator<number>;
 
 // @public (undocumented)
-export type ObjectPropertyValidator<TProperty extends unknown[], TValidator> = TProperty extends [unknown[]] ? _SelfOrArray<TValidator> : TProperty[number] extends _ReadonlyObject ? _SelfOrArray<ObjectPropertyValidators<TProperty[number]> | TValidator> : _SelfOrArray<TValidator>;
-
-// @public (undocumented)
-export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
-    readonly [prop in keyof T]?: ObjectPropertyValidator<[
-        Exclude<T[prop], undefined>
-    ], // wrap in tuple to prevent distribution of unions
-    Validator<_ArrayAsReadonly<Exclude<T[prop], undefined>>>>;
+export type ObjectPropertyValidators<T extends _ReadonlyObject | null> = null extends T ? never : T extends readonly unknown[] ? never : {
+    readonly [prop in keyof T]?: ValidatorOrShorthand<_ArrayAsReadonly<Exclude<T[prop], undefined>>>;
 };
 
 // @public (undocumented)
 export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<T>): Validator<T>;
+
+// @public (undocumented)
+export type ObjectValidatorShorthand<T> = ObjectPropertyValidators<T>;
 
 // @public (undocumented)
 export function or<T>(validator1: Validator<T>, validator2: Validator<T>, ...restValidators: Validator<T>[]): Validator<T>;
@@ -52,10 +56,10 @@ export function required<T>(value: T): Result<T>;
 export function sameAs<T>(comparand: T): Validator<T>;
 
 // @public (undocumented)
-export type _SelfOrArray<T> = T | readonly T[];
+export type Validator<T> = (value: T | Failure) => Result<T>;
 
 // @public (undocumented)
-export type Validator<T> = (value: T | Failure) => Result<T>;
+export type ValidatorOrShorthand<T> = Validator<T> | AndValidatorShorthand<T> | ObjectValidatorShorthand<T>;
 
 
 // (No @packageDocumentation comment for this package)

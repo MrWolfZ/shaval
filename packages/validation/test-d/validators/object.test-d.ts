@@ -15,6 +15,9 @@ interface SimpleObject {
   u: string | number
 }
 
+// @ts-expect-error test
+objectValidator({})
+
 expectAssignable<Validator<SimpleObject>>(objectValidator<SimpleObject>({}))
 
 expectAssignable<Validator<SimpleObject>>(

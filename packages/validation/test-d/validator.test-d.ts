@@ -1,9 +1,4 @@
-import type {
-  AndValidatorShorthand,
-  ObjectValidatorShorthand,
-  Validator,
-  ValidatorOrShorthand,
-} from '@shaval/validation'
+import type { Validator, ValidatorOrShorthand } from '@shaval/validation'
 import { expectAssignable, expectError } from 'tsd'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -36,11 +31,3 @@ expectAssignable<ValidatorOrShorthand<{ s: string | number }>>({ s: stringOrNumb
 expectError<ValidatorOrShorthand<{ s: string | null }>>({ s: stringValidator })
 expectError<ValidatorOrShorthand<{ arr: string[] | null }>>({ arr: [stringValidator] })
 expectError<ValidatorOrShorthand<{ o: { s: string } | null }>>({ o: { s: stringValidator } })
-
-expectError<Validator<readonly string[] | null>>(stringArrayValidator)
-expectError<AndValidatorShorthand<readonly string[] | null>>(stringArrayValidator)
-expectError<ObjectValidatorShorthand<readonly string[]>>(stringArrayValidator)
-
-expectError<Validator<{ s: string } | null>>({ s: stringValidator })
-expectError<AndValidatorShorthand<{ s: string } | null>>({ s: stringValidator })
-expectError<ObjectValidatorShorthand<{ s: string } | null>>({ s: stringValidator })

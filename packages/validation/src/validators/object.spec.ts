@@ -1,4 +1,4 @@
-import { failure, isFailure } from '@shaval/core'
+import { Failure, failure, isFailure } from '@shaval/core'
 import type { Validator } from '../validator.js'
 import { objectValidator } from './object.js'
 
@@ -26,7 +26,7 @@ describe(objectValidator.name, () => {
   })
 
   it('if called with failure returns failure', () => {
-    const validator = objectValidator({})
+    const validator = objectValidator({ s: (value: string | Failure) => value })
     const err = failure({}, 'fail')
     expect(validator(err)).toBe(err)
   })
@@ -249,6 +249,90 @@ describe(objectValidator.name, () => {
 
     it('fails for invalid property', () => {
       expect(isFailure(validator({ n: 0 }))).toBe(true)
+    })
+  })
+
+  describe('nested object', () => {
+    interface NestedObject {
+      o: {
+        n: number
+      }
+    }
+
+    describe('no validators', () => {
+      const validator = objectValidator<NestedObject>({})
+
+      it('succeeds for any value', () => {
+        const value: NestedObject = { o: { n: 0 } }
+        expect(validator(value)).toBe(value)
+      })
+    })
+
+    describe('with single validator for property', () => {
+      const propValidator: Validator<number> = (value) =>
+        value === 1 ? value : failure([{ value, path: ['a'], details: { a: undefined } }])
+
+      const validator = objectValidator<NestedObject>({ o: { n: propValidator } })
+
+      it('succeeds for valid property', () => {
+        const value: NestedObject = { o: { n: 1 } }
+        expect(validator(value)).toBe(value)
+      })
+
+      it('fails for invalid property', () => {
+        expect(isFailure(validator({ o: { n: 0 } }))).toBe(true)
+      })
+
+      it('adds the property name to path for errors', () => {
+        const result = validator({ o: { n: 0 } })
+
+        if (!isFailure(result)) {
+          return fail('result was not an error')
+        }
+
+        expect(result.errors).toHaveLength(1)
+        expect(result.errors[0]?.path).toEqual(['o', 'n', 'a'])
+      })
+    })
+
+    describe('with multiple validators for single property', () => {
+      const propValidator1: Validator<number> = (value) =>
+        value === 1 ? value : failure([{ value, path: ['a'], details: { a: undefined } }])
+      const propValidator2: Validator<number> = (value) =>
+        value === 1 ? value : failure([{ value, path: ['b'], details: { b: undefined } }])
+
+      const validator = objectValidator<NestedObject>({ o: [{ n: propValidator1 }, { n: propValidator2 }] })
+
+      it('succeeds for valid property', () => {
+        const value: NestedObject = { o: { n: 1 } }
+        expect(validator(value)).toBe(value)
+      })
+
+      it('fails for invalid property', () => {
+        expect(isFailure(validator({ o: { n: 0 } }))).toBe(true)
+      })
+
+      it('aggregates error messages from all validators', () => {
+        const result = validator({ o: { n: 0 } })
+
+        if (!isFailure(result)) {
+          return fail('result was not an error')
+        }
+
+        expect(result.errors).toHaveLength(2)
+      })
+
+      it('adds the property name to path for errors', () => {
+        const result = validator({ o: { n: 0 } })
+
+        if (!isFailure(result)) {
+          return fail('result was not an error')
+        }
+
+        expect(result.errors).toHaveLength(2)
+        expect(result.errors[0]?.path).toEqual(['o', 'n', 'a'])
+        expect(result.errors[1]?.path).toEqual(['o', 'n', 'b'])
+      })
     })
   })
 })

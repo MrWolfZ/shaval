@@ -1,7 +1,6 @@
 import type { Errors, _ReadonlyObject } from '@shaval/core'
-import { _and } from '../combinators/and.js'
 import { _failure, _isFailure } from '../result.js'
-import type { Validator, ValidatorOrShorthand } from '../validator.js'
+import { resolveValidatorOrShorthand, Validator, ValidatorOrShorthand } from '../validator.js'
 
 /**
  * @public
@@ -17,7 +16,7 @@ export type ObjectValidatorShorthand<T> = ObjectPropertyValidators<T>
  * @public
  */
 export type ObjectPropertyValidators<T extends _ReadonlyObject | null> = null extends T
-  ? null
+  ? never
   : T extends readonly unknown[]
   ? never
   : {
@@ -56,7 +55,7 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
       }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const propValidator = getPropertyValidator(validator!)
+      const propValidator = resolveValidatorOrShorthand(validator!)
       const result = propValidator(propValue)
 
       if (_isFailure(result)) {
@@ -66,20 +65,6 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
 
     return errors.length > 0 ? _failure(errors) : value
   }
-}
-
-function getPropertyValidator(propValidator: ValidatorOrShorthand<unknown>): Validator<unknown> {
-  const validators: Validator<unknown>[] = []
-
-  if (typeof propValidator === 'function') {
-    validators.push(propValidator as any)
-  } else if (Array.isArray(propValidator)) {
-    validators.push(...(propValidator as any))
-  } else {
-    validators.push(objectValidator(propValidator as any) as Validator<unknown>)
-  }
-
-  return _and(...validators)
 }
 
 function prependKeyToPath(error: Errors, key: string): Errors {

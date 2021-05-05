@@ -9,6 +9,7 @@ const stringOrNumberValidator: Validator<string | number> = undefined!
 const stringOrNullValidator: Validator<string | null> = undefined!
 const stringArrayValidator: Validator<readonly string[]> = undefined!
 const numberArrayValidator: Validator<readonly number[]> = undefined!
+const objectValidator: Validator<{ s: string }> = undefined!
 
 // @ts-expect-error test
 and()
@@ -17,10 +18,17 @@ and()
 and(stringValidator)
 
 expectAssignable<Validator<string>>(and(stringValidator, stringValidator))
+expectAssignable<Validator<string>>(and([stringValidator, stringValidator], [stringValidator, stringValidator]))
+expectAssignable<Validator<string>>(
+  and([stringValidator, stringValidator], [stringValidator, stringValidator], [stringValidator, stringValidator]),
+)
 expectAssignable<Validator<string | number>>(and(stringOrNumberValidator, stringOrNumberValidator))
 expectError<Validator<number>>(and(stringValidator, stringValidator))
 expectError<Validator<string | number>>(and(stringValidator, numberValidator))
 expectAssignable<Validator<string & number>>(and(stringValidator, numberValidator))
+expectAssignable<Validator<readonly string[]>>(and(stringArrayValidator, stringArrayValidator))
+expectAssignable<Validator<{ s: string }>>(and(objectValidator, objectValidator))
+expectAssignable<Validator<{ s: string }>>(and({ s: stringValidator }, { s: stringValidator }))
 
 const objectValidator1: Validator<{ s: string }> = undefined!
 const objectValidator2: Validator<{ n: number }> = undefined!

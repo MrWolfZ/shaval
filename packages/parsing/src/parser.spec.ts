@@ -26,12 +26,12 @@ describe(resolveParserOrShorthand.name, () => {
     expect(resolvedParser({ s: '' })).toEqual({ s: expectedValue })
   })
 
-  it('resolves neested object shorthands', () => {
+  it('resolves nested object shorthands', () => {
     const resolvedParser = resolveParserOrShorthand({ s: { o: parser } })
     expect(resolvedParser({ s: { o: '' } })).toEqual({ s: { o: expectedValue } })
   })
 
-  it('resolves neested object array shorthands', () => {
+  it('resolves nested object array shorthands', () => {
     const resolvedParser = resolveParserOrShorthand({ s: [parser] })
     expect(resolvedParser({ s: [''] })).toEqual({ s: [expectedValue] })
   })
