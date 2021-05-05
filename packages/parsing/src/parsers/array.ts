@@ -1,5 +1,5 @@
 import { Errors, failure, isFailure } from '@shaval/core'
-import { Parser, ParserOrShorthand, resolveParserOrShorthand } from '../parser.js'
+import { Parser, ParserOrShorthand, _resolveParserOrShorthand } from '../parser.js'
 import type { ObjectParserShorthand } from './object.js'
 
 /**
@@ -26,7 +26,7 @@ export function array<T>(itemParser: ObjectParserShorthand<T>): Parser<T[]>
  * @public
  */
 export function array<T>(itemParser: ParserOrShorthand<T>): Parser<T[]> {
-  const resolvedItemParser = resolveParserOrShorthand(itemParser)
+  const resolvedItemParser = _resolveParserOrShorthand(itemParser)
 
   return (value) => {
     if (!Array.isArray(value)) {

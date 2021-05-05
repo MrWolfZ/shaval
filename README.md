@@ -53,8 +53,6 @@ TODO
 
 ### validation
 
-- make shorthand for objects apply everywhere
-- make shorthand for `and` apply everywhere
 - add `tupleValidator`
 - add `recordValidator`
 - add most common validators

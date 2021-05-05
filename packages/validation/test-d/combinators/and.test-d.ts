@@ -29,6 +29,21 @@ expectAssignable<Validator<string & number>>(and(stringValidator, numberValidato
 expectAssignable<Validator<readonly string[]>>(and(stringArrayValidator, stringArrayValidator))
 expectAssignable<Validator<{ s: string }>>(and(objectValidator, objectValidator))
 expectAssignable<Validator<{ s: string }>>(and({ s: stringValidator }, { s: stringValidator }))
+expectAssignable<Validator<{ s: string; o: string }>>(and({ s: stringValidator }, { o: stringValidator }))
+expectAssignable<Validator<{ s: string }>>(and({ s: stringValidator }, { s: stringValidator }, { s: stringValidator }))
+expectAssignable<Validator<{ s: string; o: string; n: number }>>(
+  and({ s: stringValidator }, { o: stringValidator }, { n: numberValidator }),
+)
+expectAssignable<Validator<{ s: string }>>(
+  and([{ s: stringValidator }, { s: stringValidator }], [{ s: stringValidator }, { s: stringValidator }]),
+)
+expectAssignable<Validator<{ s: string }>>(
+  and(
+    [{ s: stringValidator }, { s: stringValidator }],
+    [{ s: stringValidator }, { s: stringValidator }],
+    [{ s: stringValidator }, { s: stringValidator }],
+  ),
+)
 
 const objectValidator1: Validator<{ s: string }> = undefined!
 const objectValidator2: Validator<{ n: number }> = undefined!

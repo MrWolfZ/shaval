@@ -1,4 +1,4 @@
-import { Parser, ParserOrShorthand, ParserResult, resolveParserOrShorthand } from '../parser.js'
+import { Parser, ParserOrShorthand, ParserResult, _resolveParserOrShorthand } from '../parser.js'
 import type { ArrayParserShorthand } from './array.js'
 import type { ObjectParserShorthand } from './object.js'
 
@@ -21,7 +21,7 @@ export function nullable<T>(valueParser: ObjectParserShorthand<T>): Parser<T | n
  * @public
  */
 export function nullable<T>(valueParser: ParserOrShorthand<T>): Parser<T | null> {
-  const resolvedParser = resolveParserOrShorthand(valueParser)
+  const resolvedParser = _resolveParserOrShorthand(valueParser)
 
   return (value) => {
     if (value === null) {

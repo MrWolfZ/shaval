@@ -1,14 +1,14 @@
 import type { Errors } from '@shaval/core'
 import { _and } from '../combinators/and.js'
 import { _failure, _isFailure } from '../result.js'
-import type { Validator } from '../validator.js'
+import type { Validator, ValidatorOrShorthand } from '../validator.js'
 
 /**
  * @public
  */
 export function arrayValidator<T>(
-  itemValidator: Validator<T>,
-  ...itemValidators: readonly Validator<T>[]
+  itemValidator: ValidatorOrShorthand<T>,
+  ...itemValidators: readonly ValidatorOrShorthand<T>[]
 ): Validator<readonly T[]> {
   const combinedValidator = _and(itemValidator, ...itemValidators)
 

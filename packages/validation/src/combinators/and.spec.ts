@@ -50,17 +50,17 @@ describe(and.name, () => {
     expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
   })
 
-  it('resolves and shorthand', () => {
+  it('resolves "and" shorthand', () => {
     const validator: Validator<number> = (value) => value
     expect(and([validator, validator], [validator, validator])(1)).toEqual(1)
   })
 
-  it('resolves and shorthand for rest arg', () => {
+  it('resolves "and" shorthand for rest arg', () => {
     const validator: Validator<number> = (value) => value
     expect(and([validator, validator], [validator, validator], [validator, validator])(1)).toEqual(1)
   })
 
-  it('resolves nested and shorthand', () => {
+  it('resolves nested "and" shorthand', () => {
     const validator: Validator<number> = (value) => value
     expect(and([validator, [validator, validator]], [validator, validator])(1)).toEqual(1)
   })
@@ -69,6 +69,12 @@ describe(and.name, () => {
     const validator: Validator<number> = (value) => value
     const value = { n: 1 }
     expect(and({ n: validator }, { n: validator })(value)).toBe(value)
+  })
+
+  it('resolves object shorthand for rest arg', () => {
+    const validator: Validator<number> = (value) => value
+    const value = { n: 1 }
+    expect(and({ n: validator }, { n: validator }, { n: validator })(value)).toBe(value)
   })
 
   describe('intersections', () => {

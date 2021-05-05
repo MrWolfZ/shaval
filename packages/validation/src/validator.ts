@@ -13,10 +13,12 @@ export type Validator<T> = (value: T | Failure) => Result<T>
 export type ValidatorOrShorthand<T> = Validator<T> | AndValidatorShorthand<T> | ObjectValidatorShorthand<T>
 
 /**
- * @public
+ * Private version to ensure it can be properly minified for production builds.
+ *
+ * @private
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<any> {
+export function _resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<any> {
   if (validatorOrShorthand === null || validatorOrShorthand === undefined) {
     throw new Error(`validators or shorthands must not be null or undefined`)
   }
@@ -30,4 +32,12 @@ export function resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOr
   }
 
   return validatorOrShorthand
+}
+
+/**
+ * @public
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<any> {
+  return _resolveValidatorOrShorthand(validatorOrShorthand)
 }

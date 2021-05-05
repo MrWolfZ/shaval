@@ -1,8 +1,7 @@
 // this file contains a end-to-end tests for the public API
 
 import { isSuccess } from '@shaval/core'
-import { array, boolean, object, optional, string } from '@shaval/parsing'
-import { readonlyArray } from './src/parsers/array.js'
+import { array, boolean, object, optional, readonlyArray, string } from '@shaval/parsing'
 
 describe(`@shaval/core`, () => {
   interface Todo {

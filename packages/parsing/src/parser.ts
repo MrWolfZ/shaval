@@ -36,10 +36,12 @@ export type Parser<T> = (value: unknown) => ParserResult<T>
 export type ParserOrShorthand<T> = Parser<T> | ArrayParserShorthand<T> | ObjectParserShorthand<T>
 
 /**
- * @public
+ * Private version to ensure it can be properly minified for production builds.
+ *
+ * @private
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any> {
+export function _resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any> {
   if (parserOrShorthand === null || parserOrShorthand === undefined) {
     throw new Error(`parsers or shorthands must not be null or undefined`)
   }
@@ -55,4 +57,12 @@ export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand
   }
 
   return parserOrShorthand
+}
+
+/**
+ * @public
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any> {
+  return _resolveParserOrShorthand(parserOrShorthand)
 }

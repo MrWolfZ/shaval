@@ -5,8 +5,13 @@ import { expectAssignable, expectError } from 'tsd'
 
 const stringValidator: Validator<string> = undefined!
 const numberValidator: Validator<number> = undefined!
+const optionalNumberValidator: Validator<number | undefined> = undefined!
+const nullableNumberValidator: Validator<number | null> = undefined!
+const optionalNullableNumberValidator: Validator<number | null | undefined> = undefined!
 const stringOrNumberValidator: Validator<string | number> = undefined!
 const stringArrayValidator: Validator<readonly string[]> = undefined!
+const numberArrayValidator: Validator<readonly number[]> = undefined!
+const optionalNumberArrayValidator: Validator<readonly number[] | undefined> = undefined!
 
 interface SimpleObject {
   s: string
@@ -54,13 +59,13 @@ expectAssignable<Validator<ObjectWithOptionalProperty>>(objectValidator<ObjectWi
 
 expectAssignable<Validator<ObjectWithOptionalProperty>>(
   objectValidator<ObjectWithOptionalProperty>({
-    n: numberValidator,
+    n: optionalNumberValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalProperty>>(
   objectValidator<ObjectWithOptionalProperty>({
-    n: [numberValidator, numberValidator],
+    n: [optionalNumberValidator, optionalNumberValidator],
   }),
 )
 
@@ -72,7 +77,7 @@ expectError<Validator<ObjectWithOptionalProperty>>(
 
 expectError<Validator<ObjectWithOptionalProperty>>(
   objectValidator<ObjectWithOptionalProperty>({
-    n: [stringValidator, numberValidator],
+    n: [optionalNumberValidator, stringValidator],
   }),
 )
 
@@ -80,19 +85,17 @@ interface ObjectWithNullableProperty {
   n: number | null
 }
 
-const nullOrNumberValidator: Validator<number | null> = undefined!
-
 expectAssignable<Validator<ObjectWithNullableProperty>>(objectValidator<ObjectWithNullableProperty>({}))
 
 expectAssignable<Validator<ObjectWithNullableProperty>>(
   objectValidator<ObjectWithNullableProperty>({
-    n: nullOrNumberValidator,
+    n: nullableNumberValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithNullableProperty>>(
   objectValidator<ObjectWithNullableProperty>({
-    n: [nullOrNumberValidator, nullOrNumberValidator],
+    n: [nullableNumberValidator, nullableNumberValidator],
   }),
 )
 
@@ -126,13 +129,13 @@ expectAssignable<Validator<ObjectWithNullableOptionalProperty>>(objectValidator<
 
 expectAssignable<Validator<ObjectWithNullableOptionalProperty>>(
   objectValidator<ObjectWithNullableOptionalProperty>({
-    n: nullOrNumberValidator,
+    n: optionalNullableNumberValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithNullableOptionalProperty>>(
   objectValidator<ObjectWithNullableOptionalProperty>({
-    n: [nullOrNumberValidator, nullOrNumberValidator],
+    n: [optionalNullableNumberValidator, optionalNullableNumberValidator],
   }),
 )
 
@@ -142,10 +145,11 @@ expectError<Validator<ObjectWithNullableOptionalProperty>>(
   }),
 )
 
-objectValidator<ObjectWithNullableOptionalProperty>({
-  // @ts-expect-error test
-  n: [numberValidator, numberValidator],
-})
+expectError<Validator<ObjectWithNullableOptionalProperty>>(
+  objectValidator<ObjectWithNullableOptionalProperty>({
+    n: [optionalNullableNumberValidator, numberValidator],
+  }),
+)
 
 expectError<Validator<ObjectWithNullableOptionalProperty>>(
   objectValidator<ObjectWithNullableOptionalProperty>({
@@ -158,8 +162,6 @@ objectValidator<ObjectWithNullableOptionalProperty>({
   n: [stringValidator, numberValidator],
 })
 
-const arrayValidator: Validator<readonly number[]> = undefined!
-
 interface ObjectWithArrayProperty {
   arr: number[]
 }
@@ -168,13 +170,13 @@ expectAssignable<Validator<ObjectWithArrayProperty>>(objectValidator<ObjectWithA
 
 expectAssignable<Validator<ObjectWithArrayProperty>>(
   objectValidator<ObjectWithArrayProperty>({
-    arr: arrayValidator,
+    arr: numberArrayValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithArrayProperty>>(
   objectValidator<ObjectWithArrayProperty>({
-    arr: [arrayValidator, arrayValidator],
+    arr: [numberArrayValidator, numberArrayValidator],
   }),
 )
 
@@ -186,7 +188,7 @@ expectError<Validator<ObjectWithArrayProperty>>(
 
 objectValidator<ObjectWithArrayProperty>({
   // @ts-expect-error test
-  arr: [stringValidator, arrayValidator],
+  arr: [stringValidator, numberArrayValidator],
 })
 
 interface ObjectWithOptionalArrayProperty {
@@ -197,13 +199,13 @@ expectAssignable<Validator<ObjectWithOptionalArrayProperty>>(objectValidator<Obj
 
 expectAssignable<Validator<ObjectWithOptionalArrayProperty>>(
   objectValidator<ObjectWithOptionalArrayProperty>({
-    arr: arrayValidator,
+    arr: optionalNumberArrayValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalArrayProperty>>(
   objectValidator<ObjectWithOptionalArrayProperty>({
-    arr: [arrayValidator, arrayValidator],
+    arr: [optionalNumberArrayValidator, optionalNumberArrayValidator],
   }),
 )
 
@@ -213,10 +215,17 @@ expectError<Validator<ObjectWithOptionalArrayProperty>>(
   }),
 )
 
-objectValidator<ObjectWithOptionalArrayProperty>({
-  // @ts-expect-error test
-  arr: [stringValidator, arrayValidator],
-})
+expectError<Validator<ObjectWithOptionalArrayProperty>>(
+  objectValidator<ObjectWithOptionalArrayProperty>({
+    arr: numberArrayValidator,
+  }),
+)
+
+expectError<Validator<ObjectWithOptionalArrayProperty>>(
+  objectValidator<ObjectWithOptionalArrayProperty>({
+    arr: [optionalNumberArrayValidator, numberArrayValidator],
+  }),
+)
 
 const nullOrArrayValidator: Validator<readonly number[] | null> = undefined!
 
@@ -240,13 +249,13 @@ expectAssignable<Validator<ObjectWithNullableArrayProperty>>(
 
 expectError<Validator<ObjectWithNullableArrayProperty>>(
   objectValidator<ObjectWithNullableArrayProperty>({
-    arr: arrayValidator,
+    arr: numberArrayValidator,
   }),
 )
 
 objectValidator<ObjectWithNullableArrayProperty>({
   // @ts-expect-error test
-  arr: [arrayValidator, arrayValidator],
+  arr: [numberArrayValidator, numberArrayValidator],
 })
 
 expectError<Validator<ObjectWithNullableArrayProperty>>(
@@ -257,7 +266,7 @@ expectError<Validator<ObjectWithNullableArrayProperty>>(
 
 objectValidator<ObjectWithNullableArrayProperty>({
   // @ts-expect-error test
-  arr: [stringValidator, arrayValidator],
+  arr: [stringValidator, numberArrayValidator],
 })
 
 const nestedObjectValidator: Validator<{ n: number }> = undefined!
@@ -318,47 +327,94 @@ expectError<Validator<ObjectWithObjectProperty>>(
   }),
 )
 
+interface ObjectWithMultipleObjectProperties {
+  obj: {
+    n: number
+    s: string
+  }
+}
+
+expectAssignable<Validator<ObjectWithMultipleObjectProperties>>(objectValidator<ObjectWithMultipleObjectProperties>({}))
+
+expectAssignable<Validator<ObjectWithMultipleObjectProperties>>(
+  objectValidator<ObjectWithMultipleObjectProperties>({
+    obj: objectValidator<ObjectWithMultipleObjectProperties['obj']>({ n: numberValidator }),
+  }),
+)
+
+expectAssignable<Validator<ObjectWithMultipleObjectProperties>>(
+  objectValidator<ObjectWithMultipleObjectProperties>({
+    obj: { n: numberValidator },
+  }),
+)
+
+expectAssignable<Validator<ObjectWithMultipleObjectProperties>>(
+  objectValidator<ObjectWithMultipleObjectProperties>({
+    obj: [{ n: numberValidator }, { n: numberValidator }],
+  }),
+)
+
+expectAssignable<Validator<ObjectWithMultipleObjectProperties>>(
+  objectValidator<ObjectWithMultipleObjectProperties>({
+    obj: [{ n: numberValidator }, { s: stringValidator }],
+  }),
+)
+
+expectError<Validator<ObjectWithMultipleObjectProperties>>(
+  objectValidator<ObjectWithMultipleObjectProperties>({
+    obj: stringValidator,
+  }),
+)
+
+expectError<Validator<ObjectWithMultipleObjectProperties>>(
+  objectValidator<ObjectWithMultipleObjectProperties>({
+    obj: [{ n: numberValidator }, nestedObjectValidator],
+  }),
+)
+
 interface ObjectWithOptionalObjectProperty {
   obj?: {
     n: number
   }
 }
 
+const optionalNestedObjectValidator: Validator<{ n: number } | undefined> = undefined!
+
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(objectValidator<ObjectWithOptionalObjectProperty>({}))
 
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
   objectValidator<ObjectWithOptionalObjectProperty>({
-    obj: nestedObjectValidator,
+    obj: optionalNestedObjectValidator,
   }),
 )
 
 expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
   objectValidator<ObjectWithOptionalObjectProperty>({
-    obj: [nestedObjectValidator, nestedObjectValidator],
+    obj: [optionalNestedObjectValidator, optionalNestedObjectValidator],
   }),
 )
 
-expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
+expectError<Validator<ObjectWithOptionalObjectProperty>>(
   objectValidator<ObjectWithOptionalObjectProperty>({
-    obj: objectValidator<NonNullable<ObjectWithOptionalObjectProperty['obj']>>({ n: numberValidator }),
+    obj: objectValidator({ n: numberValidator }),
   }),
 )
 
-expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
+expectError<Validator<ObjectWithOptionalObjectProperty>>(
   objectValidator<ObjectWithOptionalObjectProperty>({
     obj: { n: numberValidator },
   }),
 )
 
-expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
+expectError<Validator<ObjectWithOptionalObjectProperty>>(
   objectValidator<ObjectWithOptionalObjectProperty>({
-    obj: [{ n: numberValidator }, { n: numberValidator }],
+    obj: [optionalNestedObjectValidator, { n: numberValidator }],
   }),
 )
 
-expectAssignable<Validator<ObjectWithOptionalObjectProperty>>(
+expectError<Validator<ObjectWithOptionalObjectProperty>>(
   objectValidator<ObjectWithOptionalObjectProperty>({
-    obj: [nestedObjectValidator, { n: numberValidator }],
+    obj: [optionalNestedObjectValidator, { n: numberValidator }],
   }),
 )
 
@@ -370,7 +426,13 @@ expectError<Validator<ObjectWithOptionalObjectProperty>>(
 
 expectError<Validator<ObjectWithOptionalObjectProperty>>(
   objectValidator<ObjectWithOptionalObjectProperty>({
-    obj: [stringValidator, nestedObjectValidator],
+    obj: nestedObjectValidator,
+  }),
+)
+
+expectError<Validator<ObjectWithOptionalObjectProperty>>(
+  objectValidator<ObjectWithOptionalObjectProperty>({
+    obj: [stringValidator, optionalNestedObjectValidator],
   }),
 )
 

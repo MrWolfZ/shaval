@@ -8,6 +8,7 @@ const stringArrayValidator: Validator<readonly string[]> = undefined!
 const numberValidator: Validator<number> = undefined!
 const numberArrayValidator: Validator<readonly number[]> = undefined!
 const stringOrNumberValidator: Validator<string | number> = undefined!
+const objectValidator: Validator<{ s: string }> = undefined!
 
 expectAssignable<Validator<string>>(stringValidator)
 expectError<Validator<number>>(stringValidator)
@@ -16,6 +17,7 @@ expectError<Validator<string | number>>(stringValidator)
 expectAssignable<Validator<string | number>>((value) =>
   typeof value === 'string' ? stringValidator(value) : numberValidator(value),
 )
+expectAssignable<Validator<{ s: string }>>(objectValidator)
 
 expectAssignable<Validator<string>>((value) => stringValidator(stringValidator(value)))
 
@@ -27,6 +29,7 @@ expectError<ValidatorOrShorthand<readonly string[]>>([numberValidator])
 expectAssignable<ValidatorOrShorthand<{ s: string }>>({ s: stringValidator })
 expectAssignable<ValidatorOrShorthand<{ s: string; n: number }>>({ s: stringValidator, n: numberValidator })
 expectAssignable<ValidatorOrShorthand<{ s: string; n: number }>>({ s: stringValidator })
+expectAssignable<ValidatorOrShorthand<{ s: string; n: number }>>([{ s: stringValidator }, { n: numberValidator }])
 expectAssignable<ValidatorOrShorthand<{ s: string | number }>>({ s: stringOrNumberValidator })
 expectError<ValidatorOrShorthand<{ s: string | null }>>({ s: stringValidator })
 expectError<ValidatorOrShorthand<{ arr: string[] | null }>>({ arr: [stringValidator] })

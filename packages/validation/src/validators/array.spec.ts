@@ -155,4 +155,15 @@ describe(arrayValidator.name, () => {
       expect(result.errors[1]?.path).toEqual(['2'])
     })
   })
+
+  it('resolves "and" shorthand', () => {
+    const validator: Validator<number> = (value) => value
+    expect(arrayValidator([validator, validator])([1])).toEqual([1])
+  })
+
+  it('resolves object shorthand', () => {
+    const validator: Validator<number> = (value) => value
+    const value = [{ n: 1 }]
+    expect(arrayValidator({ n: validator })(value)).toBe(value)
+  })
 })

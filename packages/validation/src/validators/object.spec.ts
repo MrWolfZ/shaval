@@ -207,16 +207,32 @@ describe(objectValidator.name, () => {
       n?: number
     }
 
-    const propValidator: Validator<number> = (val) => (val === 1 ? val : { ...failure(val, ''), path: ['a'] })
+    const propValidator: Validator<number | undefined> = (val) =>
+      val === 1 ? val : { ...failure(val, ''), path: ['a'] }
+
     const validator = objectValidator<ObjectWithOptionalProperty>({ n: propValidator })
 
-    it('succeeds for missing property', () => {
-      const value: ObjectWithOptionalProperty = {}
-      expect(validator(value)).toBe(value)
+    it('failed for missing property', () => {
+      expect(isFailure(validator({}))).toBe(true)
     })
 
     it('succeeds for valid property', () => {
       const value: ObjectWithOptionalProperty = { n: 1 }
+      expect(validator(value)).toBe(value)
+    })
+
+    it('succeeds for missing property if no validator is defined', () => {
+      const value: ObjectWithOptionalProperty = {}
+      const validator = objectValidator<ObjectWithOptionalProperty>({})
+      expect(validator(value)).toBe(value)
+    })
+
+    it('succeeds for missing property if validator that allows undefined is defined', () => {
+      const value: ObjectWithOptionalProperty = {}
+      const validator = objectValidator<ObjectWithOptionalProperty>({
+        n: (value) => (value === undefined ? value : failure(value, '')),
+      })
+
       expect(validator(value)).toBe(value)
     })
 

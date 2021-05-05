@@ -9,10 +9,19 @@ import type { _ReadonlyObject } from '@shaval/core';
 import type { Result } from '@shaval/core';
 
 // @public (undocumented)
-export function and<T1, T2, TRest extends unknown[]>(validator1: ValidatorOrShorthand<T1>, validator2: ValidatorOrShorthand<T2>, ...otherValidators: _AndValidators<TRest>): Validator<T1 & T2 & ([] extends TRest ? unknown : TRest[number])>;
+export function allowUndefined<T>(validator: ValidatorOrShorthand<T>): Validator<T | undefined>;
 
 // @public (undocumented)
-export type _AndValidators<T> = {
+export function and<T>(validator1: ValidatorOrShorthand<T>, validator2: ValidatorOrShorthand<T>, ...otherValidators: ValidatorOrShorthand<T>[]): Validator<T>;
+
+// @public (undocumented)
+export function and<T1, T2, TRest extends readonly unknown[]>(validator1: ValidatorOrShorthand<T1>, validator2: ValidatorOrShorthand<T2>, ...otherValidators: _AndRestValidators<TRest>): Validator<T1 & T2 & ([] extends TRest ? unknown : TRest[number])>;
+
+// @public
+export function and<T1, T2, T3, TRest extends readonly unknown[]>(validator1: ValidatorOrShorthand<T1>, validator2: ValidatorOrShorthand<T2>, validator3: ValidatorOrShorthand<T3>, ...otherValidators: _AndRestValidators<TRest>): Validator<T1 & T2 & T3 & ([] extends TRest ? unknown : TRest[number])>;
+
+// @public
+export type _AndRestValidators<T> = {
     [K in keyof T]: ValidatorOrShorthand<T[K]>;
 };
 
@@ -27,7 +36,7 @@ export type AndValidatorShorthand<T> = readonly [
 export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;
 
 // @public (undocumented)
-export function arrayValidator<T>(itemValidator: Validator<T>, ...itemValidators: readonly Validator<T>[]): Validator<readonly T[]>;
+export function arrayValidator<T>(itemValidator: ValidatorOrShorthand<T>, ...itemValidators: readonly ValidatorOrShorthand<T>[]): Validator<readonly T[]>;
 
 // @public
 export function greaterThan(comparand: number): Validator<number>;
@@ -36,8 +45,8 @@ export function greaterThan(comparand: number): Validator<number>;
 export function lessThan(comparand: number): Validator<number>;
 
 // @public (undocumented)
-export type ObjectPropertyValidators<T extends _ReadonlyObject | null> = null extends T ? never : T extends readonly unknown[] ? never : {
-    readonly [prop in keyof T]?: ValidatorOrShorthand<_ArrayAsReadonly<Exclude<T[prop], undefined>>>;
+export type ObjectPropertyValidators<T extends _ReadonlyObject | null> = null extends T ? never : undefined extends T ? never : T extends readonly unknown[] ? never : {
+    readonly [prop in keyof T]?: ValidatorOrShorthand<_ArrayAsReadonly<T[prop]>>;
 };
 
 // @public (undocumented)
@@ -47,10 +56,13 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
 export type ObjectValidatorShorthand<T> = ObjectPropertyValidators<T>;
 
 // @public (undocumented)
-export function or<T>(validator1: Validator<T>, validator2: Validator<T>, ...restValidators: Validator<T>[]): Validator<T>;
+export function or<T>(validator1: ValidatorOrShorthand<T>, validator2: ValidatorOrShorthand<T>, ...restValidators: ValidatorOrShorthand<T>[]): Validator<T>;
 
 // @public
 export function required<T>(value: T): Result<T>;
+
+// @public (undocumented)
+export function resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<any>;
 
 // @public
 export function sameAs<T>(comparand: T): Validator<T>;

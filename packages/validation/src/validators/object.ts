@@ -1,6 +1,6 @@
 import type { Errors, _ReadonlyObject } from '@shaval/core'
 import { _failure, _isFailure } from '../result.js'
-import { resolveValidatorOrShorthand, Validator, ValidatorOrShorthand } from '../validator.js'
+import { Validator, ValidatorOrShorthand, _resolveValidatorOrShorthand } from '../validator.js'
 
 /**
  * @public
@@ -17,10 +17,12 @@ export type ObjectValidatorShorthand<T> = ObjectPropertyValidators<T>
  */
 export type ObjectPropertyValidators<T extends _ReadonlyObject | null> = null extends T
   ? never
+  : undefined extends T
+  ? never
   : T extends readonly unknown[]
   ? never
   : {
-      readonly [prop in keyof T]?: ValidatorOrShorthand<_ArrayAsReadonly<Exclude<T[prop], undefined>>>
+      readonly [prop in keyof T]?: ValidatorOrShorthand<_ArrayAsReadonly<T[prop]>>
     }
 
 /**
@@ -31,12 +33,16 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
     throw new Error(`property validators must not be null or undefined`)
   }
 
+  const resolvedPropertyValidators: Record<string, Validator<unknown>> = {}
+
   for (const key of Object.keys(propertyValidators)) {
     const validator = propertyValidators[key as keyof T]
 
-    if (validator === null || (validator === undefined && key in propertyValidators)) {
-      throw new Error(`validators must not be null or undefined`)
+    if (validator === undefined && key in propertyValidators) {
+      throw new Error(`validators must not be undefined`)
     }
+
+    resolvedPropertyValidators[key] = _resolveValidatorOrShorthand(validator as Validator<unknown>)
   }
 
   return (value) => {
@@ -46,16 +52,16 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
 
     const errors: Errors[] = []
 
-    for (const key of Object.keys(value)) {
+    for (const key of Object.keys(resolvedPropertyValidators)) {
       const propValue = value[key as keyof T]
-      const validator = propertyValidators[key as keyof T] as Validator<unknown>
+      const validator = resolvedPropertyValidators[key]
 
       if (!validator) {
         continue
       }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const propValidator = resolveValidatorOrShorthand(validator!)
+      const propValidator = _resolveValidatorOrShorthand(validator!)
       const result = propValidator(propValue)
 
       if (_isFailure(result)) {

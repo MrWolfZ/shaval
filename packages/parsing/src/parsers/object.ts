@@ -1,5 +1,5 @@
 import { Errors, failure, isFailure, _ReadonlyObject } from '@shaval/core'
-import { Parser, ParserOrShorthand, resolveParserOrShorthand } from '../parser.js'
+import { Parser, ParserOrShorthand, _resolveParserOrShorthand } from '../parser.js'
 
 /**
  * @public
@@ -27,7 +27,7 @@ export function object<T extends _ReadonlyObject>(
 
   for (const key of Object.keys(propertyParsers)) {
     const parser = propertyParsers[key as keyof T] as Parser<T[keyof T]>
-    resolvedPropertyParsers[key] = resolveParserOrShorthand(parser)
+    resolvedPropertyParsers[key] = _resolveParserOrShorthand(parser)
   }
 
   return (value) => {

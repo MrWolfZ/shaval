@@ -63,4 +63,31 @@ describe(or.name, () => {
     expect(nestedErrors).toHaveLength(1)
     expect(Object.keys(nestedErrors[0]?.details ?? {})).toHaveLength(3)
   })
+
+  it('resolves "and" shorthand', () => {
+    const validator: Validator<number> = (value) => value
+    expect(or([validator, validator], [validator, validator])(1)).toEqual(1)
+  })
+
+  it('resolves "and" shorthand for rest arg', () => {
+    const validator: Validator<number> = (value) => value
+    expect(or([validator, validator], [validator, validator], [validator, validator])(1)).toEqual(1)
+  })
+
+  it('resolves nested "and" shorthand', () => {
+    const validator: Validator<number> = (value) => value
+    expect(or([validator, [validator, validator]], [validator, validator])(1)).toEqual(1)
+  })
+
+  it('resolves object shorthand', () => {
+    const validator: Validator<number> = (value) => value
+    const value = { n: 1 }
+    expect(or({ n: validator }, { n: validator })(value)).toBe(value)
+  })
+
+  it('resolves object shorthand for rest arg', () => {
+    const validator: Validator<number> = (value) => value
+    const value = { n: 1 }
+    expect(or({ n: validator }, { n: validator }, { n: validator })(value)).toBe(value)
+  })
 })
