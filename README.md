@@ -56,13 +56,20 @@ TODO
 - add `tupleValidator`
 - add `recordValidator`
 - add most common validators
-- check if `Validator<string | number>` should be assignable to `Validator<string>`
 - omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports
 - run performance tests
 
 - support for async validators
+
+### localization
+
+- create package for localizing (and humanizing) error messages
+
+### express
+
+- create package with express middleware for parsing and validating incoming requests
 
 ### recipes
 

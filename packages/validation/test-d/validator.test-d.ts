@@ -31,6 +31,8 @@ expectAssignable<ValidatorOrShorthand<{ s: string; n: number }>>({ s: stringVali
 expectAssignable<ValidatorOrShorthand<{ s: string; n: number }>>({ s: stringValidator })
 expectAssignable<ValidatorOrShorthand<{ s: string; n: number }>>([{ s: stringValidator }, { n: numberValidator }])
 expectAssignable<ValidatorOrShorthand<{ s: string | number }>>({ s: stringOrNumberValidator })
+expectError<ValidatorOrShorthand<{ s: string | number }>>({ s: stringValidator })
+expectError<ValidatorOrShorthand<{ s: string }>>({ s: stringOrNumberValidator })
 expectError<ValidatorOrShorthand<{ s: string | null }>>({ s: stringValidator })
 expectError<ValidatorOrShorthand<{ arr: string[] | null }>>({ arr: [stringValidator] })
 expectError<ValidatorOrShorthand<{ o: { s: string } | null }>>({ o: { s: stringValidator } })
