@@ -34,6 +34,7 @@ TODO
 
 ### parsing
 
+- add shorthands for object and array parsing
 - add `literal` parser
 - add `record` parser
 - add `enum` parser
@@ -47,15 +48,24 @@ TODO
 - add comments for all public exports
 - run performance tests
 
+- add `date` parser
+- add `stringToNumber` parser
+- support for async parsers
+
 ### validation
 
+- make shorthand for objects apply everywhere
+- make shorthand for `and` apply everywhere
 - add `tupleValidator`
+- add `recordValidator`
 - add most common validators
 - in `arrayValidator` if array element is object allow passing object validation config instead of validator
 - omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports
 - run performance tests
+
+- support for async validators
 
 ### recipes
 
