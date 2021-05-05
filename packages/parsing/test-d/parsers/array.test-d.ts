@@ -29,6 +29,7 @@ expectType<Parser<{ s: string }[]>>(array({ s: stringParser }))
 expectType<Parser<{ s: string }[][]>>(array([{ s: stringParser }]))
 
 expectAssignable<ArrayParserShorthand<string>>([stringParser])
+expectError<ArrayParserShorthand<string>>([stringParser, stringParser])
 expectAssignable<ArrayParserShorthand<string[]>>([[stringParser]])
 expectError<ArrayParserShorthand<string[]>>(stringParser)
 expectError<ArrayParserShorthand<string[]>>([numberParser])

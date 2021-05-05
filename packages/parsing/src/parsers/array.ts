@@ -5,7 +5,7 @@ import type { ObjectParserShorthand } from './object.js'
 /**
  * @public
  */
-export type ArrayParserShorthand<T> = [ParserOrShorthand<T>]
+export type ArrayParserShorthand<T> = readonly [ParserOrShorthand<T>]
 
 /**
  * @public

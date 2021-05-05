@@ -1,6 +1,15 @@
 import type { Errors } from '@shaval/core'
 import { _failure, _isFailure } from '../result.js'
-import type { Validator } from '../validator.js'
+import type { Validator, ValidatorOrShorthand } from '../validator.js'
+
+/**
+ * @public
+ */
+export type AndValidatorShorthand<T> = readonly [
+  ValidatorOrShorthand<T>,
+  ValidatorOrShorthand<T>,
+  ...ValidatorOrShorthand<T>[]
+]
 
 /**
  * @public

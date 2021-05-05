@@ -1,12 +1,7 @@
 import type { Errors, _ReadonlyObject } from '@shaval/core'
 import { _and } from '../combinators/and.js'
 import { _failure, _isFailure } from '../result.js'
-import type { Validator } from '../validator.js'
-
-/**
- * @public
- */
-export type _SelfOrArray<T> = T | readonly T[]
+import type { Validator, ValidatorOrShorthand } from '../validator.js'
 
 /**
  * @public
@@ -16,21 +11,18 @@ export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] 
 /**
  * @public
  */
-export type ObjectPropertyValidator<TProperty extends unknown[], TValidator> = TProperty extends [unknown[]]
-  ? _SelfOrArray<TValidator>
-  : TProperty[number] extends _ReadonlyObject
-  ? _SelfOrArray<ObjectPropertyValidators<TProperty[number]> | TValidator>
-  : _SelfOrArray<TValidator>
+export type ObjectValidatorShorthand<T> = ObjectPropertyValidators<T>
 
 /**
  * @public
  */
-export type ObjectPropertyValidators<T extends _ReadonlyObject> = {
-  readonly [prop in keyof T]?: ObjectPropertyValidator<
-    [Exclude<T[prop], undefined>], // wrap in tuple to prevent distribution of unions
-    Validator<_ArrayAsReadonly<Exclude<T[prop], undefined>>>
-  >
-}
+export type ObjectPropertyValidators<T extends _ReadonlyObject | null> = null extends T
+  ? null
+  : T extends readonly unknown[]
+  ? never
+  : {
+      readonly [prop in keyof T]?: ValidatorOrShorthand<_ArrayAsReadonly<Exclude<T[prop], undefined>>>
+    }
 
 /**
  * @public
@@ -76,17 +68,15 @@ export function objectValidator<T>(propertyValidators: ObjectPropertyValidators<
   }
 }
 
-function getPropertyValidator(
-  propValidator: ObjectPropertyValidator<[unknown], Validator<unknown>>,
-): Validator<unknown> {
+function getPropertyValidator(propValidator: ValidatorOrShorthand<unknown>): Validator<unknown> {
   const validators: Validator<unknown>[] = []
 
   if (typeof propValidator === 'function') {
-    validators.push(propValidator)
+    validators.push(propValidator as any)
   } else if (Array.isArray(propValidator)) {
-    validators.push(...propValidator)
+    validators.push(...(propValidator as any))
   } else {
-    validators.push(objectValidator(propValidator) as Validator<unknown>)
+    validators.push(objectValidator(propValidator as any) as Validator<unknown>)
   }
 
   return _and(...validators)

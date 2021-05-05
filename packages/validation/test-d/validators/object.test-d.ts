@@ -1,10 +1,12 @@
-import { objectValidator, Validator } from '@shaval/validation'
+import { ObjectPropertyValidators, objectValidator, ObjectValidatorShorthand, Validator } from '@shaval/validation'
 import { expectAssignable, expectError } from 'tsd'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 const stringValidator: Validator<string> = undefined!
 const numberValidator: Validator<number> = undefined!
+const stringOrNumberValidator: Validator<string | number> = undefined!
+const stringArrayValidator: Validator<readonly string[]> = undefined!
 
 interface SimpleObject {
   s: string
@@ -179,11 +181,10 @@ expectError<Validator<ObjectWithArrayProperty>>(
   }),
 )
 
-expectError<Validator<ObjectWithArrayProperty>>(
-  objectValidator<ObjectWithArrayProperty>({
-    arr: [stringValidator, arrayValidator],
-  }),
-)
+objectValidator<ObjectWithArrayProperty>({
+  // @ts-expect-error test
+  arr: [stringValidator, arrayValidator],
+})
 
 interface ObjectWithOptionalArrayProperty {
   arr?: number[]
@@ -209,11 +210,10 @@ expectError<Validator<ObjectWithOptionalArrayProperty>>(
   }),
 )
 
-expectError<Validator<ObjectWithOptionalArrayProperty>>(
-  objectValidator<ObjectWithOptionalArrayProperty>({
-    arr: [stringValidator, arrayValidator],
-  }),
-)
+objectValidator<ObjectWithOptionalArrayProperty>({
+  // @ts-expect-error test
+  arr: [stringValidator, arrayValidator],
+})
 
 const nullOrArrayValidator: Validator<readonly number[] | null> = undefined!
 
@@ -416,10 +416,11 @@ expectError<Validator<ObjectWithNullableObjectProperty>>(
   }),
 )
 
-objectValidator<ObjectWithNullableObjectProperty>({
-  // @ts-expect-error test
-  obj: [{ n: numberValidator }, { n: numberValidator }],
-})
+expectError<Validator<ObjectWithNullableObjectProperty>>(
+  objectValidator<ObjectWithNullableObjectProperty>({
+    obj: [() => null, { n: numberValidator }],
+  }),
+)
 
 objectValidator<ObjectWithNullableObjectProperty>({
   // @ts-expect-error test
@@ -436,3 +437,26 @@ objectValidator<ObjectWithNullableObjectProperty>({
   // @ts-expect-error test
   obj: [stringValidator, nestedObjectValidator],
 })
+
+expectAssignable<ObjectValidatorShorthand<{ s: string }>>({ s: stringValidator })
+expectAssignable<ObjectValidatorShorthand<{ s: string }>>({ s: [stringValidator, stringValidator] })
+expectAssignable<ObjectValidatorShorthand<{ s: string; n: number }>>({ s: stringValidator, n: numberValidator })
+expectAssignable<ObjectValidatorShorthand<{ s: string; n: number }>>({ s: stringValidator })
+expectAssignable<ObjectValidatorShorthand<{ s: string | number }>>({ s: stringOrNumberValidator })
+expectAssignable<ObjectValidatorShorthand<{ s: { n: number } }>>({ s: { n: numberValidator } })
+expectError<ObjectValidatorShorthand<{ s: string[] }>>({ s: [stringValidator] })
+expectAssignable<ObjectValidatorShorthand<{ s: string[] }>>({ s: stringArrayValidator })
+expectAssignable<ObjectValidatorShorthand<{ s: readonly string[] }>>({ s: stringArrayValidator })
+expectAssignable<ObjectValidatorShorthand<{ s: string[] }>>({ s: [stringArrayValidator, stringArrayValidator] })
+expectError<ObjectValidatorShorthand<{ s: string[][] }>>({ s: [stringValidator] })
+expectError<ObjectValidatorShorthand<{ s: string[][] }>>({ s: [[stringValidator]] })
+expectAssignable<ObjectValidatorShorthand<{ o: { s: string } }>>({ o: { s: stringValidator } })
+expectError<ObjectValidatorShorthand<{ s: string | null }>>({ s: stringValidator })
+expectError<ObjectValidatorShorthand<{ arr: string[] | null }>>({ arr: [stringValidator] })
+expectError<ObjectValidatorShorthand<{ o: { s: string } | null }>>({ o: { s: stringValidator } })
+expectError<ObjectValidatorShorthand<string[]>>([stringValidator])
+
+expectAssignable<ObjectPropertyValidators<{ s: string }>>({ s: stringValidator })
+expectError<ObjectPropertyValidators<{ s: string | null }>>({ s: stringValidator })
+expectError<ObjectPropertyValidators<{ arr: string[] | null }>>({ arr: [stringValidator] })
+expectError<ObjectPropertyValidators<{ o: { s: string } | null }>>({ o: { s: stringValidator } })
