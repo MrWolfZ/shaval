@@ -1,140 +1,89 @@
-import { isFailure, isSuccess } from '@shaval/core'
-import { array } from './array.js'
-import { boolean } from './boolean.js'
-import { nullable } from './nullable.js'
-import { number } from './number.js'
+import { failure, isFailure, isSuccess } from '@shaval/core'
+import type { Parser } from '../parser.js'
 import { object } from './object.js'
-import { optional } from './optional.js'
-import { string } from './string.js'
-import { union } from './union.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe(object.name, () => {
-  it('throws for null config', () => {
-    expect(() => object<{ s: string }>(null as any)).toThrow()
+  const stringParser: Parser<string> = (value) => (value === 'a' ? value : failure(value, 'string'))
+  const numberParser: Parser<number> = (value) => (value === 1 ? value : failure(value, 'number'))
+
+  interface TestObject {
+    s: string
+    n: number
+  }
+
+  const parser = object<TestObject>({
+    s: stringParser,
+    n: numberParser,
   })
 
-  it('throws for undefined config', () => {
-    expect(() => object<{ s: string }>(undefined as any)).toThrow()
+  it('suceeds for object of correct shape', () => {
+    const value: TestObject = { s: 'a', n: 1 }
+    expect(parser(value)).toEqual(value)
   })
 
-  it('throws for null property parser', () => {
-    expect(() => object<{ s: string }>({ s: null as any })).toThrow()
+  it('fails for object with missing property', () => {
+    const value: Partial<TestObject> = { s: 'a' }
+    expect(isSuccess(parser(value))).toBe(false)
   })
 
-  it('throws for undefined property parser', () => {
-    expect(() => object<{ s: string }>({ s: undefined as any })).toThrow()
+  it('fails for object with multiple missing properties', () => {
+    const value: Partial<TestObject> = {}
+    expect(isSuccess(parser(value))).toBe(false)
   })
 
-  describe('simple object', () => {
-    interface SimpleObject {
-      s: string
-      n: number
-      b: boolean
+  it('calls the property parser for each property', () => {
+    const value: TestObject = { s: 'a', n: 1 }
+
+    const sParser = jest.fn()
+    const nParser = jest.fn()
+    const parser = object<TestObject>({
+      s: sParser,
+      n: nParser,
+    })
+
+    parser(value)
+    expect(sParser).toHaveBeenCalledTimes(1)
+    expect(sParser).toHaveBeenCalledWith(value.s)
+    expect(nParser).toHaveBeenCalledTimes(1)
+    expect(nParser).toHaveBeenCalledWith(value.n)
+  })
+
+  it('aggregates errors from all properties', () => {
+    const value: TestObject = { s: 'b', n: 2 }
+    const result = parser(value)
+
+    if (!isFailure(result)) {
+      return fail('result was not an error')
     }
 
-    const parser = object<SimpleObject>({
-      s: string,
-      n: number,
-      b: boolean,
-    })
+    expect(result.errors).toHaveLength(2)
+  })
 
-    it('suceeds for object of correct shape', () => {
-      const value: SimpleObject = { s: 'a', n: 1, b: true }
-      expect(parser(value)).toEqual(value)
-    })
+  it('adds the property name to path for errors', () => {
+    const value: TestObject = { s: 'b', n: 2 }
+    const result = parser(value)
 
-    it('fails for object with missing property', () => {
-      const value: Partial<SimpleObject> = { s: '', b: true }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
+    if (!isFailure(result)) {
+      return fail('result was not an error')
+    }
 
-    it('fails for object with multiple missing properties', () => {
-      const value: Partial<SimpleObject> = { b: true }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
+    expect(result.errors).toHaveLength(2)
+    expect(result.errors[0]?.path).toEqual(['s'])
+    expect(result.errors[1]?.path).toEqual(['n'])
+  })
 
-    it('fails for object with property of wrong type', () => {
-      const value: SimpleObject = { s: '', n: '' as any, b: true }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
+  it('returns a deep copy', () => {
+    const value: TestObject = { s: 'a', n: 1 }
+    expect(parser(value)).not.toBe(value)
+    expect(parser(value)).toEqual(value)
+  })
 
-    it('aggregates errors from all properties', () => {
-      const value: Partial<SimpleObject> = { n: '' as any, b: false }
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: Partial<SimpleObject> = { n: '' as any, b: false }
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-      expect(result.errors[0]?.path).toEqual(['s'])
-      expect(result.errors[1]?.path).toEqual(['n'])
-    })
-
-    it('returns a deep copy', () => {
-      const value: SimpleObject = { s: 'a', n: 1, b: true }
-      expect(parser(value)).not.toBe(value)
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('strips unknown properties', () => {
-      const expected: SimpleObject = { s: 'a', n: 1, b: true }
-      const input = { ...expected, extra: '' }
-      expect(parser(input)).toEqual(expected)
-    })
-
-    it('fails for zero', () => {
-      expect(isSuccess(parser(0))).toBe(false)
-    })
-
-    it('fails for number', () => {
-      expect(isSuccess(parser(1))).toBe(false)
-    })
-
-    it('fails for null', () => {
-      expect(isSuccess(parser(null))).toBe(false)
-    })
-
-    it('fails for string', () => {
-      expect(isSuccess(parser('a'))).toBe(false)
-    })
-
-    it('fails for boolean', () => {
-      expect(isSuccess(parser(true))).toBe(false)
-    })
-
-    it('fails for array', () => {
-      expect(isSuccess(parser([' ']))).toBe(false)
-    })
-
-    it('fails for function', () => {
-      expect(isSuccess(parser(() => void 0))).toBe(false)
-    })
-
-    it('fails for class instance', () => {
-      class TestClass implements SimpleObject {
-        s = ''
-        n = 0
-        b = false
-      }
-
-      const value = new TestClass()
-
-      expect(isSuccess(parser(value))).toBe(false)
-    })
+  it('strips unknown properties', () => {
+    const expected: TestObject = { s: 'a', n: 1 }
+    const input = { ...expected, extra: '' }
+    expect(parser(input)).toEqual(expected)
   })
 
   describe('object with optional property', () => {
@@ -143,9 +92,12 @@ describe(object.name, () => {
       n?: number
     }
 
+    const optionalNumberParser: Parser<number | undefined> = (value) =>
+      value === 1 || value === undefined ? (value as number) : failure(value, 'number')
+
     const parser = object<ObjectWithOptionalProperty>({
-      s: string,
-      n: optional(number),
+      s: stringParser,
+      n: optionalNumberParser,
     })
 
     it('suceeds for object of correct shape', () => {
@@ -167,11 +119,6 @@ describe(object.name, () => {
       const value: Partial<ObjectWithOptionalProperty> = { n: 1 }
       expect(isSuccess(parser(value))).toBe(false)
     })
-
-    it('fails for object with optional property of wrong type', () => {
-      const value: ObjectWithOptionalProperty = { s: '', n: '' as any }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
   })
 
   describe('object with nullable property', () => {
@@ -179,8 +126,11 @@ describe(object.name, () => {
       n: number | null
     }
 
+    const nullableNumberParser: Parser<number | null> = (value) =>
+      value === 1 || value === null ? (value as number) : failure(value, 'number')
+
     const parser = object<ObjectWithNullableProperty>({
-      n: nullable(number),
+      n: nullableNumberParser,
     })
 
     it('suceeds for object of correct shape', () => {
@@ -197,156 +147,79 @@ describe(object.name, () => {
       const value: Partial<ObjectWithNullableProperty> = {}
       expect(isSuccess(parser(value))).toBe(false)
     })
-
-    it('fails for object with property of wrong type', () => {
-      const value: ObjectWithNullableProperty = { n: '' as any }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
   })
 
-  describe('object with union property', () => {
-    interface ObjectWithOptionalProperty {
-      s: string | number
-    }
-
-    const parser = object<ObjectWithOptionalProperty>({
-      s: union(string, number),
-    })
-
-    it('suceeds for object with property of first type', () => {
-      const value: ObjectWithOptionalProperty = { s: 'a' }
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for object with property of second type', () => {
-      const value: ObjectWithOptionalProperty = { s: 1 }
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for object with missing required property', () => {
-      const value: Partial<ObjectWithOptionalProperty> = {}
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for object with property of wrong type', () => {
-      const value: ObjectWithOptionalProperty = { s: {} as any }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
+  it('resolves array shorthand for property parser', () => {
+    const parser: Parser<number> = () => 2
+    const value = { n: [1] }
+    expect(object({ n: [parser] })(value)).toEqual({ n: [2] })
   })
 
-  describe('object with array property', () => {
-    interface ObjectWithArrayProperty {
-      arr: number[]
-    }
-
-    const parser = object<ObjectWithArrayProperty>({
-      arr: array(number),
-    })
-
-    it('suceeds for object of correct shape', () => {
-      const value: ObjectWithArrayProperty = { arr: [1] }
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for empty array property', () => {
-      const value: ObjectWithArrayProperty = { arr: [] }
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for object with missing property', () => {
-      const value: Partial<ObjectWithArrayProperty> = {}
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for object with property of wrong type', () => {
-      const value: ObjectWithArrayProperty = { arr: '' as any }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for object with array item of wrong type', () => {
-      const value: ObjectWithArrayProperty = { arr: ['' as any] }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('aggregates errors from all array items', () => {
-      const value: Partial<ObjectWithArrayProperty> = { arr: ['' as any, '' as any] }
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: Partial<ObjectWithArrayProperty> = { arr: ['' as any, 0, '' as any] }
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-      expect(result.errors[0]?.path).toEqual(['arr', '0'])
-      expect(result.errors[1]?.path).toEqual(['arr', '2'])
-    })
+  it('resolves object shorthand for property parser', () => {
+    const parser: Parser<number> = () => 2
+    const value = { o: { n: 1 } }
+    expect(object({ o: { n: parser } })(value)).toEqual({ o: { n: 2 } })
   })
 
-  describe('object with object property', () => {
-    interface ObjectWithObjectProperty {
-      obj: {
-        s: string
-        n: number
-      }
+  it('resolves nested object shorthand for property parser', () => {
+    const parser: Parser<number> = () => 2
+    const value = { o: { n: { i: 1 } } }
+    expect(object({ o: { n: { i: parser } } })(value)).toEqual({ o: { n: { i: 2 } } })
+  })
+
+  it('fails for zero', () => {
+    expect(isSuccess(parser(0))).toBe(false)
+  })
+
+  it('fails for number', () => {
+    expect(isSuccess(parser(1))).toBe(false)
+  })
+
+  it('fails for null', () => {
+    expect(isSuccess(parser(null))).toBe(false)
+  })
+
+  it('fails for string', () => {
+    expect(isSuccess(parser('a'))).toBe(false)
+  })
+
+  it('fails for boolean', () => {
+    expect(isSuccess(parser(true))).toBe(false)
+  })
+
+  it('fails for array', () => {
+    expect(isSuccess(parser([' ']))).toBe(false)
+  })
+
+  it('fails for function', () => {
+    expect(isSuccess(parser(() => void 0))).toBe(false)
+  })
+
+  it('fails for class instance', () => {
+    class TestClass implements TestObject {
+      s = ''
+      n = 0
+      b = false
     }
 
-    const parser = object<ObjectWithObjectProperty>({
-      obj: object({ s: string, n: number }),
-    })
+    const value = new TestClass()
 
-    it('suceeds for object of correct shape', () => {
-      const value: ObjectWithObjectProperty = { obj: { s: '', n: 1 } }
-      expect(parser(value)).toEqual(value)
-    })
+    expect(isSuccess(parser(value))).toBe(false)
+  })
 
-    it('fails for object with missing property', () => {
-      const value: Partial<ObjectWithObjectProperty> = {}
-      expect(isSuccess(parser(value))).toBe(false)
-    })
+  it('throws for null config', () => {
+    expect(() => object(null as any)).toThrow()
+  })
 
-    it('fails for object with property of wrong type', () => {
-      const value: ObjectWithObjectProperty = { obj: '' as any }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
+  it('throws for undefined config', () => {
+    expect(() => object(undefined as any)).toThrow()
+  })
 
-    it('fails for object with property of wrong type', () => {
-      const value: ObjectWithObjectProperty = { obj: { s: '', n: '' as any } }
-      expect(isSuccess(parser(value))).toBe(false)
-    })
+  it('throws for null property parser', () => {
+    expect(() => object({ s: null as any })).toThrow()
+  })
 
-    it('aggregates errors from all nested properties', () => {
-      const value: ObjectWithObjectProperty = { obj: { s: 0 as any, n: '' as any } }
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: ObjectWithObjectProperty = { obj: { s: 0 as any, n: '' as any } }
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-      expect(result.errors[0]?.path).toEqual(['obj', 's'])
-      expect(result.errors[1]?.path).toEqual(['obj', 'n'])
-    })
+  it('throws for undefined property parser', () => {
+    expect(() => object({ s: undefined as any })).toThrow()
   })
 })

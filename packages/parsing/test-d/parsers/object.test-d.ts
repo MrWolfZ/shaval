@@ -1,39 +1,63 @@
-import { array, boolean, nullable, number, object, optional, Parser, string, union } from '@shaval/parsing'
-import { expectError, expectType } from 'tsd'
+import { object, ObjectParserShorthand, Parser } from '@shaval/parsing'
+import { expectAssignable, expectError, expectType } from 'tsd'
+
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+// @ts-expect-error test
+object([])
+
+// @ts-expect-error test
+object([''])
+
+// @ts-expect-error test
+object([string])
 
 interface SimpleObject {
   s: string
   n: number
-  b: boolean
 }
 
+const stringParser: Parser<string> = undefined!
+const numberParser: Parser<number> = undefined!
+const optionalStringParser: Parser<string | undefined> = undefined!
+const nullableStringParser: Parser<string | null> = undefined!
+const optionalNullableStringParser: Parser<string | null | undefined> = undefined!
+const stringOrNumberParser: Parser<string | number> = undefined!
+const stringArrayParser: Parser<string[]> = undefined!
+const objectParser: Parser<{ s: string }> = undefined!
+
 expectType<Parser<SimpleObject>>(
-  object<SimpleObject>({ s: string, n: number, b: boolean }),
+  object<SimpleObject>({ s: stringParser, n: numberParser }),
 )
 
-const simpleObjectParser = object<SimpleObject>({ s: string, n: number, b: boolean })
+expectError<Parser<SimpleObject>>(object<SimpleObject>([]))
 
-expectType<Parser<string | SimpleObject>>(union(string, simpleObjectParser))
-expectType<Parser<string | SimpleObject>>(union(simpleObjectParser, string))
-expectError<Parser<string | SimpleObject>>(union(string, string))
-expectError<Parser<string | SimpleObject>>(union(simpleObjectParser, simpleObjectParser))
-expectType<Parser<string | SimpleObject | undefined>>(optional(union(string, simpleObjectParser)))
-expectError<Parser<string | SimpleObject | undefined>>(nullable(union(string, simpleObjectParser)))
-expectType<Parser<string | SimpleObject | null>>(nullable(union(string, simpleObjectParser)))
-expectError<Parser<string | SimpleObject | null>>(optional(union(string, simpleObjectParser)))
-expectType<Parser<string | SimpleObject | null | undefined>>(optional(nullable(union(string, simpleObjectParser))))
-expectType<Parser<string | SimpleObject | null | undefined>>(nullable(optional(union(string, simpleObjectParser))))
+expectError<Parser<SimpleObject>>(
+  object<SimpleObject>([stringParser]),
+)
+
+interface ObjectWithUnionProperty {
+  s: string | number
+}
+
+expectType<Parser<ObjectWithUnionProperty>>(
+  object<ObjectWithUnionProperty>({ s: stringOrNumberParser }),
+)
+
+expectError<Parser<ObjectWithUnionProperty>>(
+  object<ObjectWithUnionProperty>({ s: stringParser }),
+)
 
 interface ObjectWithOptionalProperty {
   s?: string
 }
 
 expectType<Parser<ObjectWithOptionalProperty>>(
-  object<ObjectWithOptionalProperty>({ s: optional(string) }),
+  object<ObjectWithOptionalProperty>({ s: optionalStringParser }),
 )
 
 expectError<Parser<ObjectWithOptionalProperty>>(
-  object<ObjectWithOptionalProperty>({ s: string }),
+  object<ObjectWithOptionalProperty>({ s: stringParser }),
 )
 
 interface ObjectWithNullableProperty {
@@ -41,11 +65,11 @@ interface ObjectWithNullableProperty {
 }
 
 expectType<Parser<ObjectWithNullableProperty>>(
-  object<ObjectWithNullableProperty>({ s: nullable(string) }),
+  object<ObjectWithNullableProperty>({ s: nullableStringParser }),
 )
 
 expectError<Parser<ObjectWithNullableProperty>>(
-  object<ObjectWithNullableProperty>({ s: string }),
+  object<ObjectWithNullableProperty>({ s: stringParser }),
 )
 
 interface ObjectWithNullableOptionalProperty {
@@ -53,19 +77,19 @@ interface ObjectWithNullableOptionalProperty {
 }
 
 expectType<Parser<ObjectWithNullableOptionalProperty>>(
-  object<ObjectWithNullableOptionalProperty>({ s: optional(nullable(string)) }),
+  object<ObjectWithNullableOptionalProperty>({ s: optionalNullableStringParser }),
 )
 
 expectError<Parser<ObjectWithNullableOptionalProperty>>(
-  object<ObjectWithNullableOptionalProperty>({ s: nullable(string) }),
+  object<ObjectWithNullableOptionalProperty>({ s: nullableStringParser }),
 )
 
 expectError<Parser<ObjectWithNullableOptionalProperty>>(
-  object<ObjectWithNullableOptionalProperty>({ s: optional(string) }),
+  object<ObjectWithNullableOptionalProperty>({ s: optionalStringParser }),
 )
 
 expectError<Parser<ObjectWithNullableOptionalProperty>>(
-  object<ObjectWithNullableOptionalProperty>({ s: string }),
+  object<ObjectWithNullableOptionalProperty>({ s: stringParser }),
 )
 
 interface ObjectWithArrayProperty {
@@ -73,40 +97,25 @@ interface ObjectWithArrayProperty {
 }
 
 expectType<Parser<ObjectWithArrayProperty>>(
-  object<ObjectWithArrayProperty>({ arr: array(string) }),
+  object<ObjectWithArrayProperty>({ arr: stringArrayParser }),
 )
 
-interface ObjectWithOptionalArrayProperty {
-  arr?: string[]
-}
-
-expectType<Parser<ObjectWithOptionalArrayProperty>>(
-  object<ObjectWithOptionalArrayProperty>({ arr: optional(array(string)) }),
+expectType<Parser<ObjectWithArrayProperty>>(
+  object<ObjectWithArrayProperty>({ arr: [stringParser] }),
 )
 
-expectError<Parser<ObjectWithOptionalArrayProperty>>(
-  object<ObjectWithOptionalArrayProperty>({ arr: array(string) }),
+expectError<Parser<ObjectWithArrayProperty>>(
+  object<ObjectWithArrayProperty>({ arr: stringParser }),
 )
 
-expectError<Parser<ObjectWithOptionalArrayProperty>>(
-  object<ObjectWithOptionalArrayProperty>({ arr: nullable(array(string)) }),
-)
+// TODO
+// interface ObjectWithReadonlyArrayProperty {
+//   arr: readonly string[]
+// }
 
-interface ObjectWithNullableArrayProperty {
-  arr: string[] | null
-}
-
-expectType<Parser<ObjectWithNullableArrayProperty>>(
-  object<ObjectWithNullableArrayProperty>({ arr: nullable(array(string)) }),
-)
-
-expectError<Parser<ObjectWithNullableArrayProperty>>(
-  object<ObjectWithNullableArrayProperty>({ arr: array(string) }),
-)
-
-expectError<Parser<ObjectWithNullableArrayProperty>>(
-  object<ObjectWithNullableArrayProperty>({ arr: optional(array(string)) }),
-)
+// expectType<Parser<ObjectWithReadonlyArrayProperty>>(
+//   object<ObjectWithReadonlyArrayProperty>({ arr: array(string) }),
+// )
 
 interface ObjectWithObjectProperty {
   obj: {
@@ -115,19 +124,14 @@ interface ObjectWithObjectProperty {
 }
 
 expectType<Parser<ObjectWithObjectProperty>>(
-  object<ObjectWithObjectProperty>({ obj: object({ s: string }) }),
+  object<ObjectWithObjectProperty>({ obj: objectParser }),
 )
 
-interface ObjectWithOptionalObjectProperty {
-  obj?: {
-    s: string
-  }
-}
-
-expectType<Parser<ObjectWithOptionalObjectProperty>>(
-  object<ObjectWithOptionalObjectProperty>({ obj: optional(object({ s: string })) }),
-)
-
-expectError<Parser<ObjectWithOptionalObjectProperty>>(
-  object<ObjectWithOptionalObjectProperty>({ obj: object({ s: string }) }),
-)
+expectAssignable<ObjectParserShorthand<{ s: string }>>({ s: stringParser })
+expectAssignable<ObjectParserShorthand<{ s: string; n: number }>>({ s: stringParser, n: numberParser })
+expectError<ObjectParserShorthand<{ s: string; n: number }>>({ s: stringParser })
+expectAssignable<ObjectParserShorthand<{ s: string | number }>>({ s: stringOrNumberParser })
+expectAssignable<ObjectParserShorthand<{ s: { n: number } }>>({ s: { n: numberParser } })
+expectAssignable<ObjectParserShorthand<{ s: string[] }>>({ s: [stringParser] })
+expectError<ObjectParserShorthand<{ s: string[][] }>>({ s: [stringParser] })
+expectAssignable<ObjectParserShorthand<{ s: string[][] }>>({ s: [[stringParser]] })

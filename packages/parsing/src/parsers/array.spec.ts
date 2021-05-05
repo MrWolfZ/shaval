@@ -1,312 +1,119 @@
-import { isFailure, isSuccess } from '@shaval/core'
+import { failure, isFailure, isSuccess } from '@shaval/core'
+import type { Parser } from '../parser.js'
 import { array } from './array.js'
-import { nullable } from './nullable.js'
-import { number } from './number.js'
-import { object } from './object.js'
-import { optional } from './optional.js'
-import { string } from './string.js'
-import { union } from './union.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe(array.name, () => {
+  const itemParser: Parser<number> = (value) => (value === 1 ? value : failure(value, 'fail'))
+  const parser = array(itemParser)
+
+  it('suceeds for empty array', () => {
+    const value: number[] = []
+    expect(parser(value)).toEqual(value)
+  })
+
+  it('suceeds for non-empty array of valid values', () => {
+    const value = [1, 1]
+    expect(parser(value)).toEqual(value)
+  })
+
+  it('fails it one item is invalid', () => {
+    expect(isSuccess(parser([1, 2]))).toBe(false)
+  })
+
+  it('calls the item parser for each item in order', () => {
+    const value = [1, 2, 3]
+    const itemParser = jest.fn()
+    const parser = array(itemParser)
+    parser(value)
+    expect(itemParser).toHaveBeenCalledTimes(value.length)
+    expect(itemParser).toHaveBeenNthCalledWith(1, 1)
+    expect(itemParser).toHaveBeenNthCalledWith(2, 2)
+    expect(itemParser).toHaveBeenNthCalledWith(3, 3)
+  })
+
+  it('aggregates errors from all items', () => {
+    const value = [2, 1, 3]
+    const result = parser(value)
+
+    if (!isFailure(result)) {
+      return fail('result was not an error')
+    }
+
+    expect(result.errors).toHaveLength(2)
+  })
+
+  it('adds the index to path for errors', () => {
+    const value = [2, 1, 3]
+    const result = parser(value)
+
+    if (!isFailure(result)) {
+      return fail('result was not an error')
+    }
+
+    expect(result.errors).toHaveLength(2)
+    expect(result.errors[0]?.path).toEqual(['0'])
+    expect(result.errors[1]?.path).toEqual(['2'])
+  })
+
+  it('returns a deep copy', () => {
+    const value = [1, 1, 1]
+    expect(parser(value)).not.toBe(value)
+    expect(parser(value)).toEqual(value)
+  })
+
+  it('resolves array shorthand', () => {
+    const parser: Parser<number> = () => 2
+    const value = [[1]]
+    expect(array([parser])(value)).toEqual([[2]])
+  })
+
+  it('resolves nested array shorthand', () => {
+    const parser: Parser<number> = () => 2
+    const value = [[[1]]]
+    expect(array([[parser]])(value)).toEqual([[[2]]])
+  })
+
+  it('resolves object shorthand', () => {
+    const parser: Parser<number> = () => 2
+    const value = [{ n: 1 }]
+    expect(array({ n: parser })(value)).toEqual([{ n: 2 }])
+  })
+
+  it('fails for zero', () => {
+    expect(isSuccess(parser(0))).toBe(false)
+  })
+
+  it('fails for number', () => {
+    expect(isSuccess(parser(1))).toBe(false)
+  })
+
+  it('fails for null', () => {
+    expect(isSuccess(parser(null))).toBe(false)
+  })
+
+  it('fails for string', () => {
+    expect(isSuccess(parser('a'))).toBe(false)
+  })
+
+  it('fails for boolean', () => {
+    expect(isSuccess(parser(true))).toBe(false)
+  })
+
+  it('fails for object', () => {
+    expect(isSuccess(parser({ s: '' }))).toBe(false)
+  })
+
+  it('fails for function', () => {
+    expect(isSuccess(parser(() => void 0))).toBe(false)
+  })
+
   it('throws for null parser', () => {
-    expect(() => object<{ s: string }>(null as any)).toThrow()
+    expect(() => array(null as any)).toThrow()
   })
 
   it('throws for undefined parser', () => {
-    expect(() => object<{ s: string }>(undefined as any)).toThrow()
-  })
-
-  describe('primitive items', () => {
-    const parser = array(number)
-
-    it('suceeds for empty array', () => {
-      const value: number[] = []
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array', () => {
-      const value = [1, 2, 3]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for item of wrong type', () => {
-      const value: number[] = [1, '' as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for undefined item', () => {
-      const value: number[] = [1, undefined as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for null item', () => {
-      const value: number[] = [1, null as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('aggregates errors from all items', () => {
-      const value: number[] = ['' as any, '' as any]
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-    })
-
-    it('adds the index to path for errors', () => {
-      const value: number[] = ['' as any, 1, '' as any]
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-      expect(result.errors[0]?.path).toEqual(['0'])
-      expect(result.errors[1]?.path).toEqual(['2'])
-    })
-
-    it('returns a deep copy', () => {
-      const value = [1, 2, 3]
-      expect(parser(value)).not.toBe(value)
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for zero', () => {
-      expect(isSuccess(parser(0))).toBe(false)
-    })
-
-    it('fails for number', () => {
-      expect(isSuccess(parser(1))).toBe(false)
-    })
-
-    it('fails for null', () => {
-      expect(isSuccess(parser(null))).toBe(false)
-    })
-
-    it('fails for string', () => {
-      expect(isSuccess(parser('a'))).toBe(false)
-    })
-
-    it('fails for boolean', () => {
-      expect(isSuccess(parser(true))).toBe(false)
-    })
-
-    it('fails for function', () => {
-      expect(isSuccess(parser(() => void 0))).toBe(false)
-    })
-  })
-
-  describe('optional items', () => {
-    const parser = array(optional(number))
-
-    it('suceeds for empty array', () => {
-      const value: number[] = []
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array', () => {
-      const value = [1, 2, 3]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array with undefined value', () => {
-      const value = [1, undefined, 3]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for item of wrong type', () => {
-      const value: number[] = [1, '' as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for null item', () => {
-      const value: number[] = [1, null as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-  })
-
-  describe('nullable items', () => {
-    const parser = array(nullable(number))
-
-    it('suceeds for empty array', () => {
-      const value: number[] = []
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array', () => {
-      const value = [1, 2, 3]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array with null value', () => {
-      const value = [1, null, 3]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for item of wrong type', () => {
-      const value: number[] = [1, '' as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for undefined item', () => {
-      const value: number[] = [1, undefined as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-  })
-
-  describe('union items', () => {
-    const parser = array(union(string, number))
-
-    it('suceeds for empty array', () => {
-      const value: number[] = []
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array of first type', () => {
-      const value = [1, 2, 3]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array of second type', () => {
-      const value = ['a', 'b', 'c']
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array with mixed values', () => {
-      const value = [1, 'a', 3]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for item of wrong type', () => {
-      const value: number[] = [1, true as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for undefined item', () => {
-      const value: number[] = [1, undefined as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for null item', () => {
-      const value: number[] = [1, null as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-  })
-
-  describe('array items', () => {
-    const parser = array(array(number))
-
-    it('suceeds for empty array', () => {
-      const value: number[][] = []
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array', () => {
-      const value = [[1, 2], [3]]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for item of wrong type', () => {
-      const value: number[][] = [[1], '' as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for undefined item', () => {
-      const value: number[][] = [[1], undefined as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for null item', () => {
-      const value: number[][] = [[1], null as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('aggregates errors from all array items', () => {
-      const value: number[][] = [undefined as any, undefined as any]
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: number[][] = [[undefined as any], [1], [0, undefined as any]]
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-      expect(result.errors[0]?.path).toEqual(['0', '0'])
-      expect(result.errors[1]?.path).toEqual(['2', '1'])
-    })
-  })
-
-  describe('object items', () => {
-    interface TestObject {
-      n: number
-    }
-
-    const parser = array(
-      object<TestObject>({ n: number }),
-    )
-
-    it('suceeds for empty array', () => {
-      const value: TestObject[] = []
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('suceeds for non-empty array', () => {
-      const value: TestObject[] = [{ n: 1 }, { n: 2 }]
-      expect(parser(value)).toEqual(value)
-    })
-
-    it('fails for item of wrong type', () => {
-      const value: TestObject[] = [{ n: 1 }, '' as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for undefined item', () => {
-      const value: TestObject[] = [{ n: 1 }, undefined as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('fails for null item', () => {
-      const value: TestObject[] = [{ n: 1 }, null as any]
-      expect(isSuccess(parser(value))).toBe(false)
-    })
-
-    it('aggregates errors from all array items', () => {
-      const value: TestObject[] = [undefined as any, undefined as any]
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-    })
-
-    it('adds the property name to path for errors', () => {
-      const value: TestObject[] = [{ n: undefined as any }, { n: 1 }, { n: undefined as any }]
-      const result = parser(value)
-
-      if (!isFailure(result)) {
-        return fail('result was not an error')
-      }
-
-      expect(result.errors).toHaveLength(2)
-      expect(result.errors[0]?.path).toEqual(['0', 'n'])
-      expect(result.errors[1]?.path).toEqual(['2', 'n'])
-    })
+    expect(() => array(undefined as any)).toThrow()
   })
 })

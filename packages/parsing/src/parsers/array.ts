@@ -1,11 +1,32 @@
 import { Errors, failure, isFailure } from '@shaval/core'
-import type { Parser } from '../parser.js'
+import { Parser, ParserOrShorthand, resolveParserOrShorthand } from '../parser.js'
+import type { ObjectParserShorthand } from './object.js'
 
 /**
  * @public
  */
-export function array<T>(valueParser: Parser<T>): Parser<T[]> {
-  valueParser
+export type ArrayParserShorthand<T> = [ParserOrShorthand<T>]
+
+/**
+ * @public
+ */
+export function array<T>(itemParser: Parser<T>): Parser<T[]>
+
+/**
+ * @public
+ */
+export function array<T>(itemParser: ArrayParserShorthand<T>): Parser<T[][]>
+
+/**
+ * @public
+ */
+export function array<T>(itemParser: ObjectParserShorthand<T>): Parser<T[]>
+
+/**
+ * @public
+ */
+export function array<T>(itemParser: ParserOrShorthand<T>): Parser<T[]> {
+  const resolvedItemParser = resolveParserOrShorthand(itemParser)
 
   return (value) => {
     if (!Array.isArray(value)) {
@@ -13,16 +34,19 @@ export function array<T>(valueParser: Parser<T>): Parser<T[]> {
     }
 
     const errors: Errors[] = []
+    const returnValue: T[] = []
 
     for (const [i, item] of value.entries()) {
-      const result = valueParser(item)
+      const result = resolvedItemParser(item)
 
       if (isFailure(result)) {
         errors.push(...result.errors.map((err) => prependIndexToPath(err, i)))
+      } else if (errors.length === 0) {
+        returnValue.push(result)
       }
     }
 
-    return errors.length > 0 ? failure(errors) : value.map((i) => i)
+    return errors.length > 0 ? failure(errors) : returnValue
   }
 }
 

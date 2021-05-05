@@ -1,9 +1,15 @@
-import type { Result } from '@shaval/core'
+import type { Failure } from '@shaval/core'
+import { array, ArrayParserShorthand } from './parsers/array.js'
+import { object, ObjectParserShorthand } from './parsers/object.js'
 
 /**
- * Helper interface to force the type system to handle unions
- * properly (e.g. so that `Parser<string>` is not assignable to
- * `Parser<string | number>` or `Parser<string | undefined>`)
+ * The parser result type is covariant in its type parameter,
+ * which means it allows invalid assignments like assigning
+ * `Parser<string>` to `Parser<string | number>`. For proper
+ * type inference we need to prevent such assignments, so we
+ * use this helper interface to force the type system to handle
+ * these kinds of unions properly by ensuring the type parameter
+ * is not covariant
  *
  * @public
  */
@@ -11,15 +17,42 @@ export interface _ResultTypeMarker<T> {
   /**
    * This property never exists at runtime.
    */
-  readonly nullOrUndefined?: undefined extends T ? 'undefined' : null extends T ? 'null' : never
+  readonly _?: unknown extends T ? unknown : never
 }
 
 /**
  * @public
  */
-export type ParserResult<T> = Result<T> & _ResultTypeMarker<T>
+export type ParserResult<T> = T | (Failure & _ResultTypeMarker<T>)
 
 /**
  * @public
  */
 export type Parser<T> = (value: unknown) => ParserResult<T>
+
+/**
+ * @public
+ */
+export type ParserOrShorthand<T> = Parser<T> | ArrayParserShorthand<T> | ObjectParserShorthand<T>
+
+/**
+ * @public
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any> {
+  if (parserOrShorthand === null || parserOrShorthand === undefined) {
+    throw new Error(`parsers or shorthands must not be null or undefined`)
+  }
+
+  if (Array.isArray(parserOrShorthand)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return array(parserOrShorthand[0] as any)
+  }
+
+  if (typeof parserOrShorthand === 'object') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return object(parserOrShorthand as any)
+  }
+
+  return parserOrShorthand
+}

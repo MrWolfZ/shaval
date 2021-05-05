@@ -1,41 +1,27 @@
-import { isSuccess } from '@shaval/core'
-import { number } from './number.js'
+import { failure } from '@shaval/core'
+import type { Parser } from '../parser.js'
 import { optional } from './optional.js'
 
 describe(optional.name, () => {
-  it('succeeds for zero', () => {
-    expect(optional(number)(0)).toBe(0)
-  })
-
-  it('succeeds for non-zero optional', () => {
-    expect(optional(number)(1)).toBe(1)
-  })
-
   it('succeeds for undefined', () => {
-    expect(optional(number)(undefined)).toBe(undefined)
+    const parser: Parser<number> = (value) => failure(value, '')
+    expect(optional(parser)(undefined)).toBe(undefined)
   })
 
-  it('fails for null', () => {
-    expect(isSuccess(optional(number)(null))).toBe(false)
+  it('calls nested parser for defined values', () => {
+    const parser: Parser<number> = () => 100
+    expect(optional(parser)(0)).toBe(100)
   })
 
-  it('fails for string', () => {
-    expect(isSuccess(optional(number)('a'))).toBe(false)
+  it('resolves array shorthand', () => {
+    const parser: Parser<number> = (value) => value as number
+    const value = [1]
+    expect(optional([parser])(value)).toEqual(value)
   })
 
-  it('fails for boolean', () => {
-    expect(isSuccess(optional(number)(true))).toBe(false)
-  })
-
-  it('fails for object', () => {
-    expect(isSuccess(optional(number)({ s: '' }))).toBe(false)
-  })
-
-  it('fails for array', () => {
-    expect(isSuccess(optional(number)([' ']))).toBe(false)
-  })
-
-  it('fails for function', () => {
-    expect(isSuccess(optional(number)(() => void 0))).toBe(false)
+  it('resolves object shorthand', () => {
+    const parser: Parser<number> = (value) => value as number
+    const value = { n: 1 }
+    expect(optional({ n: parser })(value)).toEqual(value)
   })
 })

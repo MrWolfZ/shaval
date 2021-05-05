@@ -35,6 +35,7 @@ TODO
 ### parsing
 
 - add shorthands for object and array parsing
+- deal with readonly array support
 - add `literal` parser
 - add `record` parser
 - add `enum` parser
@@ -59,7 +60,7 @@ TODO
 - add `tupleValidator`
 - add `recordValidator`
 - add most common validators
-- in `arrayValidator` if array element is object allow passing object validation config instead of validator
+- check if `Validator<string | number>` should be assignable to `Validator<string>`
 - omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports

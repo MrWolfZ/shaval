@@ -1,27 +1,33 @@
 import { Errors, failure, isFailure, _ReadonlyObject } from '@shaval/core'
-import type { Parser } from '../parser.js'
+import { Parser, ParserOrShorthand, resolveParserOrShorthand } from '../parser.js'
+
+/**
+ * @public
+ */
+export type ObjectParserShorthand<T extends _ReadonlyObject> = ObjectPropertyParsers<T>
 
 /**
  * @public
  */
 export type ObjectPropertyParsers<T extends _ReadonlyObject> = {
-  readonly [prop in keyof T]: Parser<T[prop]>
+  readonly [prop in keyof T]: ParserOrShorthand<T[prop]>
 }
 
 /**
  * @public
  */
-export function object<T extends _ReadonlyObject>(propertyParsers: ObjectPropertyParsers<T>): Parser<T> {
+export function object<T extends _ReadonlyObject>(
+  propertyParsers: Exclude<ObjectPropertyParsers<T>, readonly unknown[]>,
+): Parser<T> {
   if (propertyParsers === null || propertyParsers === undefined) {
     throw new Error(`property parsers must not be null or undefined`)
   }
 
-  for (const key of Object.keys(propertyParsers)) {
-    const parser = propertyParsers[key as keyof T]
+  const resolvedPropertyParsers: Record<string, Parser<unknown>> = {}
 
-    if (parser === null || parser === undefined) {
-      throw new Error(`parsers must not be null or undefined`)
-    }
+  for (const key of Object.keys(propertyParsers)) {
+    const parser = propertyParsers[key as keyof T] as Parser<T[keyof T]>
+    resolvedPropertyParsers[key] = resolveParserOrShorthand(parser)
   }
 
   return (value) => {
@@ -44,9 +50,9 @@ export function object<T extends _ReadonlyObject>(propertyParsers: ObjectPropert
     const errors: Errors[] = []
     const returnValue: Record<string, unknown> = {}
 
-    for (const key of Object.keys(propertyParsers)) {
+    for (const key of Object.keys(resolvedPropertyParsers)) {
       const propValue = value[key as keyof typeof value]
-      const propertyParser = propertyParsers[key as keyof T]
+      const propertyParser = resolvedPropertyParsers[key]
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const result = propertyParser!(propValue)

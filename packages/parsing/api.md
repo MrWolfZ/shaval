@@ -4,11 +4,20 @@
 
 ```ts
 
+import type { Failure } from '@shaval/core';
 import { _ReadonlyObject } from '@shaval/core';
-import type { Result } from '@shaval/core';
 
 // @public (undocumented)
-export function array<T>(valueParser: Parser<T>): Parser<T[]>;
+export function array<T>(itemParser: Parser<T>): Parser<T[]>;
+
+// @public (undocumented)
+export function array<T>(itemParser: ArrayParserShorthand<T>): Parser<T[][]>;
+
+// @public (undocumented)
+export function array<T>(itemParser: ObjectParserShorthand<T>): Parser<T[]>;
+
+// @public (undocumented)
+export type ArrayParserShorthand<T> = [ParserOrShorthand<T>];
 
 // @public (undocumented)
 export const boolean: Parser<boolean>;
@@ -17,28 +26,49 @@ export const boolean: Parser<boolean>;
 export function nullable<T>(valueParser: Parser<T>): Parser<T | null>;
 
 // @public (undocumented)
+export function nullable<T>(valueParser: ArrayParserShorthand<T>): Parser<T[] | null>;
+
+// @public (undocumented)
+export function nullable<T>(valueParser: ObjectParserShorthand<T>): Parser<T | null>;
+
+// @public (undocumented)
 export const number: Parser<number>;
 
 // @public (undocumented)
-export function object<T extends _ReadonlyObject>(propertyParsers: ObjectPropertyParsers<T>): Parser<T>;
+export function object<T extends _ReadonlyObject>(propertyParsers: Exclude<ObjectPropertyParsers<T>, readonly unknown[]>): Parser<T>;
+
+// @public (undocumented)
+export type ObjectParserShorthand<T extends _ReadonlyObject> = ObjectPropertyParsers<T>;
 
 // @public (undocumented)
 export type ObjectPropertyParsers<T extends _ReadonlyObject> = {
-    readonly [prop in keyof T]: Parser<T[prop]>;
+    readonly [prop in keyof T]: ParserOrShorthand<T[prop]>;
 };
 
 // @public (undocumented)
 export function optional<T>(valueParser: Parser<T>): Parser<T | undefined>;
 
 // @public (undocumented)
+export function optional<T>(valueParser: ArrayParserShorthand<T>): Parser<T[] | undefined>;
+
+// @public (undocumented)
+export function optional<T>(valueParser: ObjectParserShorthand<T>): Parser<T | undefined>;
+
+// @public (undocumented)
 export type Parser<T> = (value: unknown) => ParserResult<T>;
 
 // @public (undocumented)
-export type ParserResult<T> = Result<T> & _ResultTypeMarker<T>;
+export type ParserOrShorthand<T> = Parser<T> | ArrayParserShorthand<T> | ObjectParserShorthand<T>;
+
+// @public (undocumented)
+export type ParserResult<T> = T | (Failure & _ResultTypeMarker<T>);
+
+// @public (undocumented)
+export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any>;
 
 // @public
 export interface _ResultTypeMarker<T> {
-    readonly nullOrUndefined?: undefined extends T ? 'undefined' : null extends T ? 'null' : never;
+    readonly _?: unknown extends T ? unknown : never;
 }
 
 // @public (undocumented)
