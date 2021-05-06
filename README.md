@@ -27,6 +27,10 @@ TODO
 
 ## Open points
 
+### entry
+
+- create entry package `shaval` that simply exports everything from `core`, `parsing`, and `validation`
+
 ### core
 
 - write e2e tests
@@ -34,26 +38,28 @@ TODO
 
 ### parsing
 
-- add `record` parser
 - add `enum` parser
 - add `tuple` parser
-- add `promise` parser
 - add `symbol` parser
-- add `function` parser
 - add `intersection` parser
 - add `date` parser
 - omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports
 - run performance tests
+- in type tests remove generics from `expectError` where possible and replace all `// @ts-expect-error` with `expectError`
 
 - export two objects `parsers` and `p` that contain all parsers are properties
+- add `promise` parser
+- add `function` parser
 - add `stringToDate` parser
 - add `stringToNumber` parser
+- in `object` support symbol properties
 - support for async parsers
 
 ### validation
 
+- rename `custom` to `customValidator`
 - add `tupleValidator`
 - add `recordValidator`
 - add most common validators
@@ -61,8 +67,10 @@ TODO
 - write e2e tests
 - add comments for all public exports
 - run performance tests
+- in type tests remove generics from `expectError` where possible and replace all `// @ts-expect-error` with `expectError`
 
 - export two objects `validators` and `v` that contain all validators are properties
+- in `objectValidator` support symbol properties
 - support for async validators
 
 ### localization

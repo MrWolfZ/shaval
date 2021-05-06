@@ -76,6 +76,27 @@ export function readonlyArray<T>(itemParser: ArrayParserShorthand<T>): Parser<re
 export function readonlyArray<T>(itemParser: ObjectParserShorthand<T>): Parser<readonly T[]>;
 
 // @public (undocumented)
+export function record<TValue>(valueParser: Parser<TValue>): RecordParser<string, TValue>;
+
+// @public (undocumented)
+export function record<TKey extends string | symbol, TValue>(keyParser: Parser<TKey>, valueParser: Parser<TValue>): RecordParser<TKey, TValue>;
+
+// @public (undocumented)
+export function record<TValue>(valueParser: ArrayParserShorthand<TValue>): RecordParser<string, TValue[]>;
+
+// @public (undocumented)
+export function record<TKey extends string | symbol, TValue>(keyParser: Parser<TKey>, valueParser: ArrayParserShorthand<TValue>): RecordParser<TKey, TValue[]>;
+
+// @public (undocumented)
+export function record<TValue>(valueParser: ObjectParserShorthand<TValue>): RecordParser<string, TValue>;
+
+// @public (undocumented)
+export function record<TKey extends string | symbol, TValue>(keyParser: Parser<TKey>, valueParser: ObjectParserShorthand<TValue>): RecordParser<TKey, TValue>;
+
+// @public (undocumented)
+export type RecordParser<TKey extends string | symbol, TValue> = Parser<Record<TKey, TValue>>;
+
+// @public (undocumented)
 export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any>;
 
 // @public

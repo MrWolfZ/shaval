@@ -99,14 +99,14 @@ describe(some.name, () => {
       expect(validator(value)).toBe(value)
     })
 
-    it('suceeds if single element is invalid', () => {
+    it('succeeds if single element is invalid', () => {
       const itemValidator: Validator<number> = (value) => (value === 1 ? failure(value, '') : value)
       const validator = some(itemValidator, itemValidator)
       const value = [1, 2, 3]
       expect(validator(value)).toBe(value)
     })
 
-    it('suceeds if multiple elements are invalid', () => {
+    it('succeeds if multiple elements are invalid', () => {
       const itemValidator: Validator<number> = (value) => (value !== 1 ? failure(value, '') : value)
       const validator = some(itemValidator, itemValidator)
       const value = [1, 2, 3]

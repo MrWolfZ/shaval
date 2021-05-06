@@ -8,17 +8,17 @@ describe(array.name, () => {
   const itemParser: Parser<number> = (value) => (value === 1 ? value : failure(value, 'fail'))
   const parser = array(itemParser)
 
-  it('suceeds for empty array', () => {
+  it('succeeds for empty array', () => {
     const value: number[] = []
     expect(parser(value)).toEqual(value)
   })
 
-  it('suceeds for non-empty array of valid values', () => {
+  it('succeeds for non-empty array of valid values', () => {
     const value = [1, 1]
     expect(parser(value)).toEqual(value)
   })
 
-  it('fails it one item is invalid', () => {
+  it('fails if one item is invalid', () => {
     expect(isSuccess(parser([1, 2]))).toBe(false)
   })
 
@@ -122,17 +122,17 @@ describe(readonlyArray.name, () => {
   const itemParser: Parser<number> = (value) => (value === 1 ? value : failure(value, 'fail'))
   const parser = readonlyArray(itemParser)
 
-  it('suceeds for empty array', () => {
+  it('succeeds for empty array', () => {
     const value: number[] = []
     expect(parser(value)).toEqual(value)
   })
 
-  it('suceeds for non-empty array of valid values', () => {
+  it('succeeds for non-empty array of valid values', () => {
     const value = [1, 1]
     expect(parser(value)).toEqual(value)
   })
 
-  it('fails it one item is invalid', () => {
+  it('fails if one item is invalid', () => {
     expect(isSuccess(parser([1, 2]))).toBe(false)
   })
 

@@ -59,7 +59,7 @@ export function object<T extends _ReadonlyObject>(
 
       if (isFailure(result)) {
         errors.push(...result.errors.map((err) => prependKeyToPath(err, key)))
-      } else {
+      } else if (errors.length === 0) {
         returnValue[key] = result
       }
     }

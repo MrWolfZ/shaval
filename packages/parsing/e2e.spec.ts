@@ -1,7 +1,7 @@
 // this file contains a end-to-end tests for the public API
 
 import { isSuccess } from '@shaval/core'
-import { array, boolean, object, optional, readonlyArray, string } from '@shaval/parsing'
+import { array, boolean, object, optional, readonlyArray, record, string } from '@shaval/parsing'
 
 describe(`@shaval/core`, () => {
   interface Todo {
@@ -12,6 +12,7 @@ describe(`@shaval/core`, () => {
     readonly details: {
       readonly author: string
     }
+    readonly metadata: Readonly<Record<string, string>>
   }
 
   const todo: Todo = {
@@ -20,6 +21,9 @@ describe(`@shaval/core`, () => {
     remarks: ['too lazy'],
     details: {
       author: 'me',
+    },
+    metadata: {
+      a: 'b',
     },
   }
 
@@ -32,6 +36,7 @@ describe(`@shaval/core`, () => {
       details: {
         author: string,
       },
+      metadata: record(string, string),
     })
 
     const todoParserWithoutShorthands = object<Todo>({
@@ -42,6 +47,7 @@ describe(`@shaval/core`, () => {
       details: object({
         author: string,
       }),
+      metadata: record(string, string),
     })
 
     expect(todoParser(todo)).toEqual(todo)
@@ -51,6 +57,8 @@ describe(`@shaval/core`, () => {
     expect(isSuccess(todoParser({}))).toBe(false)
     expect(isSuccess(todoParser({ id: '1' }))).toBe(false)
     expect(isSuccess(todoParser({ ...todo, remarks: [1] }))).toBe(false)
+    expect(isSuccess(todoParser({ ...todo, details: {} }))).toBe(false)
+    expect(isSuccess(todoParser({ ...todo, metadata: [1] }))).toBe(false)
 
     const remarks = todo.remarks
     expect(array(string)(remarks)).toEqual(remarks)

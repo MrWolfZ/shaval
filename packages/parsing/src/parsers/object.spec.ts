@@ -18,7 +18,7 @@ describe(object.name, () => {
     n: numberParser,
   })
 
-  it('suceeds for object of correct shape', () => {
+  it('succeeds for object of correct shape', () => {
     const value: TestObject = { s: 'a', n: 1 }
     expect(parser(value)).toEqual(value)
   })
@@ -100,17 +100,17 @@ describe(object.name, () => {
       n: optionalNumberParser,
     })
 
-    it('suceeds for object of correct shape', () => {
+    it('succeeds for object of correct shape', () => {
       const value: ObjectWithOptionalProperty = { s: 'a', n: 1 }
       expect(parser(value)).toEqual(value)
     })
 
-    it('suceeds for object with missing optional property', () => {
+    it('succeeds for object with missing optional property', () => {
       const value: ObjectWithOptionalProperty = { s: 'a' }
       expect(parser(value)).toEqual(value)
     })
 
-    it('suceeds for object with optional property explicitly undefined', () => {
+    it('succeeds for object with optional property explicitly undefined', () => {
       const value: ObjectWithOptionalProperty = { s: 'a', n: undefined }
       expect(parser(value)).toEqual(value)
     })
@@ -133,12 +133,12 @@ describe(object.name, () => {
       n: nullableNumberParser,
     })
 
-    it('suceeds for object of correct shape', () => {
+    it('succeeds for object of correct shape', () => {
       const value: ObjectWithNullableProperty = { n: 1 }
       expect(parser(value)).toEqual(value)
     })
 
-    it('suceeds for object with null property', () => {
+    it('succeeds for object with null property', () => {
       const value: ObjectWithNullableProperty = { n: null }
       expect(parser(value)).toEqual(value)
     })
