@@ -4,7 +4,7 @@ export type { AndValidatorShorthand, _AndRestValidators } from './src/combinator
 export { every } from './src/combinators/every.js'
 export { or } from './src/combinators/or.js'
 export { some } from './src/combinators/some.js'
-export { resolveValidatorOrShorthand } from './src/validator.js'
+export { custom, validator } from './src/validator.js'
 export type { Validator, ValidatorOrShorthand } from './src/validator.js'
 export { greaterThan } from './src/validators/greater-than.js'
 export { lessThan } from './src/validators/less-than.js'

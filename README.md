@@ -47,22 +47,22 @@ TODO
 - add comments for all public exports
 - run performance tests
 
+- export two objects `parsers` and `p` that contain all parsers are properties
 - add `stringToDate` parser
 - add `stringToNumber` parser
 - support for async parsers
 
 ### validation
 
-- create function `validator` that takes another validator or shorthand and resolves it
 - add `tupleValidator`
 - add `recordValidator`
-- add `custom` (or `customValidator`) that handles failures and allows specifying a simple validator
 - add most common validators
 - omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports
 - run performance tests
 
+- export two objects `validators` and `v` that contain all validators are properties
 - support for async validators
 
 ### localization

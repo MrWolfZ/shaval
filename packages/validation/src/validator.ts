@@ -1,4 +1,4 @@
-import type { Failure, Result } from '@shaval/core'
+import { Failure, isFailure, Result } from '@shaval/core'
 import { AndValidatorShorthand, _and } from './combinators/and.js'
 import { objectValidator, ObjectValidatorShorthand } from './validators/object.js'
 
@@ -17,8 +17,7 @@ export type ValidatorOrShorthand<T> = Validator<T> | AndValidatorShorthand<T> | 
  *
  * @private
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function _resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<any> {
+export function _resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<T> {
   if (validatorOrShorthand === null || validatorOrShorthand === undefined) {
     throw new Error(`validators or shorthands must not be null or undefined`)
   }
@@ -37,7 +36,17 @@ export function _resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorO
 /**
  * @public
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<any> {
+export function validator<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<T> {
   return _resolveValidatorOrShorthand(validatorOrShorthand)
+}
+
+/**
+ * @public
+ */
+export function custom<T>(validationFn: (value: T) => Result<T>): Validator<T> {
+  if (validationFn === null || validationFn === undefined) {
+    throw new Error(`validation function must not be null or undefined`)
+  }
+
+  return (value) => (isFailure(value) ? value : validationFn(value))
 }

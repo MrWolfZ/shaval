@@ -1,7 +1,7 @@
 // this file contains a end-to-end tests for the public API
 
 import { failure } from '@shaval/core'
-import { and, every, objectValidator, required } from '@shaval/validation'
+import { and, every, required, validator } from '@shaval/validation'
 import { allowUndefined } from './src/combinators/allow-undefined.js'
 import type { Validator } from './src/validator.js'
 
@@ -30,9 +30,9 @@ describe(`@shaval/core`, () => {
     const nonEmptyStringValidator: Validator<string> = (value) =>
       typeof value === 'string' && value.length > 0 ? value : failure(value, '')
 
-    const todoValidator = objectValidator<Todo>({
+    const todoValidator = validator<Todo>({
       id: [required, nonEmptyStringValidator],
-      remarks: every(nonEmptyStringValidator),
+      remarks: every(nonEmptyStringValidator, nonEmptyStringValidator),
       details: allowUndefined([
         {
           author: nonEmptyStringValidator,
@@ -43,9 +43,9 @@ describe(`@shaval/core`, () => {
       ]),
     })
 
-    const todoValidatorWithoutShorthands = objectValidator<Todo>({
+    const todoValidatorWithoutShorthands = validator<Todo>({
       id: and(required, nonEmptyStringValidator),
-      remarks: every(nonEmptyStringValidator),
+      remarks: every(nonEmptyStringValidator, nonEmptyStringValidator),
       details: allowUndefined(
         and(
           {

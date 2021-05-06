@@ -4,9 +4,9 @@
 
 ```ts
 
-import type { Failure } from '@shaval/core';
+import { Failure } from '@shaval/core';
 import type { _ReadonlyObject } from '@shaval/core';
-import type { Result } from '@shaval/core';
+import { Result } from '@shaval/core';
 
 // @public (undocumented)
 export function allowUndefined<T>(validator: ValidatorOrShorthand<T>): Validator<T | undefined>;
@@ -36,6 +36,9 @@ export type AndValidatorShorthand<T> = readonly [
 export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;
 
 // @public (undocumented)
+export function custom<T>(validationFn: (value: T) => Result<T>): Validator<T>;
+
+// @public (undocumented)
 export function every<T>(itemValidator: ValidatorOrShorthand<T>, ...itemValidators: readonly ValidatorOrShorthand<T>[]): Validator<readonly T[]>;
 
 // @public
@@ -61,9 +64,6 @@ export function or<T>(validator1: ValidatorOrShorthand<T>, validator2: Validator
 // @public
 export function required<T>(value: T): Result<T>;
 
-// @public (undocumented)
-export function resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<any>;
-
 // @public
 export function sameAs<T>(comparand: T): Validator<T>;
 
@@ -72,6 +72,9 @@ export function some<T>(itemValidator: ValidatorOrShorthand<T>, ...itemValidator
 
 // @public (undocumented)
 export type Validator<T> = (value: T | Failure) => Result<T>;
+
+// @public (undocumented)
+export function validator<T>(validatorOrShorthand: ValidatorOrShorthand<T>): Validator<T>;
 
 // @public (undocumented)
 export type ValidatorOrShorthand<T> = Validator<T> | AndValidatorShorthand<T> | ObjectValidatorShorthand<T>;
