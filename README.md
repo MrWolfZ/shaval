@@ -40,22 +40,21 @@ TODO
 
 - add `enum` parser
 - add `tuple` parser
-- add `symbol` parser
-- add `intersection` parser
 - add `date` parser
-- omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports
 - run performance tests
-- in type tests remove generics from `expectError` where possible and replace all `// @ts-expect-error` with `expectError`
 
 - export two objects `parsers` and `p` that contain all parsers are properties
+- add `intersection` parser
 - add `promise` parser
 - add `function` parser
 - add `stringToDate` parser
 - add `stringToNumber` parser
 - in `object` support symbol properties
 - support for async parsers
+- omit certain error messages for production builds
+- in type tests remove generics from `expectError` where possible and replace all `// @ts-expect-error` with `expectError`
 
 ### validation
 
@@ -63,15 +62,15 @@ TODO
 - add `tupleValidator`
 - add `recordValidator`
 - add most common validators
-- omit certain error messages for production builds
 - write e2e tests
 - add comments for all public exports
 - run performance tests
-- in type tests remove generics from `expectError` where possible and replace all `// @ts-expect-error` with `expectError`
 
 - export two objects `validators` and `v` that contain all validators are properties
 - in `objectValidator` support symbol properties
 - support for async validators
+- omit certain error messages for production builds
+- in type tests remove generics from `expectError` where possible and replace all `// @ts-expect-error` with `expectError`
 
 ### localization
 

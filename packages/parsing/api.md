@@ -23,7 +23,7 @@ export type ArrayParserShorthand<T> = readonly [ParserOrShorthand<T>];
 export const boolean: Parser<boolean>;
 
 // @public (undocumented)
-export function literal<T extends string | number | boolean>(literalValue: T): Parser<T>;
+export function literal<T extends string | number | boolean | symbol>(literalValue: T): Parser<T>;
 
 // @public (undocumented)
 export function nullable<T>(valueParser: Parser<T>): Parser<T | null>;
