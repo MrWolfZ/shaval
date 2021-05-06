@@ -1,7 +1,7 @@
 // this file contains a end-to-end tests for the public API
 
 import { isSuccess } from '@shaval/core'
-import { array, boolean, object, optional, readonlyArray, record, string } from '@shaval/parsing'
+import { array, boolean, number, object, optional, readonlyArray, record, string, tuple, union } from '@shaval/parsing'
 
 describe(`@shaval/core`, () => {
   interface Todo {
@@ -13,6 +13,8 @@ describe(`@shaval/core`, () => {
       readonly author: string
     }
     readonly metadata: Readonly<Record<string, string>>
+    readonly numberOrString: string | number
+    readonly numberStringTuple: [string, number]
   }
 
   const todo: Todo = {
@@ -25,6 +27,8 @@ describe(`@shaval/core`, () => {
     metadata: {
       a: 'b',
     },
+    numberOrString: 'a',
+    numberStringTuple: ['a', 1],
   }
 
   it('works', () => {
@@ -37,6 +41,8 @@ describe(`@shaval/core`, () => {
         author: string,
       },
       metadata: record(string, string),
+      numberOrString: union(string, number),
+      numberStringTuple: tuple(string, number),
     })
 
     const todoParserWithoutShorthands = object<Todo>({
@@ -48,6 +54,8 @@ describe(`@shaval/core`, () => {
         author: string,
       }),
       metadata: record(string, string),
+      numberOrString: union(string, number),
+      numberStringTuple: tuple(string, number),
     })
 
     expect(todoParser(todo)).toEqual(todo)

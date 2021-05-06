@@ -1,29 +1,29 @@
-import { isFailure, isSuccess } from '@shaval/core'
-import { boolean } from './boolean.js'
-import { nullable } from './nullable.js'
-import { number } from './number.js'
-import { optional } from './optional.js'
-import { string } from './string.js'
+import { failure, isFailure, isSuccess } from '@shaval/core'
+import type { Parser } from '../parser.js'
 import { union } from './union.js'
 
 describe(union.name, () => {
+  const stringParser: Parser<string> = (value) => (value === 'a' ? value : failure(value, 'string'))
+  const numberParser: Parser<number> = (value) => (value === 1 ? value : failure(value, 'number'))
+  const booleanParser: Parser<boolean> = (value) => (value === true ? value : failure(value, 'boolean'))
+
   describe('two types', () => {
-    const parser = union(string, number)
+    const parser = union(stringParser, numberParser)
 
-    it('succeeds for empty string', () => {
-      expect(parser('')).toBe('')
-    })
-
-    it('succeeds for non-empty string', () => {
+    it('succeeds for valid value of first type', () => {
       expect(parser('a')).toBe('a')
     })
 
-    it('succeeds for zero', () => {
-      expect(parser(0)).toBe(0)
+    it('succeeds for valid value of second type', () => {
+      expect(parser(1)).toBe(1)
     })
 
-    it('succeeds for non-zero', () => {
-      expect(parser(1)).toBe(1)
+    it('fails for invalid value of first type', () => {
+      expect(isSuccess(parser('b'))).toBe(false)
+    })
+
+    it('fails for invalid value of second type', () => {
+      expect(isSuccess(parser(2))).toBe(false)
     })
 
     it('fails for undefined', () => {
@@ -62,129 +62,57 @@ describe(union.name, () => {
       expect(result.errors[0]?.value).toBe(value)
       expect(Object.keys(result.errors[0]?.details ?? {})).toHaveLength(2)
     })
-  })
 
-  describe('two types with optional type', () => {
-    const parser = union(optional(string), number)
-
-    it('succeeds for empty string', () => {
-      expect(parser('')).toBe('')
+    it('resolves array shorthand', () => {
+      const parser = union(stringParser, [stringParser])
+      const value = ['a']
+      expect(parser(value)).toEqual(value)
     })
 
-    it('succeeds for non-empty string', () => {
-      expect(parser('a')).toBe('a')
+    it('resolves array shorthand in rest arg', () => {
+      const parser = union(stringParser, numberParser, [stringParser])
+      const value = ['a']
+      expect(parser(value)).toEqual(value)
     })
 
-    it('succeeds for zero', () => {
-      expect(parser(0)).toBe(0)
+    it('resolves object shorthand', () => {
+      const parser = union(stringParser, { s: stringParser })
+      const value = { s: 'a' }
+      expect(parser(value)).toEqual(value)
     })
 
-    it('succeeds for non-zero', () => {
-      expect(parser(1)).toBe(1)
-    })
-
-    it('succeeds for undefined', () => {
-      expect(parser(undefined)).toBe(undefined)
-    })
-
-    it('fails for null', () => {
-      expect(isSuccess(parser(null))).toBe(false)
-    })
-
-    it('fails for boolean', () => {
-      expect(isSuccess(parser(true))).toBe(false)
-    })
-
-    it('fails for object', () => {
-      expect(isSuccess(parser({ s: '' }))).toBe(false)
-    })
-
-    it('fails for array', () => {
-      expect(isSuccess(parser([' ']))).toBe(false)
-    })
-  })
-
-  describe('two types with nullable type', () => {
-    const parser = union(nullable(string), number)
-
-    it('succeeds for empty string', () => {
-      expect(parser('')).toBe('')
-    })
-
-    it('succeeds for non-empty string', () => {
-      expect(parser('a')).toBe('a')
-    })
-
-    it('succeeds for zero', () => {
-      expect(parser(0)).toBe(0)
-    })
-
-    it('succeeds for non-zero', () => {
-      expect(parser(1)).toBe(1)
-    })
-
-    it('succeeds for null', () => {
-      expect(parser(null)).toBe(null)
-    })
-
-    it('fails for undefined', () => {
-      expect(isSuccess(parser(undefined))).toBe(false)
-    })
-
-    it('fails for boolean', () => {
-      expect(isSuccess(parser(true))).toBe(false)
-    })
-
-    it('fails for object', () => {
-      expect(isSuccess(parser({ s: '' }))).toBe(false)
-    })
-
-    it('fails for array', () => {
-      expect(isSuccess(parser([' ']))).toBe(false)
+    it('resolves object shorthand in rest arg', () => {
+      const parser = union(stringParser, numberParser, { s: stringParser })
+      const value = { s: 'a' }
+      expect(parser(value)).toEqual(value)
     })
   })
 
   describe('three types', () => {
-    const parser = union(string, number, boolean)
+    const parser = union(stringParser, numberParser, booleanParser)
 
-    it('succeeds for empty string', () => {
-      expect(parser('')).toBe('')
-    })
-
-    it('succeeds for non-empty string', () => {
+    it('succeeds for valid value of first type', () => {
       expect(parser('a')).toBe('a')
     })
 
-    it('succeeds for zero', () => {
-      expect(parser(0)).toBe(0)
-    })
-
-    it('succeeds for non-zero', () => {
+    it('succeeds for valid value of second type', () => {
       expect(parser(1)).toBe(1)
     })
 
-    it('succeeds for true', () => {
+    it('succeeds for valid value of third type', () => {
       expect(parser(true)).toBe(true)
     })
 
-    it('succeeds for false', () => {
-      expect(parser(false)).toBe(false)
+    it('fails for invalid value of first type', () => {
+      expect(isSuccess(parser('b'))).toBe(false)
     })
 
-    it('fails for undefined', () => {
-      expect(isSuccess(parser(undefined))).toBe(false)
+    it('fails for invalid value of second type', () => {
+      expect(isSuccess(parser(2))).toBe(false)
     })
 
-    it('fails for null', () => {
-      expect(isSuccess(parser(null))).toBe(false)
-    })
-
-    it('fails for object', () => {
-      expect(isSuccess(parser({ s: '' }))).toBe(false)
-    })
-
-    it('fails for array', () => {
-      expect(isSuccess(parser([' ']))).toBe(false)
+    it('fails for invalid value of third type', () => {
+      expect(isSuccess(parser(false))).toBe(false)
     })
 
     it('aggregates errors from all properties', () => {

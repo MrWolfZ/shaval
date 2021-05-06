@@ -38,17 +38,15 @@ TODO
 
 ### parsing
 
-- add `enum` parser
-- add `tuple` parser
 - add `date` parser
-- write e2e tests
 - add comments for all public exports
 - run performance tests
 
-- export two objects `parsers` and `p` that contain all parsers are properties
+- export two objects `parsers` and `p` that contain all parsers as properties
 - add `intersection` parser
 - add `promise` parser
 - add `function` parser
+- add `enum` parser
 - add `stringToDate` parser
 - add `stringToNumber` parser
 - in `object` support symbol properties
@@ -66,7 +64,7 @@ TODO
 - add comments for all public exports
 - run performance tests
 
-- export two objects `validators` and `v` that contain all validators are properties
+- export two objects `validators` and `v` that contain all validators as properties
 - in `objectValidator` support symbol properties
 - support for async validators
 - omit certain error messages for production builds
