@@ -36,7 +36,7 @@ export type AndValidatorShorthand<T> = readonly [
 export type _ArrayAsReadonly<T> = T extends readonly (infer U)[] ? readonly U[] : T;
 
 // @public (undocumented)
-export function arrayValidator<T>(itemValidator: ValidatorOrShorthand<T>, ...itemValidators: readonly ValidatorOrShorthand<T>[]): Validator<readonly T[]>;
+export function every<T>(itemValidator: ValidatorOrShorthand<T>, ...itemValidators: readonly ValidatorOrShorthand<T>[]): Validator<readonly T[]>;
 
 // @public
 export function greaterThan(comparand: number): Validator<number>;
@@ -66,6 +66,9 @@ export function resolveValidatorOrShorthand<T>(validatorOrShorthand: ValidatorOr
 
 // @public
 export function sameAs<T>(comparand: T): Validator<T>;
+
+// @public (undocumented)
+export function some<T>(itemValidator: ValidatorOrShorthand<T>, ...itemValidators: readonly ValidatorOrShorthand<T>[]): Validator<readonly T[]>;
 
 // @public (undocumented)
 export type Validator<T> = (value: T | Failure) => Result<T>;

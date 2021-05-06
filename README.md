@@ -53,8 +53,10 @@ TODO
 
 ### validation
 
+- create function `validator` that takes another validator or shorthand and resolves it
 - add `tupleValidator`
 - add `recordValidator`
+- add `custom` (or `customValidator`) that handles failures and allows specifying a simple validator
 - add most common validators
 - omit certain error messages for production builds
 - write e2e tests
