@@ -23,6 +23,9 @@ export type ArrayParserShorthand<T> = readonly [ParserOrShorthand<T>];
 export const boolean: Parser<boolean>;
 
 // @public (undocumented)
+export const date: Parser<Date>;
+
+// @public (undocumented)
 export function literal<T extends string | number | boolean | symbol>(literalValue: T): Parser<T>;
 
 // @public (undocumented)
@@ -59,6 +62,9 @@ export function optional<T>(valueParser: ObjectParserShorthand<T>): Parser<T | u
 
 // @public (undocumented)
 export type Parser<T> = (value: unknown) => ParserResult<T>;
+
+// @public (undocumented)
+export function parser<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any>;
 
 // @public (undocumented)
 export type ParserOrShorthand<T> = Parser<T> | ArrayParserShorthand<T> | ObjectParserShorthand<T>;
@@ -100,7 +106,7 @@ export function record<TKey extends string | symbol, TValue>(keyParser: Parser<T
 export type RecordParser<TKey extends string | symbol, TValue> = Parser<Record<TKey, TValue>>;
 
 // @public (undocumented)
-export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any>;
+export function recursive<T extends _ReadonlyObject>(propertyParserFactory: (selfParser: Parser<T>) => Exclude<ObjectPropertyParsers<T>, readonly unknown[]>): Parser<T>;
 
 // @public
 export interface _ResultTypeMarker<T> {

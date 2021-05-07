@@ -68,6 +68,15 @@ export function object<T extends _ReadonlyObject>(
   }
 }
 
+/**
+ * @public
+ */
+export function recursive<T extends _ReadonlyObject>(
+  propertyParserFactory: (selfParser: Parser<T>) => Exclude<ObjectPropertyParsers<T>, readonly unknown[]>,
+): Parser<T> {
+  return (value) => object(propertyParserFactory(recursive(propertyParserFactory)))(value)
+}
+
 function prependKeyToPath(error: Errors, key: string): Errors {
   return {
     ...error,

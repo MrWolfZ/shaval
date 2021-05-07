@@ -1,51 +1,51 @@
-import { Parser, resolveParserOrShorthand } from './parser.js'
+import { Parser, parser } from './parser.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-describe(resolveParserOrShorthand.name, () => {
+describe(parser.name, () => {
   const expectedValue = 'expected'
-  const parser: Parser<string> = () => expectedValue
+  const stringParser: Parser<string> = () => expectedValue
 
   it('resolves array shorthands', () => {
-    const resolvedParser = resolveParserOrShorthand([parser])
+    const resolvedParser = parser([stringParser])
     expect(resolvedParser([''])).toEqual([expectedValue])
   })
 
   it('resolves nested array shorthands', () => {
-    const resolvedParser = resolveParserOrShorthand([[parser]])
+    const resolvedParser = parser([[stringParser]])
     expect(resolvedParser([['']])).toEqual([[expectedValue]])
   })
 
   it('resolves nested array object shorthands', () => {
-    const resolvedParser = resolveParserOrShorthand([{ s: parser }])
+    const resolvedParser = parser([{ s: stringParser }])
     expect(resolvedParser([{ s: '' }])).toEqual([{ s: expectedValue }])
   })
 
   it('resolves object shorthands', () => {
-    const resolvedParser = resolveParserOrShorthand({ s: parser })
+    const resolvedParser = parser({ s: stringParser })
     expect(resolvedParser({ s: '' })).toEqual({ s: expectedValue })
   })
 
   it('resolves nested object shorthands', () => {
-    const resolvedParser = resolveParserOrShorthand({ s: { o: parser } })
+    const resolvedParser = parser({ s: { o: stringParser } })
     expect(resolvedParser({ s: { o: '' } })).toEqual({ s: { o: expectedValue } })
   })
 
   it('resolves nested object array shorthands', () => {
-    const resolvedParser = resolveParserOrShorthand({ s: [parser] })
+    const resolvedParser = parser({ s: [stringParser] })
     expect(resolvedParser({ s: [''] })).toEqual({ s: [expectedValue] })
   })
 
   it('returns parsers', () => {
-    const resolvedParser = resolveParserOrShorthand(parser)
+    const resolvedParser = parser(stringParser)
     expect(resolvedParser('')).toEqual(expectedValue)
   })
 
   it('throws for null parser', () => {
-    expect(() => resolveParserOrShorthand(null as any)).toThrow()
+    expect(() => parser(null as any)).toThrow()
   })
 
   it('throws for undefined parser', () => {
-    expect(() => resolveParserOrShorthand(undefined as any)).toThrow()
+    expect(() => parser(undefined as any)).toThrow()
   })
 })

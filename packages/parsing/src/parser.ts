@@ -69,6 +69,6 @@ export function _resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthan
  * @public
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function resolveParserOrShorthand<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any> {
+export function parser<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any> {
   return _resolveParserOrShorthand(parserOrShorthand)
 }

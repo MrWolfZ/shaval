@@ -38,9 +38,6 @@ TODO
 
 ### parsing
 
-- add test for recursive parsing
-- add `date` parser
-- in `tuple` support tuples with one element
 - add comments for all public exports
 - run performance tests
 

@@ -1,7 +1,19 @@
 // this file contains a end-to-end tests for the public API
 
 import { isSuccess } from '@shaval/core'
-import { array, boolean, number, object, optional, readonlyArray, record, string, tuple, union } from '@shaval/parsing'
+import {
+  array,
+  boolean,
+  number,
+  object,
+  optional,
+  parser,
+  readonlyArray,
+  record,
+  string,
+  tuple,
+  union,
+} from '@shaval/parsing'
 
 describe(`@shaval/core`, () => {
   interface Todo {
@@ -32,7 +44,7 @@ describe(`@shaval/core`, () => {
   }
 
   it('works', () => {
-    const todoParser = object<Todo>({
+    const todoParser = parser<Todo>({
       id: string,
       description: string,
       isDone: optional(boolean),
@@ -45,7 +57,7 @@ describe(`@shaval/core`, () => {
       numberStringTuple: tuple(string, number),
     })
 
-    const todoParserWithoutShorthands = object<Todo>({
+    const todoParserWithoutShorthands = parser<Todo>({
       id: string,
       description: string,
       isDone: optional(boolean),
