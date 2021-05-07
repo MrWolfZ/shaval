@@ -1,4 +1,4 @@
-import { object, ObjectParserShorthand, Parser, ParserResultType, recursive } from '@shaval/parsing'
+import { object, ObjectParserShorthand, Parser, ParserResultType } from '@shaval/parsing'
 import { expectAssignable, expectError, expectType } from 'tsd'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -174,12 +174,3 @@ expectType<{ o: string; arr: string[] }>(undefined! as InferredResultType['neste
 expectType<Record<string, string>>(undefined! as InferredResultType['rec'])
 expectType<string | number>(undefined! as InferredResultType['stringOrNumber'])
 expectType<[string, number]>(undefined! as InferredResultType['stringNumberTuple'])
-
-interface RecursiveObject {
-  s: string
-  recArr: RecursiveObject[]
-}
-
-expectType<Parser<RecursiveObject>>(
-  recursive<RecursiveObject>((self) => ({ s: stringParser, recArr: [self] })),
-)

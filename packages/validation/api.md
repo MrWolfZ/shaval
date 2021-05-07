@@ -61,6 +61,9 @@ export type ObjectValidatorShorthand<T> = ObjectPropertyValidators<T>;
 // @public (undocumented)
 export function or<T>(validator1: ValidatorOrShorthand<T>, validator2: ValidatorOrShorthand<T>, ...restValidators: ValidatorOrShorthand<T>[]): Validator<T>;
 
+// @public (undocumented)
+export function recursiveValidator<T extends _ReadonlyObject>(validatorFactory: (selfValidator: Validator<T>) => ValidatorOrShorthand<T>): Validator<T>;
+
 // @public
 export function required<T>(value: T): Result<T>;
 

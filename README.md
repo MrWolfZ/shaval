@@ -56,8 +56,6 @@ TODO
 
 ### validation
 
-- add test for recursive validation
-- rename `custom` to `customValidator`
 - add `tupleValidator`
 - add `recordValidator`
 - add most common validators

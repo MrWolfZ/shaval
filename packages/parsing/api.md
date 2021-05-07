@@ -106,7 +106,7 @@ export function record<TKey extends string | symbol, TValue>(keyParser: Parser<T
 export type RecordParser<TKey extends string | symbol, TValue> = Parser<Record<TKey, TValue>>;
 
 // @public (undocumented)
-export function recursive<T extends _ReadonlyObject>(propertyParserFactory: (selfParser: Parser<T>) => Exclude<ObjectPropertyParsers<T>, readonly unknown[]>): Parser<T>;
+export function recursive<T extends _ReadonlyObject>(parserFactory: (selfParser: Parser<T>) => ParserOrShorthand<T>): Parser<T>;
 
 // @public
 export interface _ResultTypeMarker<T> {
