@@ -4,10 +4,220 @@
 
 ```ts
 
-import type { Result } from '@shaval/core';
+import type { Failure } from '@shaval/core';
+import { _ReadonlyObject } from '@shaval/core';
 
 // @public (undocumented)
-export type Parser<T> = (value: unknown) => Result<T>;
+export function array<T>(itemParser: Parser<T>): Parser<T[]>;
+
+// @public (undocumented)
+export function array<T>(itemParser: ArrayParserShorthand<T>): Parser<T[][]>;
+
+// @public (undocumented)
+export function array<T>(itemParser: ObjectParserShorthand<T>): Parser<T[]>;
+
+// @public (undocumented)
+export type ArrayParserShorthand<T> = readonly [ParserOrShorthand<T>];
+
+// @public (undocumented)
+export const boolean: Parser<boolean>;
+
+// @public (undocumented)
+export const date: Parser<Date>;
+
+// @public (undocumented)
+export function literal<T extends string | number | boolean | symbol>(literalValue: T): Parser<T>;
+
+// @public (undocumented)
+export function nullable<T>(valueParser: Parser<T>): Parser<T | null>;
+
+// @public (undocumented)
+export function nullable<T>(valueParser: ArrayParserShorthand<T>): Parser<T[] | null>;
+
+// @public (undocumented)
+export function nullable<T>(valueParser: ObjectParserShorthand<T>): Parser<T | null>;
+
+// @public (undocumented)
+export const number: Parser<number>;
+
+// @public (undocumented)
+export function object<T extends _ReadonlyObject>(propertyParsers: Exclude<ObjectPropertyParsers<T>, readonly unknown[]>): Parser<T>;
+
+// @public (undocumented)
+export type ObjectParserShorthand<T extends _ReadonlyObject> = ObjectPropertyParsers<T>;
+
+// @public (undocumented)
+export type ObjectPropertyParsers<T extends _ReadonlyObject> = {
+    readonly [prop in keyof T]: ParserOrShorthand<T[prop]>;
+};
+
+// @public (undocumented)
+export function optional<T>(valueParser: Parser<T>): Parser<T | undefined>;
+
+// @public (undocumented)
+export function optional<T>(valueParser: ArrayParserShorthand<T>): Parser<T[] | undefined>;
+
+// @public (undocumented)
+export function optional<T>(valueParser: ObjectParserShorthand<T>): Parser<T | undefined>;
+
+// @public (undocumented)
+export type Parser<T> = (value: unknown) => ParserResult<T>;
+
+// @public (undocumented)
+export function parser<T>(parserOrShorthand: ParserOrShorthand<T>): Parser<any>;
+
+// @public (undocumented)
+export type ParserOrShorthand<T> = Parser<T> | ArrayParserShorthand<T> | ObjectParserShorthand<T>;
+
+// @public (undocumented)
+export type ParserResult<T> = T | (Failure & _ResultTypeMarker<T>);
+
+// @public (undocumented)
+export type ParserResultType<TParser extends Parser<any>> = TParser extends Parser<infer U> ? U : never;
+
+// @public (undocumented)
+export function readonlyArray<T>(itemParser: Parser<T>): Parser<readonly T[]>;
+
+// @public (undocumented)
+export function readonlyArray<T>(itemParser: ArrayParserShorthand<T>): Parser<readonly T[][]>;
+
+// @public (undocumented)
+export function readonlyArray<T>(itemParser: ObjectParserShorthand<T>): Parser<readonly T[]>;
+
+// @public (undocumented)
+export function record<TValue>(valueParser: Parser<TValue>): RecordParser<string, TValue>;
+
+// @public (undocumented)
+export function record<TKey extends string | symbol, TValue>(keyParser: Parser<TKey>, valueParser: Parser<TValue>): RecordParser<TKey, TValue>;
+
+// @public (undocumented)
+export function record<TValue>(valueParser: ArrayParserShorthand<TValue>): RecordParser<string, TValue[]>;
+
+// @public (undocumented)
+export function record<TKey extends string | symbol, TValue>(keyParser: Parser<TKey>, valueParser: ArrayParserShorthand<TValue>): RecordParser<TKey, TValue[]>;
+
+// @public (undocumented)
+export function record<TValue>(valueParser: ObjectParserShorthand<TValue>): RecordParser<string, TValue>;
+
+// @public (undocumented)
+export function record<TKey extends string | symbol, TValue>(keyParser: Parser<TKey>, valueParser: ObjectParserShorthand<TValue>): RecordParser<TKey, TValue>;
+
+// @public (undocumented)
+export type RecordParser<TKey extends string | symbol, TValue> = Parser<Record<TKey, TValue>>;
+
+// @public (undocumented)
+export function recursive<T extends _ReadonlyObject>(parserFactory: (selfParser: Parser<T>) => ParserOrShorthand<T>): Parser<T>;
+
+// @public
+export interface _ResultTypeMarker<T> {
+    readonly _?: unknown extends T ? unknown : never;
+}
+
+// @public (undocumented)
+export const string: Parser<string>;
+
+// @public
+export function tuple<T1, T2, T3, T4, T5, T6, T7>(parser1: Parser<T1>, parser2: Parser<T2>, parser3: Parser<T3>, parser4: Parser<T4>, parser5: Parser<T5>, parser6: Parser<T6>, parser7: Parser<T7>): Parser<[T1, T2, T3, T4, T5, T6, T7]>;
+
+// @public
+export function tuple<T1, T2, T3, T4, T5, T6>(parser1: Parser<T1>, parser2: Parser<T2>, parser3: Parser<T3>, parser4: Parser<T4>, parser5: Parser<T5>, parser6: Parser<T6>): Parser<[T1, T2, T3, T4, T5, T6]>;
+
+// @public
+export function tuple<T1, T2, T3, T4, T5>(parser1: Parser<T1>, parser2: Parser<T2>, parser3: Parser<T3>, parser4: Parser<T4>, parser5: Parser<T5>): Parser<[T1, T2, T3, T4, T5]>;
+
+// @public
+export function tuple<T1, T2, T3, T4>(parser1: Parser<T1>, parser2: Parser<T2>, parser3: Parser<T3>, parser4: Parser<T4>): Parser<[T1, T2, T3, T4]>;
+
+// @public (undocumented)
+export function tuple<T1, T2, T3>(parser1: ArrayParserShorthand<T1>, parser2: ArrayParserShorthand<T2>, parser3: ArrayParserShorthand<T3>): Parser<[T1[], T2[], T3[]]>;
+
+// @public (undocumented)
+export function tuple<T1, T2, T3>(parser1: ArrayParserShorthand<T1>, parser2: ArrayParserShorthand<T2>, parser3: ParserOrShorthand<T3>): Parser<[T1[], T2[], T3]>;
+
+// @public (undocumented)
+export function tuple<T1, T2, T3>(parser1: ArrayParserShorthand<T1>, parser2: ParserOrShorthand<T2>, parser3: ArrayParserShorthand<T3>): Parser<[T1[], T2, T3[]]>;
+
+// @public (undocumented)
+export function tuple<T1, T2, T3>(parser1: ParserOrShorthand<T1>, parser2: ArrayParserShorthand<T2>, parser3: ArrayParserShorthand<T3>): Parser<[T1, T2[], T3[]]>;
+
+// @public (undocumented)
+export function tuple<T1, T2, T3>(parser1: ArrayParserShorthand<T1>, parser2: ParserOrShorthand<T2>, parser3: ParserOrShorthand<T3>): Parser<[T1[], T2, T3]>;
+
+// @public (undocumented)
+export function tuple<T1, T2, T3>(parser1: ParserOrShorthand<T1>, parser2: ArrayParserShorthand<T2>, parser3: ParserOrShorthand<T3>): Parser<[T1, T2[], T3]>;
+
+// @public (undocumented)
+export function tuple<T1, T2, T3>(parser1: ParserOrShorthand<T1>, parser2: ParserOrShorthand<T2>, parser3: ArrayParserShorthand<T3>): Parser<[T1, T2, T3[]]>;
+
+// @public (undocumented)
+export function tuple<T1, T2, T3>(parser1: ParserOrShorthand<T1>, parser2: ParserOrShorthand<T2>, parser3: ParserOrShorthand<T3>): Parser<[T1, T2, T3]>;
+
+// @public (undocumented)
+export function tuple<T1, T2>(parser1: ArrayParserShorthand<T1>, parser2: ArrayParserShorthand<T2>): Parser<[T1[], T2[]]>;
+
+// @public (undocumented)
+export function tuple<T1, T2>(parser1: ArrayParserShorthand<T1>, parser2: ParserOrShorthand<T2>): Parser<[T1[], T2]>;
+
+// @public (undocumented)
+export function tuple<T1, T2>(parser1: ParserOrShorthand<T1>, parser2: ArrayParserShorthand<T2>): Parser<[T1, T2[]]>;
+
+// @public (undocumented)
+export function tuple<T1, T2>(parser1: ParserOrShorthand<T1>, parser2: ParserOrShorthand<T2>): Parser<[T1, T2]>;
+
+// @public (undocumented)
+export function tuple<T>(parser: ArrayParserShorthand<T>): Parser<[T[]]>;
+
+// @public (undocumented)
+export function tuple<T>(parser: ParserOrShorthand<T>): Parser<[T]>;
+
+// @public (undocumented)
+export type _TupleRestParsers<T> = {
+    [K in keyof T]: ParserOrShorthand<T[K]>;
+};
+
+// @public
+export function union<T1, T2, T3, TRest extends readonly unknown[]>(parser1: ArrayParserShorthand<T1>, parser2: ArrayParserShorthand<T2>, parser3: ArrayParserShorthand<T3>, ...otherParsers: _UnionRestParsers<TRest>): Parser<T1[] | T2[] | T3[] | TRest[number]>;
+
+// @public
+export function union<T1, T2, T3, TRest extends readonly unknown[]>(parser1: ArrayParserShorthand<T1>, parser2: ArrayParserShorthand<T2>, parser3: ParserOrShorthand<T3>, ...otherParsers: _UnionRestParsers<TRest>): Parser<T1[] | T2[] | T3 | TRest[number]>;
+
+// @public
+export function union<T1, T2, T3, TRest extends readonly unknown[]>(parser1: ArrayParserShorthand<T1>, parser2: ParserOrShorthand<T2>, parser3: ArrayParserShorthand<T3>, ...otherParsers: _UnionRestParsers<TRest>): Parser<T1[] | T2 | T3[] | TRest[number]>;
+
+// @public
+export function union<T1, T2, T3, TRest extends readonly unknown[]>(parser1: ParserOrShorthand<T1>, parser2: ArrayParserShorthand<T2>, parser3: ArrayParserShorthand<T3>, ...otherParsers: _UnionRestParsers<TRest>): Parser<T1 | T2[] | T3[] | TRest[number]>;
+
+// @public
+export function union<T1, T2, T3, TRest extends readonly unknown[]>(parser1: ArrayParserShorthand<T1>, parser2: ParserOrShorthand<T2>, parser3: ParserOrShorthand<T3>, ...otherParsers: _UnionRestParsers<TRest>): Parser<T1[] | T2 | T3 | TRest[number]>;
+
+// @public
+export function union<T1, T2, T3, TRest extends readonly unknown[]>(parser1: ParserOrShorthand<T1>, parser2: ArrayParserShorthand<T2>, parser3: ParserOrShorthand<T3>, ...otherParsers: _UnionRestParsers<TRest>): Parser<T1 | T2[] | T3 | TRest[number]>;
+
+// @public
+export function union<T1, T2, T3, TRest extends readonly unknown[]>(parser1: ParserOrShorthand<T1>, parser2: ParserOrShorthand<T2>, parser3: ArrayParserShorthand<T3>, ...otherParsers: _UnionRestParsers<TRest>): Parser<T1 | T2 | T3[] | TRest[number]>;
+
+// @public
+export function union<T1, T2, T3, TRest extends readonly unknown[]>(parser1: ParserOrShorthand<T1>, parser2: ParserOrShorthand<T2>, parser3: ParserOrShorthand<T3>, ...otherParsers: _UnionRestParsers<TRest>): Parser<T1 | T2 | T3 | TRest[number]>;
+
+// @public (undocumented)
+export function union<T1, T2>(parser1: ArrayParserShorthand<T1>, parser2: ArrayParserShorthand<T2>): Parser<T1[] | T2[]>;
+
+// @public (undocumented)
+export function union<T1, T2>(parser1: ArrayParserShorthand<T1>, parser2: ParserOrShorthand<T2>): Parser<T1[] | T2>;
+
+// @public (undocumented)
+export function union<T1, T2>(parser1: ParserOrShorthand<T1>, parser2: ArrayParserShorthand<T2>): Parser<T1 | T2[]>;
+
+// @public (undocumented)
+export function union<T1, T2>(parser1: ParserOrShorthand<T1>, parser2: ParserOrShorthand<T2>): Parser<T1 | T2>;
+
+// @public (undocumented)
+export function union<T>(parser1: ParserOrShorthand<T>, parser2: ParserOrShorthand<T>, ...otherParsers: ParserOrShorthand<T>[]): Parser<T>;
+
+// @public (undocumented)
+export type _UnionRestParsers<T> = {
+    [K in keyof T]: ParserOrShorthand<T[K]>;
+};
 
 
 // (No @packageDocumentation comment for this package)
