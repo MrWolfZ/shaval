@@ -67,6 +67,9 @@ export type ParserOrShorthand<T> = Parser<T> | ArrayParserShorthand<T> | ObjectP
 export type ParserResult<T> = T | (Failure & _ResultTypeMarker<T>);
 
 // @public (undocumented)
+export type ParserResultType<TParser extends Parser<any>> = TParser extends Parser<infer U> ? U : never;
+
+// @public (undocumented)
 export function readonlyArray<T>(itemParser: Parser<T>): Parser<readonly T[]>;
 
 // @public (undocumented)

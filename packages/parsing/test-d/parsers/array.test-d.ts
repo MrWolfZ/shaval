@@ -1,4 +1,4 @@
-import { array, ArrayParserShorthand, Parser, ParserResult, readonlyArray } from '@shaval/parsing'
+import { array, ArrayParserShorthand, Parser, ParserResult, ParserResultType, readonlyArray } from '@shaval/parsing'
 import { expectAssignable, expectError, expectType } from 'tsd'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -41,3 +41,9 @@ expectAssignable<ArrayParserShorthand<{ s: string | number }>>([{ s: stringOrNum
 expectType<ParserResult<string[]>>(array(stringParser)([] as string[]))
 expectType<ParserResult<string[]>>(array(stringParser)([] as readonly string[]))
 expectType<ParserResult<readonly string[]>>(readonlyArray(stringParser)([] as readonly string[]))
+
+const testParser = array(stringParser)
+
+type InferredResultType = ParserResultType<typeof testParser>
+
+expectType<string[]>(undefined! as InferredResultType)

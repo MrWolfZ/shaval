@@ -38,11 +38,14 @@ TODO
 
 ### parsing
 
+- add test for recursive parsing
 - add `date` parser
+- in `tuple` support tuples with one element
 - add comments for all public exports
 - run performance tests
 
 - export two objects `parsers` and `p` that contain all parsers as properties
+- gracefully handle cycles
 - add `intersection` parser
 - add `promise` parser
 - add `function` parser
@@ -56,6 +59,7 @@ TODO
 
 ### validation
 
+- add test for recursive validation
 - rename `custom` to `customValidator`
 - add `tupleValidator`
 - add `recordValidator`
@@ -65,6 +69,8 @@ TODO
 - run performance tests
 
 - export two objects `validators` and `v` that contain all validators as properties
+- gracefully handle cycles
+- add `validatedFunction` function that takes input/output validator(s) and a function implementation and returns a function that validates its inputs/output
 - in `objectValidator` support symbol properties
 - support for async validators
 - omit certain error messages for production builds

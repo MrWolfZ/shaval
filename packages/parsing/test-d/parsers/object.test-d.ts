@@ -1,4 +1,4 @@
-import { object, ObjectParserShorthand, Parser } from '@shaval/parsing'
+import { object, ObjectParserShorthand, Parser, ParserResultType } from '@shaval/parsing'
 import { expectAssignable, expectError, expectType } from 'tsd'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -24,7 +24,9 @@ const nullableStringParser: Parser<string | null> = undefined!
 const optionalNullableStringParser: Parser<string | null | undefined> = undefined!
 const stringOrNumberParser: Parser<string | number> = undefined!
 const stringArrayParser: Parser<string[]> = undefined!
+const stringNumberTupleParser: Parser<[string, number]> = undefined!
 const objectParser: Parser<{ s: string }> = undefined!
+const recordParser: Parser<Record<string, string>> = undefined!
 
 expectType<Parser<SimpleObject>>(
   object<SimpleObject>({ s: stringParser, n: numberParser }),
@@ -148,3 +150,27 @@ expectAssignable<ObjectParserShorthand<{ s: { n: number } }>>({ s: { n: numberPa
 expectAssignable<ObjectParserShorthand<{ s: string[] }>>({ s: [stringParser] })
 expectError<ObjectParserShorthand<{ s: string[][] }>>({ s: [stringParser] })
 expectAssignable<ObjectParserShorthand<{ s: string[][] }>>({ s: [[stringParser]] })
+
+const testParser = object({
+  s: stringParser,
+  optS: optionalStringParser,
+  arr: stringArrayParser,
+  nested: {
+    o: stringParser,
+    arr: stringArrayParser,
+  },
+  rec: recordParser,
+  stringOrNumber: stringOrNumberParser,
+  stringNumberTuple: stringNumberTupleParser,
+})
+
+type InferredResultType = ParserResultType<typeof testParser>
+
+expectType<string>(undefined! as InferredResultType['s'])
+expectType<string | undefined>(undefined! as InferredResultType['optS'])
+expectError<string>(undefined! as InferredResultType['optS'])
+expectType<string[]>(undefined! as InferredResultType['arr'])
+expectType<{ o: string; arr: string[] }>(undefined! as InferredResultType['nested'])
+expectType<Record<string, string>>(undefined! as InferredResultType['rec'])
+expectType<string | number>(undefined! as InferredResultType['stringOrNumber'])
+expectType<[string, number]>(undefined! as InferredResultType['stringNumberTuple'])

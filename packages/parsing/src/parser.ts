@@ -28,6 +28,12 @@ export type ParserResult<T> = T | (Failure & _ResultTypeMarker<T>)
 /**
  * @public
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ParserResultType<TParser extends Parser<any>> = TParser extends Parser<infer U> ? U : never
+
+/**
+ * @public
+ */
 export type Parser<T> = (value: unknown) => ParserResult<T>
 
 /**
