@@ -11,9 +11,8 @@ const stringArrayParser: Parser<string[]> = undefined!
 // @ts-expect-error test
 tuple()
 
-// @ts-expect-error test
-tuple(stringParser)
-
+expectType<Parser<[string]>>(tuple(stringParser))
+expectType<Parser<[string[]]>>(tuple([stringParser]))
 expectType<Parser<[string, number]>>(tuple(stringParser, numberParser))
 expectType<Parser<[number, string]>>(tuple(numberParser, stringParser))
 expectError<Parser<[string, number]>>(tuple(stringParser, stringParser))
@@ -33,11 +32,17 @@ expectType<Parser<[string[], string]>>(tuple([stringParser], stringParser))
 expectError<Parser<[string[], string]>>(tuple(stringParser, [stringParser]))
 expectType<Parser<[number[], string[]]>>(tuple([numberParser], [stringParser]))
 expectType<Parser<[string[], number[]]>>(tuple([stringParser], [numberParser]))
+expectType<Parser<[string, number, string]>>(tuple(stringParser, numberParser, stringParser))
 expectType<Parser<[string, number, string[]]>>(tuple(stringParser, numberParser, [stringParser]))
 expectType<Parser<[string, number[], string]>>(tuple(stringParser, [numberParser], stringParser))
 expectType<Parser<[string[], number, string]>>(tuple([stringParser], numberParser, stringParser))
 expectType<Parser<[string[], number[], string]>>(tuple([stringParser], [numberParser], stringParser))
 expectType<Parser<[string[], number[], boolean[]]>>(tuple([stringParser], [numberParser], [booleanParser]))
+expectType<Parser<[string, number, string, string]>>(tuple(stringParser, numberParser, stringParser, stringParser))
+expectType<Parser<[string, number, string, string, string]>>(
+  tuple(stringParser, numberParser, stringParser, stringParser, stringParser),
+)
+expectError(tuple(stringParser, [numberParser], [booleanParser], stringParser))
 
 expectType<Parser<[string, { s: string }]>>(tuple(stringParser, { s: stringParser }))
 expectType<Parser<[{ s: string }, string]>>(tuple({ s: stringParser }, stringParser))

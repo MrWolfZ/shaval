@@ -117,38 +117,22 @@ export function union<T1, T2, T3, TRest extends readonly unknown[]>(
 /**
  * @public
  */
-export function union<T1, T2, TRest extends readonly unknown[]>(
-  parser1: ArrayParserShorthand<T1>,
-  parser2: ArrayParserShorthand<T2>,
-  ...otherParsers: _UnionRestParsers<TRest>
-): Parser<T1[] | T2[] | TRest[number]>
+export function union<T1, T2>(parser1: ArrayParserShorthand<T1>, parser2: ArrayParserShorthand<T2>): Parser<T1[] | T2[]>
 
 /**
  * @public
  */
-export function union<T1, T2, TRest extends readonly unknown[]>(
-  parser1: ArrayParserShorthand<T1>,
-  parser2: ParserOrShorthand<T2>,
-  ...otherParsers: _UnionRestParsers<TRest>
-): Parser<T1[] | T2 | TRest[number]>
+export function union<T1, T2>(parser1: ArrayParserShorthand<T1>, parser2: ParserOrShorthand<T2>): Parser<T1[] | T2>
 
 /**
  * @public
  */
-export function union<T1, T2, TRest extends readonly unknown[]>(
-  parser1: ParserOrShorthand<T1>,
-  parser2: ArrayParserShorthand<T2>,
-  ...otherParsers: _UnionRestParsers<TRest>
-): Parser<T1 | T2[] | TRest[number]>
+export function union<T1, T2>(parser1: ParserOrShorthand<T1>, parser2: ArrayParserShorthand<T2>): Parser<T1 | T2[]>
 
 /**
  * @public
  */
-export function union<T1, T2, TRest extends readonly unknown[]>(
-  parser1: ParserOrShorthand<T1>,
-  parser2: ParserOrShorthand<T2>,
-  ...otherParsers: _UnionRestParsers<TRest>
-): Parser<T1 | T2 | TRest[number]>
+export function union<T1, T2>(parser1: ParserOrShorthand<T1>, parser2: ParserOrShorthand<T2>): Parser<T1 | T2>
 
 /**
  * @public
@@ -162,7 +146,8 @@ export function union<T>(
 /**
  * @public
  */
-export function union(...restParsers: ParserOrShorthand<unknown>[]): Parser<unknown> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function union(...restParsers: ParserOrShorthand<unknown>[]): Parser<any> {
   const resolvedParsers = restParsers.map(_resolveParserOrShorthand)
 
   return (value) => {
