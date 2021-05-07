@@ -5,7 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 0.1.0-alpha.1 (2021-05-07)
 
-
-### Features
-
-* wip ([1de04b0](https://github.com/MrWolfZ/shaval/commit/1de04b04a16315ccad5f13159a400d000a3f8ce7))
+**Note:** Version bump only for package @shaval/recipes.quickstart.validation

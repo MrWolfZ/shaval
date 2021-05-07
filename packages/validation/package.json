@@ -1,6 +1,6 @@
 {
   "name": "@shaval/validation",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "description": "The validation package of shaval. Contains everything to validate objects in a simple way.",
   "module": "./esm2015/index.js",
   "main": "./index.js",
@@ -48,7 +48,7 @@
   "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
   "license": "MIT",
   "dependencies": {
-    "@shaval/core": "0.1.0-alpha.0"
+    "@shaval/core": "0.1.0-alpha.1"
   },
   "devDependencies": {
     "eslint": "^7.25.0",
